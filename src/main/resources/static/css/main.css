@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Material Design inspired styles */
+@layer components {
+    .material-btn {
+        @apply relative overflow-hidden transform;
+        transform: translate3d(0, 0, 0);
+    }
+    .material-btn::after {
+        content: "";
+        @apply block absolute w-full h-full top-0 left-0 pointer-events-none opacity-0 transform transition-all;
+        background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+        background-repeat: no-repeat;
+        background-position: 50%;
+        transform: scale(10, 10);
+        transition: transform .5s, opacity 1s;
+    }
+    .material-btn:active::after {
+        @apply opacity-30 transition-none;
+        transform: scale(0, 0);
+    }
+
+    /* Theme toggle switch styles */
+    .theme-toggle {
+        @apply relative inline-flex items-center p-1 rounded-full cursor-pointer transition-colors duration-300;
+    }
+
+    .theme-toggle:focus {
+        @apply outline-none;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+    }
+
+    /* Material Design form field animation */
+    .form-field {
+        @apply relative mb-6;
+    }
+    .form-field input {
+        @apply w-full py-3 px-4 border-none rounded border-b-2 border-gray-200 bg-gray-50 transition-all duration-300 outline-none;
+    }
+    .form-field input:focus {
+        @apply border-b-primary-500 bg-primary-50 shadow;
+    }
+    .form-field label {
+        @apply absolute left-4 top-3 text-gray-500 pointer-events-none transition-all duration-300;
+    }
+    .form-field input:focus + label,
+    .form-field input:not(:placeholder-shown) + label {
+        @apply -top-3 left-2 text-xs text-primary-600 bg-white px-1;
+    }
+
+    /* Dark mode adjustments for form fields */
+    .dark .form-field input {
+        @apply border-b-darkpurple-900 bg-darkpurple-950 text-darkpurple-50;
+    }
+    .dark .form-field input:focus {
+        @apply border-b-darkpurple-600 bg-darkpurple-900;
+    }
+    .dark .form-field label {
+        @apply text-darkpurple-300;
+    }
+    .dark .form-field input:focus + label,
+    .dark .form-field input:not(:placeholder-shown) + label {
+        @apply text-darkpurple-500 bg-darkpurple-950;
+    }
+
+    /* Card hover effect */
+    .task-card {
+        @apply transition-all duration-300;
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    }
+    .task-card:hover {
+        @apply transform -translate-y-1;
+    }
+
+    /* Modal animation */
+    .modal-container {
+        @apply transition-opacity duration-300;
+    }
+    .modal-content {
+        @apply transition-all duration-300;
+    }
+    .modal-enter {
+        @apply opacity-0;
+    }
+    .modal-enter .modal-content {
+        @apply transform scale-90 opacity-0;
+    }
+    .modal-enter-active {
+        @apply opacity-100;
+    }
+    .modal-enter-active .modal-content {
+        @apply transform scale-100 opacity-100;
+    }
+}

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Moderator - AP CSA FRQ Practice Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'slide-in-right': 'slideInRight 0.5s ease-out',
+                        'slide-in-left': 'slideInLeft 0.5s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        slideInRight: {
+                            '0%': { transform: 'translateX(20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        slideInLeft: {
+                            '0%': { transform: 'translateX(-20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                    },
+                    boxShadow: {
+                        'elevation-1': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+                        'elevation-2': '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
+                        'elevation-3': '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)',
+                        'elevation-4': '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
+                        'elevation-5': '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Material Design inspired styles */
+        .material-btn {
+            position: relative;
+            overflow: hidden;
+            transform: translate3d(0, 0, 0);
+        }
+        .material-btn::after {
+            content: "";
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+            background-repeat: no-repeat;
+            background-position: 50%;
+            transform: scale(10, 10);
+            opacity: 0;
+            transition: transform .5s, opacity 1s;
+        }
+        .material-btn:active::after {
+            transform: scale(0, 0);
+            opacity: .3;
+            transition: 0s;
+        }
+
+        /* Material Design form field animation */
+        .form-field {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .form-field input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            border-bottom: 2px solid #e5e7eb;
+            background-color: #f9fafb;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .form-field input:focus {
+            border-bottom-color: #0ea5e9;
+            background-color: #f0f9ff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .form-field label {
+            position: absolute;
+            left: 1rem;
+            top: 0.75rem;
+            color: #6b7280;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        .form-field input:focus + label,
+        .form-field input:not(:placeholder-shown) + label {
+            top: -0.75rem;
+            left: 0.5rem;
+            font-size: 0.75rem;
+            color: #0ea5e9;
+            background-color: white;
+            padding: 0 0.25rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <div class="bg-primary-800 text-white w-64 py-8 px-4 hidden md:block shadow-elevation-2 animate-slide-in-left">
+            <div class="mb-8">
+                <h1 class="text-xl font-bold">AP CSA FRQ Practice</h1>
+                <p class="text-primary-200 text-sm">Admin Panel</p>
+            </div>
+
+            <nav>
+                <ul>
+                    <li class="mb-2">
+                        <a href="/admin" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="/admin/moderators" class="block py-2 px-4 bg-primary-700 rounded-lg font-medium transition-all duration-300 shadow-elevation-1">
+                            Manage Moderators
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="/tasks" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            View Public Site
+                        </a>
+                    </li>
+                    <li class="mt-8">
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="material-btn block w-full py-2 px-4 text-left hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- Mobile Header -->
+            <div class="md:hidden bg-primary-800 text-white p-4 flex justify-between items-center shadow-elevation-2">
+                <h1 class="text-xl font-bold">Admin Panel</h1>
+                <button id="mobileMenuBtn" class="material-btn text-white p-1 rounded-full hover:bg-primary-700 transition-colors duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="md:hidden bg-primary-800 text-white p-4 hidden shadow-elevation-3 animate-fade-in">
+                <nav>
+                    <ul>
+                        <li class="mb-2">
+                            <a href="/admin" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="/admin/moderators" class="block py-2 px-4 bg-primary-700 rounded-lg font-medium transition-all duration-300 shadow-elevation-1">
+                                Manage Moderators
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="/tasks" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                View Public Site
+                            </a>
+                        </li>
+                        <li class="mt-4">
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="material-btn block w-full py-2 px-4 text-left hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                    Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Page Content -->
+            <div class="p-6 animate-fade-in">
+                <div class="flex justify-between items-center mb-6 animate-slide-up">
+                    <h2 class="text-2xl font-bold text-gray-800 border-b pb-2">Create New Moderator</h2>
+                    <a href="/admin/moderators" class="text-primary-600 hover:text-primary-800 transition-colors duration-300 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Back to Moderators
+                    </a>
+                </div>
+
+                <!-- Flash Messages -->
+                <div th:if="${errorMessage}" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 animate-fade-in shadow-elevation-1 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    <span th:text="${errorMessage}"></span>
+                </div>
+
+                <!-- Moderator Form -->
+                <div class="bg-white shadow-elevation-2 rounded-xl p-6 max-w-3xl animate-slide-up hover:shadow-elevation-3 transition-all duration-300" style="animation-delay: 0.1s;">
+                    <form th:action="@{/admin/moderators/save}" th:object="${moderator}" method="post">
+                        <div class="form-field">
+                            <input type="text" id="username" th:field="*{username}" required placeholder=" ">
+                            <label for="username">Username</label>
+                            <p class="text-sm text-gray-500 mt-1">Username must be unique and will be used for login.</p>
+                        </div>
+
+                        <div class="form-field">
+                            <input type="password" id="password" th:field="*{password}" required placeholder=" ">
+                            <label for="password">Password</label>
+                            <p class="text-sm text-gray-500 mt-1">Create a strong password for the moderator account.</p>
+                        </div>
+
+                        <div class="form-field">
+                            <input type="text" id="fullName" th:field="*{fullName}" placeholder=" ">
+                            <label for="fullName">Full Name</label>
+                        </div>
+
+                        <div class="flex justify-end space-x-4 mt-8">
+                            <a href="/admin/moderators" class="material-btn px-6 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300">
+                                Cancel
+                            </a>
+                            <button type="submit" class="material-btn px-6 py-2 bg-primary-600 text-white rounded-full hover:bg-primary-700 shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
+                                Create Moderator
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="text-center text-gray-500 text-sm mt-12 p-6 animate-fade-in" style="animation-delay: 0.3s;">
+                <p>&copy; 2025 AP CSA FRQ Practice Hub. All rights reserved.</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle with animation
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenu.classList.contains('hidden')) {
+                // Show menu with animation
+                mobileMenu.classList.remove('hidden');
+                // Force a reflow to ensure the animation works
+                void mobileMenu.offsetWidth;
+                mobileMenu.classList.add('opacity-100');
+            } else {
+                // Hide menu with animation
+                mobileMenu.classList.remove('opacity-100');
+                mobileMenu.classList.add('opacity-0');
+                // Wait for animation to complete before hiding
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html> 

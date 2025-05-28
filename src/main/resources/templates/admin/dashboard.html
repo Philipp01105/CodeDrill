@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AP CSA FRQ Practice Hub</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="/js/darkMode.js"></script>
+    <script src="/js/analytics-tracker.js"></script>
+</head>
+<body class="bg-gray-50 dark:bg-darkpurple-950 min-h-screen font-sans transition-colors duration-300">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <div class="bg-primary-800 dark:bg-darkpurple-900 text-white w-64 py-8 px-4 hidden md:block shadow-elevation-2 animate-slide-in-left transition-colors duration-300">
+            <div class="mb-8">
+                <h1 class="text-xl font-bold">AP CSA FRQ Practice</h1>
+                <p class="text-primary-200 dark:text-darkpurple-200 text-sm transition-colors duration-300">Administrator Panel</p>
+            </div>
+
+            <nav>
+                <ul>
+                    <li class="mb-2">
+                        <a href="/admin" class="block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1">
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="/admin/users" class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            User Management
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="/admin/moderators" class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            Manage Moderators
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="/moderator/tasks" class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            Task Management
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="/analytics/admin" class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            Analytics Dashboard
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="/tasks" class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            View Public Site
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="/change-password" class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            Change Password
+                        </a>
+                    </li>
+
+                    <!-- Dark mode toggle in sidebar -->
+                    <li class="mb-4 flex justify-center">
+                        <button id="theme-toggle" class="theme-toggle bg-primary-700 dark:bg-darkpurple-800 p-2 rounded-full transition-colors duration-300" aria-label="Toggle dark mode" aria-checked="false">
+                            <svg class="moon-icon w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                            <svg class="sun-icon w-5 h-5 text-yellow-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                        </button>
+                    </li>
+
+                    <li class="mt-8">
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="material-btn block w-full py-2 px-4 text-left hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- Mobile Header -->
+            <div class="md:hidden bg-primary-800 dark:bg-darkpurple-900 text-white p-4 flex justify-between items-center shadow-elevation-2 transition-colors duration-300">
+                <h1 class="text-xl font-bold">Administrator Panel</h1>
+                <button id="mobileMenuBtn" class="material-btn text-white p-1 rounded-full hover:bg-primary-700 dark:hover:bg-darkpurple-800 transition-colors duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="md:hidden bg-primary-800 dark:bg-darkpurple-900 text-white p-4 hidden shadow-elevation-3 animate-fade-in transition-colors duration-300">
+                <nav>
+                    <ul>
+                        <li class="mb-2">
+                            <a href="/admin" class="block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1">
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="/admin/users" class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                User Management
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="/admin/moderators" class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                Manage Moderators
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="/moderator/tasks" class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                Task Management
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="/analytics/admin" class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                Analytics Dashboard
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="/tasks" class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                View Public Site
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="/change-password" class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                Change Password
+                            </a>
+                        </li>
+
+                        <!-- Dark mode toggle in mobile menu -->
+                        <li class="mb-4 flex justify-center">
+                            <button id="mobile-theme-toggle" class="theme-toggle bg-primary-700 dark:bg-darkpurple-800 p-2 rounded-full transition-colors duration-300" aria-label="Toggle dark mode" aria-checked="false">
+                                <svg class="moon-icon w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                                </svg>
+                                <svg class="sun-icon w-5 h-5 text-yellow-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                </svg>
+                            </button>
+                        </li>
+
+                        <li class="mt-4">
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="material-btn block w-full py-2 px-4 text-left hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                    Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Page Content -->
+            <div class="p-6 animate-fade-in">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-darkpurple-200 mb-6 border-b dark:border-darkpurple-700 pb-3 animate-slide-up transition-colors duration-300">Administrator Dashboard</h2>
+
+                <!-- Success/Error Messages -->
+                <div th:if="${successMessage}" class="mb-6 p-4 rounded-lg bg-green-100 dark:bg-green-900 border-l-4 border-green-500 text-green-800 dark:text-green-200 flex items-start shadow-elevation-1 animate-fade-in transition-colors duration-300">
+                    <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span th:text="${successMessage}">Success message</span>
+                </div>
+
+                <div th:if="${errorMessage}" class="mb-6 p-4 rounded-lg bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-800 dark:text-red-200 flex items-start shadow-elevation-1 animate-fade-in transition-colors duration-300">
+                    <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <span th:text="${errorMessage}">Error message</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- User Statistics -->
+                    <div class="bg-white rounded-xl shadow-elevation-2 p-6 border-l-4 border-primary-500 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up" style="animation-delay: 0.1s;">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">User Statistics</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <div class="text-3xl font-bold text-primary-600 mb-2" th:text="${userCount}">0</div>
+                                <p class="text-gray-600">Total Users</p>
+                            </div>
+                            <div>
+                                <div class="text-3xl font-bold text-green-600 mb-2" th:text="${moderatorCount}">0</div>
+                                <p class="text-gray-600">Moderators</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <a href="/admin/users" class="text-primary-600 hover:text-primary-800 font-medium flex items-center transition-colors duration-300">
+                                <span>Manage Users</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-xl shadow-elevation-2 p-6 border-l-4 border-purple-500 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up" style="animation-delay: 0.2s;">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                        <div>
+                            <a href="/admin/users/new" class="material-btn block w-full bg-primary-600 hover:bg-primary-700 text-white text-center py-3 px-4 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1 mb-3">
+                                Create New User
+                            </a>
+                            <a href="/admin/moderators/new" class="material-btn block w-full bg-green-600 hover:bg-green-700 text-white text-center py-3 px-4 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1 mb-3">
+                                Add Moderator
+                            </a>
+                            <a href="/moderator/tasks/new" class="material-btn block w-full bg-purple-600 hover:bg-purple-700 text-white text-center py-3 px-4 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
+                                Create New Task
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Account Information -->
+                    <div class="bg-white rounded-xl shadow-elevation-2 p-6 border-l-4 border-indigo-500 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up" style="animation-delay: 0.3s;">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Account Information</h3>
+                        <div class="mb-4">
+                            <div class="text-sm text-gray-500">Username</div>
+                            <div class="font-medium" th:text="${user.username}">admin</div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="text-sm text-gray-500">Full Name</div>
+                            <div class="font-medium" th:text="${user.fullName != null ? user.fullName : 'Not set'}">Admin User</div>
+                        </div>
+                        <div>
+                            <a href="/change-password" class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors duration-300">
+                                Change Password
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Moderator Management -->
+                <div class="bg-white rounded-xl shadow-elevation-2 p-6 mb-8 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up" style="animation-delay: 0.4s;">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Moderator Management</h3>
+
+                    <div th:if="${#lists.isEmpty(moderators)}" class="text-gray-500 py-4 text-center bg-gray-50 rounded-lg">
+                        There are no moderators yet. <a href="/admin/moderators/new" class="text-green-600 hover:text-green-800 transition-colors duration-300 font-medium">Add your first moderator</a>.
+                    </div>
+
+                    <div th:unless="${#lists.isEmpty(moderators)}" class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Username
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Full Name
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Registration Date
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr th:each="moderator : ${moderators}" class="hover:bg-gray-50 transition-colors duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900" th:text="${moderator.username}">username</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900" th:text="${moderator.fullName != null ? moderator.fullName : 'Not set'}">Full Name</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900" th:text="${#temporals.format(moderator.registrationDate, 'MMM d, yyyy')}">Jan 1, 2025</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <div class="flex justify-end space-x-2">
+                                            <a th:href="@{/admin/users/edit/{id}(id=${moderator.id})}" class="text-primary-600 hover:text-primary-800 transition-colors duration-300">
+                                                Edit
+                                            </a>
+                                            <form th:action="@{/admin/moderators/remove/{id}(id=${moderator.id})}" method="post" class="inline">
+                                                <button type="submit" class="text-red-600 hover:text-red-800 transition-colors duration-300" onclick="return confirm('Are you sure you want to remove this moderator?')">
+                                                    Remove
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="pt-4 flex justify-center">
+                            <a href="/admin/moderators" class="text-primary-600 hover:text-primary-800 inline-flex items-center transition-colors duration-300">
+                                <span>Manage All Moderators</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task Management -->
+                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 mb-8 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up" style="animation-delay: 0.5s;">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4 border-b dark:border-darkpurple-700 pb-2 transition-colors duration-300">Task Management</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-gray-50 dark:bg-darkpurple-800 p-4 rounded-lg shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300">
+                            <div class="text-3xl font-bold text-purple-600 dark:text-darkpurple-400 mb-2 transition-colors duration-300" th:text="${taskCount}">0</div>
+                            <p class="text-gray-600 dark:text-gray-300 transition-colors duration-300">Total Tasks</p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-darkpurple-800 p-4 rounded-lg shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300">
+                            <a href="/admin/tasks/new" class="material-btn block w-full bg-purple-600 dark:bg-darkpurple-600 hover:bg-purple-700 dark:hover:bg-darkpurple-700 text-white text-center py-3 px-4 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
+                                Create New Task
+                            </a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a href="/admin/tasks" class="text-purple-600 dark:text-darkpurple-400 hover:text-purple-800 dark:hover:text-darkpurple-300 inline-flex items-center transition-colors duration-300">
+                            <span>Manage All Tasks</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Emergency Shutdown Section -->
+                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 mb-8 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up" style="animation-delay: 0.6s;">
+                    <h3 class="text-lg font-semibold text-red-800 dark:text-darkred-300 mb-4 border-b dark:border-darkpurple-700 pb-2 transition-colors duration-300">System Administration</h3>
+
+                    <div class="mb-4">
+                        <p class="text-gray-700 dark:text-gray-200 mb-4 leading-relaxed transition-colors duration-300">Use this section for emergency system operations. These actions require password confirmation and may impact system availability.</p>
+
+                        <button id="emergencyShutdownBtn" class="material-btn bg-red-600 dark:bg-darkred-600 hover:bg-red-700 dark:hover:bg-darkred-700 text-white font-bold py-2 px-6 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                            </svg>
+                            Emergency Shutdown
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Shutdown Confirmation Modal -->
+                <div id="shutdownModal" class="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center hidden z-50 modal-container modal-enter">
+                    <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-4 p-6 max-w-md w-full modal-content transition-colors duration-300">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold text-red-700 dark:text-darkred-300 transition-colors duration-300">Confirm Emergency Shutdown</h3>
+                            <button id="closeShutdownModal" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-300 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-darkpurple-800">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <p class="text-gray-700 dark:text-gray-200 mb-6 leading-relaxed transition-colors duration-300">This action will immediately shut down the application server. All users will be disconnected and the service will be unavailable until manually restarted.</p>
+
+                        <form id="shutdownForm" th:action="@{/admin/emergency-shutdown}" method="post" class="mb-4">
+                            <div class="mb-4 form-field">
+                                <input type="password" id="confirmPassword" name="password" required placeholder=" " 
+                                    class="w-full px-4 py-2 border-b-2 border-gray-300 dark:border-darkred-600 bg-white dark:bg-darkpurple-800 text-gray-800 dark:text-gray-200 rounded-lg focus:outline-none focus:border-red-500 dark:focus:border-darkred-400 focus:bg-red-50 dark:focus:bg-darkred-900/30 transition-all duration-300">
+                                <label for="confirmPassword" class="text-gray-700 dark:text-gray-200 transition-colors duration-300">Confirm Administrator Password</label>
+                                <p class="text-sm text-gray-500 dark:text-gray-300 mt-1 transition-colors duration-300">Re-enter your password to confirm this action.</p>
+                            </div>
+
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" id="cancelShutdown" class="material-btn px-6 py-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="material-btn px-6 py-2 bg-red-600 dark:bg-darkred-600 hover:bg-red-700 dark:hover:bg-darkred-700 text-white rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                    </svg>
+                                    Confirm Shutdown
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Administrator Information -->
+                <div class="bg-white rounded-xl shadow-elevation-2 p-6 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up" style="animation-delay: 0.7s;">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Administrator Information</h3>
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4 rounded-r-lg shadow-elevation-1 animate-fade-in" style="animation-delay: 0.8s;">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-yellow-700 leading-relaxed">
+                                    As an administrator, you have full access to all aspects of the system. Please exercise caution when making changes.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="list-disc pl-5 text-gray-600 space-y-3 animate-fade-in" style="animation-delay: 0.9s;">
+                        <li class="hover:text-gray-800 transition-colors duration-300">You can create and manage all users, including other administrators and moderators.</li>
+                        <li class="hover:text-gray-800 transition-colors duration-300">You have full control over all tasks in the system.</li>
+                        <li class="hover:text-gray-800 transition-colors duration-300">Regular security audits are recommended to ensure system integrity.</li>
+                        <li class="hover:text-gray-800 transition-colors duration-300">Remember to regularly change your password and use strong credentials.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Emergency shutdown modal
+        const shutdownModal = document.getElementById('shutdownModal');
+        const emergencyShutdownBtn = document.getElementById('emergencyShutdownBtn');
+        const closeShutdownModal = document.getElementById('closeShutdownModal');
+        const cancelShutdown = document.getElementById('cancelShutdown');
+
+        // Modal animation functions
+        function showModal(modalElement) {
+            // First remove the hidden class
+            modalElement.classList.remove('hidden');
+
+            // Force a reflow to ensure the transition works
+            void modalElement.offsetWidth;
+
+            // Remove the enter class to trigger the animation
+            modalElement.classList.remove('modal-enter');
+            modalElement.classList.add('modal-enter-active');
+
+            // Prevent body scrolling
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideModal(modalElement) {
+            // Add the enter class to start the exit animation
+            modalElement.classList.remove('modal-enter-active');
+            modalElement.classList.add('modal-enter');
+
+            // Wait for animation to complete before hiding
+            setTimeout(() => {
+                modalElement.classList.add('hidden');
+                document.body.style.overflow = ''; // Restore scrolling
+            }, 300); // Match this to your animation duration
+        }
+
+        // Open modal
+        emergencyShutdownBtn.addEventListener('click', function() {
+            showModal(shutdownModal);
+            document.getElementById('confirmPassword').focus();
+        });
+
+        // Close modal
+        function closeModal() {
+            hideModal(shutdownModal);
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        closeShutdownModal.addEventListener('click', closeModal);
+        cancelShutdown.addEventListener('click', closeModal);
+
+        // Close on click outside
+        shutdownModal.addEventListener('click', function(e) {
+            if (e.target === shutdownModal) {
+                closeModal();
+            }
+        });
+
+        // Close on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !shutdownModal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html> 

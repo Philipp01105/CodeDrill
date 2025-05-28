@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Analytics - AP CSA FRQ Practice Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        darkpurple: {
+                            50: '#f8f5ff',
+                            100: '#f0ebff',
+                            200: '#e4d9ff',
+                            300: '#d4c2ff',
+                            400: '#b69afc',
+                            500: '#9d6ff8',
+                            600: '#8344f8',
+                            700: '#7028e0',
+                            800: '#5d20c6',
+                            900: '#4a1ba0',
+                            950: '#2d1068',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="/js/darkMode.js"></script>
+</head>
+<body class="bg-gray-50 dark:bg-darkpurple-950 min-h-screen font-sans transition-colors duration-300">
+    <div class="flex min-h-screen">
+        <!-- Sidebar (reuse from other pages) -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- Mobile Header (reuse from other pages) -->
+            <div th:replace="~{fragments/mobile-header :: mobile-header}"></div>
+
+            <!-- Page Content -->
+            <div class="p-6 animate-fade-in">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-darkpurple-200 mb-6 border-b dark:border-darkpurple-700 pb-3 animate-slide-up transition-colors duration-300">System Analytics Dashboard</h2>
+
+                <!-- Time Period Selector -->
+                <div class="mb-6">
+                    <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-4 flex flex-wrap gap-4">
+                        <button id="today-btn" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-300">Today</button>
+                        <button id="week-btn" class="px-4 py-2 bg-gray-200 dark:bg-darkpurple-800 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-darkpurple-700 transition-colors duration-300">Last 7 Days</button>
+                        <button id="month-btn" class="px-4 py-2 bg-gray-200 dark:bg-darkpurple-800 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-darkpurple-700 transition-colors duration-300">Last 30 Days</button>
+                    </div>
+                </div>
+
+                <!-- Overview Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <!-- Active Users -->
+                    <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 border-l-4 border-primary-500 hover:shadow-lg transition-all duration-300">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Active Users</h3>
+                        <div id="active-users" class="text-3xl font-bold text-primary-600 dark:text-primary-400" th:text="${metrics.todayActiveUsers}">0</div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Users active in the selected period</p>
+                    </div>
+
+                    <!-- New Users -->
+                    <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 border-l-4 border-green-500 hover:shadow-lg transition-all duration-300">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">New Users</h3>
+                        <div id="new-users" class="text-3xl font-bold text-green-600 dark:text-green-400" th:text="${metrics.todayNewUsers}">0</div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">New registrations in the selected period</p>
+                    </div>
+
+                    <!-- Task Completions -->
+                    <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 border-l-4 border-purple-500 hover:shadow-lg transition-all duration-300">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Task Completions</h3>
+                        <div id="task-completions" class="text-3xl font-bold text-purple-600 dark:text-purple-400" th:text="${metrics.todayTaskCompletions}">0</div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Tasks completed in the selected period</p>
+                    </div>
+
+                    <!-- Success Rate -->
+                    <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 border-l-4 border-indigo-500 hover:shadow-lg transition-all duration-300">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Success Rate</h3>
+                        <div id="success-rate" class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
+                            <span th:if="${metrics.todayTaskAttempts != null && metrics.todayTaskAttempts > 0}" 
+                                  th:text="${#numbers.formatPercent(metrics.todayTaskCompletions / metrics.todayTaskAttempts, 1, 0)}">0%</span>
+                            <span th:unless="${metrics.todayTaskAttempts != null && metrics.todayTaskAttempts > 0}">0%</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Task completion success rate</p>
+                    </div>
+                </div>
+
+                <!-- User Activity Chart -->
+                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">User Activity Trend</h3>
+                    <div class="h-64">
+                        <canvas id="userActivityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Browser and Device Usage -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <!-- Browser Usage -->
+                    <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">Browser Usage</h3>
+                        <div class="h-64">
+                            <canvas id="browserChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Device Type -->
+                    <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">Device Type</h3>
+                        <div class="h-64">
+                            <canvas id="deviceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task Activity Metrics -->
+                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">Task Activity Metrics</h3>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-darkpurple-700">
+                            <thead class="bg-gray-50 dark:bg-darkpurple-800">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Metric</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Today</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Last 7 Days</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Last 30 Days</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-darkpurple-900 divide-y divide-gray-200 dark:divide-darkpurple-700">
+                                <tr class="hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-colors duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">Task Views</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics.todayTaskViews}">0</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics.last7DaysTaskViews}">0</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics.last30DaysTaskViews}">0</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-colors duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">Task Attempts</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics.todayTaskAttempts}">0</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics.last7DaysTaskAttempts}">0</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics.last30DaysTaskAttempts}">0</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-colors duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">Task Completions</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics.todayTaskCompletions}">0</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics.last7DaysTaskCompletions}">0</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics.last30DaysTaskCompletions}">0</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-colors duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">Avg. Session Time</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">-</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics.last7DaysAvgSessionTime != null ? #numbers.formatDecimal(metrics.last7DaysAvgSessionTime / 60, 1, 1) + ' min' : '-'}">0 min</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics.last30DaysAvgSessionTime != null ? #numbers.formatDecimal(metrics.last30DaysAvgSessionTime / 60, 1, 1) + ' min' : '-'}">0 min</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // Get data from Thymeleaf model
+        var todayActiveUsers = /*[[${metrics.todayActiveUsers}]]*/ 0;
+        var todayNewUsers = /*[[${metrics.todayNewUsers}]]*/ 0;
+        var todayTaskCompletions = /*[[${metrics.todayTaskCompletions}]]*/ 0;
+        
+        var last7DaysActiveUsers = /*[[${metrics.last7DaysActiveUsers}]]*/ 0;
+        var last7DaysNewUsers = /*[[${metrics.last7DaysNewUsers}]]*/ 0;
+        var last7DaysTaskCompletions = /*[[${metrics.last7DaysTaskCompletions}]]*/ 0;
+        var last7DaysSuccessRate = /*[[${metrics.last7DaysSuccessRate}]]*/ 0;
+        
+        var last30DaysActiveUsers = /*[[${metrics.last30DaysActiveUsers}]]*/ 0;
+        var last30DaysNewUsers = /*[[${metrics.last30DaysNewUsers}]]*/ 0;
+        var last30DaysTaskCompletions = /*[[${metrics.last30DaysTaskCompletions}]]*/ 0;
+        var last30DaysSuccessRate = /*[[${metrics.last30DaysSuccessRate}]]*/ 0;
+        
+        // Browser usage data
+        var chromeUsers = /*[[${metrics.chromeUsers}]]*/ 0;
+        var firefoxUsers = /*[[${metrics.firefoxUsers}]]*/ 0;
+        var safariUsers = /*[[${metrics.safariUsers}]]*/ 0;
+        var edgeUsers = /*[[${metrics.edgeUsers}]]*/ 0;
+        var otherBrowsers = /*[[${metrics.otherBrowsers}]]*/ 0;
+        
+        // Device type data
+        var desktopUsers = /*[[${metrics.desktopUsers}]]*/ 0;
+        var mobileUsers = /*[[${metrics.mobileUsers}]]*/ 0;
+        var tabletUsers = /*[[${metrics.tabletUsers}]]*/ 0;
+        
+        // User Activity Chart
+        const userActivityCtx = document.getElementById('userActivityChart').getContext('2d');
+        
+        // Sample data for the chart - in a real implementation, this would come from the backend
+        const userActivityData = {
+            labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+            datasets: [{
+                label: 'Active Users',
+                data: [65, 59, 80, 81, 56, 55, 40],
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                tension: 0.1
+            }]
+        };
+        
+        const userActivityChart = new Chart(userActivityCtx, {
+            type: 'line',
+            data: userActivityData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        
+        // Browser Usage Chart
+        const browserCtx = document.getElementById('browserChart').getContext('2d');
+        
+        const browserData = {
+            labels: ['Chrome', 'Firefox', 'Safari', 'Edge', 'Other'],
+            datasets: [{
+                data: [chromeUsers, firefoxUsers, safariUsers, edgeUsers, otherBrowsers],
+                backgroundColor: [
+                    'rgba(52, 211, 153, 0.8)',
+                    'rgba(251, 146, 60, 0.8)',
+                    'rgba(59, 130, 246, 0.8)',
+                    'rgba(79, 70, 229, 0.8)',
+                    'rgba(156, 163, 175, 0.8)'
+                ],
+                borderColor: [
+                    'rgb(52, 211, 153)',
+                    'rgb(251, 146, 60)',
+                    'rgb(59, 130, 246)',
+                    'rgb(79, 70, 229)',
+                    'rgb(156, 163, 175)'
+                ],
+                borderWidth: 1
+            }]
+        };
+        
+        const browserChart = new Chart(browserCtx, {
+            type: 'doughnut',
+            data: browserData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        
+        // Device Type Chart
+        const deviceCtx = document.getElementById('deviceChart').getContext('2d');
+        
+        const deviceData = {
+            labels: ['Desktop', 'Mobile', 'Tablet'],
+            datasets: [{
+                data: [desktopUsers, mobileUsers, tabletUsers],
+                backgroundColor: [
+                    'rgba(139, 92, 246, 0.8)',
+                    'rgba(248, 113, 113, 0.8)',
+                    'rgba(16, 185, 129, 0.8)'
+                ],
+                borderColor: [
+                    'rgb(139, 92, 246)',
+                    'rgb(248, 113, 113)',
+                    'rgb(16, 185, 129)'
+                ],
+                borderWidth: 1
+            }]
+        };
+        
+        const deviceChart = new Chart(deviceCtx, {
+            type: 'pie',
+            data: deviceData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        
+        // Time period selector functionality
+        document.getElementById('today-btn').addEventListener('click', function() {
+            updateTimeFrame('today');
+        });
+        
+        document.getElementById('week-btn').addEventListener('click', function() {
+            updateTimeFrame('week');
+        });
+        
+        document.getElementById('month-btn').addEventListener('click', function() {
+            updateTimeFrame('month');
+        });
+        
+        function updateTimeFrame(period) {
+            // Update active button
+            document.getElementById('today-btn').classList.remove('bg-primary-600', 'text-white');
+            document.getElementById('today-btn').classList.add('bg-gray-200', 'dark:bg-darkpurple-800', 'text-gray-800', 'dark:text-gray-200');
+            
+            document.getElementById('week-btn').classList.remove('bg-primary-600', 'text-white');
+            document.getElementById('week-btn').classList.add('bg-gray-200', 'dark:bg-darkpurple-800', 'text-gray-800', 'dark:text-gray-200');
+            
+            document.getElementById('month-btn').classList.remove('bg-primary-600', 'text-white');
+            document.getElementById('month-btn').classList.add('bg-gray-200', 'dark:bg-darkpurple-800', 'text-gray-800', 'dark:text-gray-200');
+            
+            if (period === 'today') {
+                document.getElementById('today-btn').classList.remove('bg-gray-200', 'dark:bg-darkpurple-800', 'text-gray-800', 'dark:text-gray-200');
+                document.getElementById('today-btn').classList.add('bg-primary-600', 'text-white');
+                
+                document.getElementById('active-users').textContent = todayActiveUsers;
+                document.getElementById('new-users').textContent = todayNewUsers;
+                document.getElementById('task-completions').textContent = todayTaskCompletions;
+                // Success rate calculation would be done here
+            } else if (period === 'week') {
+                document.getElementById('week-btn').classList.remove('bg-gray-200', 'dark:bg-darkpurple-800', 'text-gray-800', 'dark:text-gray-200');
+                document.getElementById('week-btn').classList.add('bg-primary-600', 'text-white');
+                
+                document.getElementById('active-users').textContent = last7DaysActiveUsers;
+                document.getElementById('new-users').textContent = last7DaysNewUsers;
+                document.getElementById('task-completions').textContent = last7DaysTaskCompletions;
+                document.getElementById('success-rate').textContent = (last7DaysSuccessRate * 100).toFixed(0) + '%';
+            } else if (period === 'month') {
+                document.getElementById('month-btn').classList.remove('bg-gray-200', 'dark:bg-darkpurple-800', 'text-gray-800', 'dark:text-gray-200');
+                document.getElementById('month-btn').classList.add('bg-primary-600', 'text-white');
+                
+                document.getElementById('active-users').textContent = last30DaysActiveUsers;
+                document.getElementById('new-users').textContent = last30DaysNewUsers;
+                document.getElementById('task-completions').textContent = last30DaysTaskCompletions;
+                document.getElementById('success-rate').textContent = (last30DaysSuccessRate * 100).toFixed(0) + '%';
+            }
+        }
+    </script>
+</body>
+</html>

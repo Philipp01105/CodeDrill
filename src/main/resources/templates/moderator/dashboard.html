@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moderator Dashboard - AP CSA FRQ Practice Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'slide-in-right': 'slideInRight 0.5s ease-out',
+                        'slide-in-left': 'slideInLeft 0.5s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        slideInRight: {
+                            '0%': { transform: 'translateX(20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        slideInLeft: {
+                            '0%': { transform: 'translateX(-20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                    },
+                    boxShadow: {
+                        'elevation-1': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+                        'elevation-2': '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
+                        'elevation-3': '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)',
+                        'elevation-4': '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
+                        'elevation-5': '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Material Design inspired styles */
+        .material-btn {
+            position: relative;
+            overflow: hidden;
+            transform: translate3d(0, 0, 0);
+        }
+        .material-btn::after {
+            content: "";
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+            background-repeat: no-repeat;
+            background-position: 50%;
+            transform: scale(10, 10);
+            opacity: 0;
+            transition: transform .5s, opacity 1s;
+        }
+        .material-btn:active::after {
+            transform: scale(0, 0);
+            opacity: .3;
+            transition: 0s;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <div class="bg-primary-800 text-white w-64 py-8 px-4 hidden md:block shadow-elevation-2 animate-slide-in-left">
+            <div class="mb-8">
+                <h1 class="text-xl font-bold">AP CSA FRQ Practice</h1>
+                <p class="text-primary-200 text-sm">Moderator Panel</p>
+            </div>
+
+            <nav>
+                <ul>
+                    <li class="mb-2">
+                        <a href="/moderator" class="block py-2 px-4 bg-primary-700 rounded-lg font-medium transition-all duration-300 shadow-elevation-1">
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="/moderator/tasks" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            Manage Tasks
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="/tasks" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            View Public Site
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="/change-password" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            Change Password
+                        </a>
+                    </li>
+                    <li class="mt-8">
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="material-btn block w-full py-2 px-4 text-left hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- Mobile Header -->
+            <div class="md:hidden bg-primary-800 text-white p-4 flex justify-between items-center shadow-elevation-2">
+                <h1 class="text-xl font-bold">Moderator Panel</h1>
+                <button id="mobileMenuBtn" class="material-btn text-white p-1 rounded-full hover:bg-primary-700 transition-colors duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="md:hidden bg-primary-800 text-white p-4 hidden shadow-elevation-3 animate-fade-in">
+                <nav>
+                    <ul>
+                        <li class="mb-2">
+                            <a href="/moderator" class="block py-2 px-4 bg-primary-700 rounded-lg font-medium transition-all duration-300 shadow-elevation-1">
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="/moderator/tasks" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                Manage Tasks
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="/tasks" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                View Public Site
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="/change-password" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                Change Password
+                            </a>
+                        </li>
+                        <li class="mt-4">
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="material-btn block w-full py-2 px-4 text-left hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                    Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Page Content -->
+            <div class="p-6 animate-fade-in">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3 animate-slide-up">Moderator Dashboard</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Task Statistics -->
+                    <div class="bg-white rounded-xl shadow-elevation-2 p-6 border-l-4 border-primary-500 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up" style="animation-delay: 0.1s;">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Your Tasks</h3>
+                        <div class="text-3xl font-bold text-primary-600 mb-2" th:text="${userTaskCount}">0</div>
+                        <p class="text-gray-600">Tasks you have created</p>
+                        <div class="mt-4">
+                            <a href="/moderator/tasks" class="text-primary-600 hover:text-primary-800 font-medium flex items-center transition-colors duration-300">
+                                <span>View All Tasks</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-xl shadow-elevation-2 p-6 border-l-4 border-blue-500 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up" style="animation-delay: 0.2s;">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                        <div>
+                            <a href="/moderator/tasks/new" class="material-btn block w-full bg-primary-600 hover:bg-primary-700 text-white text-center py-3 px-4 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1 mb-4">
+                                Create New Task
+                            </a>
+                            <a href="/tasks" class="material-btn block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-3 px-4 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
+                                View Public Site
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Account Information -->
+                    <div class="bg-white rounded-xl shadow-elevation-2 p-6 border-l-4 border-purple-500 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up" style="animation-delay: 0.3s;">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Account Information</h3>
+                        <div class="mb-4">
+                            <div class="text-sm text-gray-500">Username</div>
+                            <div class="font-medium" th:text="${user.username}">username</div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="text-sm text-gray-500">Full Name</div>
+                            <div class="font-medium" th:text="${user.fullName != null ? user.fullName : 'Not set'}">Full Name</div>
+                        </div>
+                        <div>
+                            <a href="/change-password" class="text-purple-600 hover:text-purple-800 font-medium transition-colors duration-300">
+                                Change Password
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Tasks -->
+                <div class="bg-white rounded-xl shadow-elevation-2 p-6 mb-8 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up" style="animation-delay: 0.4s;">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Your Recent Tasks</h3>
+
+                    <div th:if="${#lists.isEmpty(recentTasks)}" class="text-gray-500 py-4 text-center bg-gray-50 rounded-lg">
+                        You haven't created any tasks yet. <a href="/moderator/tasks/new" class="text-primary-600 hover:text-primary-800 transition-colors duration-300 font-medium">Create your first task</a>.
+                    </div>
+
+                    <div th:unless="${#lists.isEmpty(recentTasks)}" class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Title
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Type
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Description
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr th:each="task : ${recentTasks}" class="hover:bg-gray-50 transition-colors duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900" th:text="${task.title}">Task Title</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex flex-wrap gap-1">
+                                            <span th:each="tag : ${task.tags}" th:switch="${tag}" class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
+                                                <span th:case="'Methods and Control Structures'" class="bg-blue-100 text-blue-800" th:text="${tag}"></span>
+                                                <span th:case="'Class Design'" class="bg-green-100 text-green-800" th:text="${tag}"></span>
+                                                <span th:case="'Array/ArrayList'" class="bg-purple-100 text-purple-800" th:text="${tag}"></span>
+                                                <span th:case="'Recursion'" class="bg-yellow-100 text-yellow-800" th:text="${tag}"></span>
+                                                <span th:case="*" class="bg-gray-100 text-gray-800" th:text="${tag}"></span>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-900 line-clamp-2" th:text="${task.description}">Task description</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <div class="flex justify-end space-x-2">
+                                            <a th:href="@{/moderator/tasks/edit/{id}(id=${task.id})}" class="text-primary-600 hover:text-primary-800 transition-colors duration-300">
+                                                Edit
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="pt-4 flex justify-center">
+                            <a href="/moderator/tasks" class="text-primary-600 hover:text-primary-800 inline-flex items-center transition-colors duration-300">
+                                <span>View All Tasks</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guidelines & Help -->
+                <div class="bg-white rounded-xl shadow-elevation-2 p-6 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up" style="animation-delay: 0.5s;">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Guidelines for Task Creation</h3>
+                    <ul class="list-disc pl-5 text-gray-600 space-y-3 animate-fade-in" style="animation-delay: 0.6s;">
+                        <li class="hover:text-gray-800 transition-colors duration-300">Create tasks that are relevant to the AP CSA curriculum and properly categorized.</li>
+                        <li class="hover:text-gray-800 transition-colors duration-300">Provide clear and concise instructions in the task content.</li>
+                        <li class="hover:text-gray-800 transition-colors duration-300">Include a working Java solution that solves the problem correctly.</li>
+                        <li class="hover:text-gray-800 transition-colors duration-300">Specify the expected output to help students verify their solutions.</li>
+                        <li class="hover:text-gray-800 transition-colors duration-300">Use appropriate difficulty levels for high school AP CSA students.</li>
+                    </ul>
+                </div>
+
+                <!-- Footer -->
+                <footer class="text-center text-gray-500 text-sm mt-12 animate-fade-in" style="animation-delay: 0.7s;">
+                    <p>&copy; 2025 AP CSA FRQ Practice Hub. All rights reserved.</p>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle with animation
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenu.classList.contains('hidden')) {
+                // Show menu with animation
+                mobileMenu.classList.remove('hidden');
+                // Force a reflow to ensure the animation works
+                void mobileMenu.offsetWidth;
+                mobileMenu.classList.add('opacity-100');
+            } else {
+                // Hide menu with animation
+                mobileMenu.classList.remove('opacity-100');
+                mobileMenu.classList.add('opacity-0');
+                // Wait for animation to complete before hiding
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html> 

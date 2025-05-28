@@ -1,0 +1,31 @@
+FROM openjdk:17-jdk-slim
+
+
+WORKDIR /app
+
+# Install necessary tools
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create a non-root user to run the code
+RUN groupadd -r coderunner && useradd -r -g coderunner coderunner
+RUN mkdir -p /app/code && chown -R coderunner:coderunner /app
+
+# Copy entrypoint script
+COPY --chown=coderunner:coderunner docker-entrypoint.sh /app/
+RUN chmod +x /app/docker-entrypoint.sh
+
+# Set resource limits
+# This would need to be properly configured in a production environment
+ENV MEMORY_LIMIT=256m
+ENV CPU_LIMIT=1
+ENV TIMEOUT=5
+ENV NETWORK_DISABLED=true
+
+USER coderunner
+WORKDIR /app/code
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"] 

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Form - AP CSA FRQ Practice Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'slide-in-right': 'slideInRight 0.5s ease-out',
+                        'slide-in-left': 'slideInLeft 0.5s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        slideInRight: {
+                            '0%': { transform: 'translateX(20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        slideInLeft: {
+                            '0%': { transform: 'translateX(-20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                    },
+                    boxShadow: {
+                        'elevation-1': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+                        'elevation-2': '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
+                        'elevation-3': '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)',
+                        'elevation-4': '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
+                        'elevation-5': '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Material Design inspired styles */
+        .material-btn {
+            position: relative;
+            overflow: hidden;
+            transform: translate3d(0, 0, 0);
+        }
+        .material-btn::after {
+            content: "";
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+            background-repeat: no-repeat;
+            background-position: 50%;
+            transform: scale(10, 10);
+            opacity: 0;
+            transition: transform .5s, opacity 1s;
+        }
+        .material-btn:active::after {
+            transform: scale(0, 0);
+            opacity: .3;
+            transition: 0s;
+        }
+
+        /* Material Design form field animation */
+        .form-field {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .form-field input, .form-field textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            border-bottom: 2px solid #e5e7eb;
+            background-color: #f9fafb;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .form-field input:focus, .form-field textarea:focus {
+            border-bottom-color: #22c55e;
+            background-color: #f0fdf4;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .form-field label {
+            position: absolute;
+            left: 1rem;
+            top: 0.75rem;
+            color: #6b7280;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        .form-field input:focus + label,
+        .form-field input:not(:placeholder-shown) + label,
+        .form-field textarea:focus + label,
+        .form-field textarea:not(:placeholder-shown) + label {
+            top: -0.75rem;
+            left: 0.5rem;
+            font-size: 0.75rem;
+            color: #22c55e;
+            background-color: white;
+            padding: 0 0.25rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <div class="bg-primary-800 text-white w-64 py-8 px-4 hidden md:block shadow-elevation-2 animate-slide-in-left">
+            <div class="mb-8">
+                <h1 class="text-xl font-bold">AP CSA FRQ Practice</h1>
+                <p class="text-primary-200 text-sm">Moderator Panel</p>
+            </div>
+
+            <nav>
+                <ul>
+                    <li class="mb-2">
+                        <a href="/moderator" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="/moderator/tasks" class="block py-2 px-4 bg-primary-700 rounded-lg font-medium transition-all duration-300 shadow-elevation-1">
+                            Manage Tasks
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="/tasks" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            View Public Site
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="/change-password" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            Change Password
+                        </a>
+                    </li>
+                    <li class="mt-8">
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="material-btn block w-full py-2 px-4 text-left hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- Mobile Header -->
+            <div class="md:hidden bg-primary-800 text-white p-4 flex justify-between items-center shadow-elevation-2">
+                <h1 class="text-xl font-bold">Moderator Panel</h1>
+                <button id="mobileMenuBtn" class="material-btn text-white p-1 rounded-full hover:bg-primary-700 transition-colors duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="md:hidden bg-primary-800 text-white p-4 hidden shadow-elevation-3 animate-fade-in">
+                <nav>
+                    <ul>
+                        <li class="mb-2">
+                            <a href="/moderator" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="/moderator/tasks" class="block py-2 px-4 bg-primary-700 rounded-lg font-medium transition-all duration-300 shadow-elevation-1">
+                                Manage Tasks
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="/tasks" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                View Public Site
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="/change-password" class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                Change Password
+                            </a>
+                        </li>
+                        <li class="mt-4">
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="material-btn block w-full py-2 px-4 text-left hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                                    Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Page Content -->
+            <div class="p-6 animate-fade-in">
+                <div class="flex justify-between items-center mb-6 animate-slide-up">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 border-b pb-2" th:text="${task.id != null ? 'Edit Task' : 'Create New Task'}">Task Form</h2>
+                        <div th:if="${#authentication.principal.authorities[0].authority == 'ADMIN' && task.id != null && task.createdBy != null && !task.createdBy.username.equals(#authentication.name)}" 
+                            class="mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 shadow-elevation-1">
+                            <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            Admin editing task created by <span th:text="${task.createdBy.username}" class="font-semibold"></span>
+                        </div>
+                    </div>
+                    <a href="/moderator/tasks" class="text-primary-600 hover:text-primary-800 transition-colors duration-300 flex items-center animate-slide-in-right">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Back to Tasks
+                    </a>
+                </div>
+
+                <!-- Task Form -->
+                <div class="bg-white rounded-xl shadow-elevation-2 p-6 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up" style="animation-delay: 0.1s;">
+                    <form th:action="@{/moderator/tasks/save}" th:object="${task}" method="post">
+                        <input type="hidden" th:field="*{id}">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="form-field">
+                                <input type="text" id="title" th:field="*{title}" required placeholder=" ">
+                                <label for="title">Task Title</label>
+                            </div>
+
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-3">FRQ Types (Select all that apply)</label>
+                                <div class="space-y-3 bg-gray-50 p-4 rounded-lg shadow-elevation-1">
+                                    <div class="flex items-center hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200">
+                                        <input type="checkbox" id="tag1" name="tags" value="Methods and Control Structures" 
+                                               th:checked="${#lists.contains(task.tags, 'Methods and Control Structures')}"
+                                               class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <label for="tag1" class="ml-2 text-sm font-medium text-gray-700">Methods and Control Structures</label>
+                                    </div>
+                                    <div class="flex items-center hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200">
+                                        <input type="checkbox" id="tag2" name="tags" value="Class Design"
+                                               th:checked="${#lists.contains(task.tags, 'Class Design')}"
+                                               class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                                        <label for="tag2" class="ml-2 text-sm font-medium text-gray-700">Class Design</label>
+                                    </div>
+                                    <div class="flex items-center hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200">
+                                        <input type="checkbox" id="tag3" name="tags" value="Array/ArrayList"
+                                               th:checked="${#lists.contains(task.tags, 'Array/ArrayList')}"
+                                               class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                                        <label for="tag3" class="ml-2 text-sm font-medium text-gray-700">Array/ArrayList</label>
+                                    </div>
+                                    <div class="flex items-center hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200">
+                                        <input type="checkbox" id="tag4" name="tags" value="Recursion"
+                                               th:checked="${#lists.contains(task.tags, 'Recursion')}"
+                                               class="w-4 h-4 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500">
+                                        <label for="tag4" class="ml-2 text-sm font-medium text-gray-700">Recursion</label>
+                                    </div>
+                                    <!-- Additional tags from database if any -->
+                                    <div th:each="existingTag : ${allTags}" 
+                                         th:if="${existingTag != 'Methods and Control Structures' && existingTag != 'Class Design' && existingTag != 'Array/ArrayList' && existingTag != 'Recursion'}"
+                                         class="flex items-center hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200">
+                                        <input type="checkbox" th:id="${'tag-' + existingTag}" name="tags" th:value="${existingTag}"
+                                               th:checked="${#lists.contains(task.tags, existingTag)}"
+                                               class="w-4 h-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500">
+                                        <label th:for="${'tag-' + existingTag}" class="ml-2 text-sm font-medium text-gray-700" th:text="${existingTag}">Other Tag</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-field mb-6">
+                            <input type="text" id="description" th:field="*{description}" required placeholder=" ">
+                            <label for="description">Short Description</label>
+                            <p class="text-sm text-gray-500 mt-1">A brief description that will appear on the task card.</p>
+                        </div>
+
+                        <div class="form-field mb-6">
+                            <textarea id="content" th:field="*{content}" rows="10" required placeholder=" "></textarea>
+                            <label for="content">Full Task Content</label>
+                            <p class="text-sm text-gray-500 mt-1">The complete task description that will appear when a user clicks on the task card.</p>
+                        </div>
+
+                        <div class="form-field mb-6">
+                            <textarea id="solution" th:field="*{solution}" rows="10" placeholder=" " class="font-mono"></textarea>
+                            <label for="solution">Java Solution</label>
+                            <p class="text-sm text-gray-500 mt-1">The Java code solution for this task. Will be displayed with syntax highlighting when users click "See Solution".</p>
+                        </div>
+
+                        <div class="form-field mb-6">
+                            <textarea id="expectedOutput" th:field="*{expectedOutput}" rows="5" placeholder=" " class="font-mono"></textarea>
+                            <label for="expectedOutput">Expected Output</label>
+                            <p class="text-sm text-gray-500 mt-1">The expected console output when the solution code is run. This will be used to verify student solutions.</p>
+                        </div>
+
+                        <div class="form-field mb-6">
+                            <textarea id="junitTests" th:field="*{junitTests}" rows="10" placeholder=" " class="font-mono"></textarea>
+                            <label for="junitTests">JUnit 5 Tests</label>
+                            <p class="text-sm text-gray-500 mt-1">JUnit 5 tests to verify student solutions. Tasks are only considered correct when all tests pass.</p>
+                            <div class="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                <h4 class="font-medium text-blue-800 mb-1">Test Format Guidelines:</h4>
+                                <ul class="list-disc list-inside text-sm text-blue-700 space-y-1">
+                                    <li>Write complete test class with JUnit 5 annotations (@Test, @DisplayName, etc.)</li>
+                                    <li>Include assertions to verify expected behavior</li>
+                                    <li>Tests will be run against student code</li>
+                                    <li>All tests must pass for the task to be considered complete</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end space-x-4 mt-8">
+                            <a href="/moderator/tasks" class="material-btn px-6 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300">
+                                Cancel
+                            </a>
+                            <button type="submit" class="material-btn px-6 py-2 bg-primary-600 text-white rounded-full hover:bg-primary-700 shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
+                                <span th:text="${task.id != null ? 'Update Task' : 'Create Task'}">Save Task</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Footer -->
+                <footer class="text-center text-gray-500 text-sm mt-12 animate-fade-in" style="animation-delay: 0.3s;">
+                    <p>&copy; 2025 AP CSA FRQ Practice Hub. All rights reserved.</p>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle with animation
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenu.classList.contains('hidden')) {
+                // Show menu with animation
+                mobileMenu.classList.remove('hidden');
+                // Force a reflow to ensure the animation works
+                void mobileMenu.offsetWidth;
+                mobileMenu.classList.add('opacity-100');
+            } else {
+                // Hide menu with animation
+                mobileMenu.classList.remove('opacity-100');
+                mobileMenu.classList.add('opacity-0');
+                // Wait for animation to complete before hiding
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html> 
