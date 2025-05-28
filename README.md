@@ -67,4 +67,4 @@ The application uses Maven for Java dependencies and NPM for frontend components
 The project includes Dockerfile.coderunner for containerizing the application.
 
 ## License
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License. See [LICENSE](LICENSE.md) for details.
