@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "tasks")
@@ -47,6 +48,9 @@ public class Task {
 
     @Column
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.REMOVE)
+    private List<UserTaskCompletion> completions;
 
     public Task() {
     }

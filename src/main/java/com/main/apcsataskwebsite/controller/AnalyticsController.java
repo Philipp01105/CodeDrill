@@ -160,7 +160,17 @@ public class AnalyticsController {
             HttpSession session = request.getSession(true);
             String sessionId = session.getId();
 
-            boolean successful = payload.containsKey("successful") && (boolean) payload.get("successful");
+            // Sicheres Casting für Boolean-Werte und standardmäßig "false", wenn nicht vorhanden
+            boolean successful = false;
+            if (payload.containsKey("successful")) {
+                Object successObj = payload.get("successful");
+                if (successObj instanceof Boolean) {
+                    successful = (Boolean) successObj;
+                } else if (successObj instanceof String) {
+                    successful = Boolean.parseBoolean((String) successObj);
+                }
+            }
+
             String errorMessage = payload.containsKey("errorMessage") ? (String) payload.get("errorMessage") : "";
             String codeSubmitted = payload.containsKey("code") ? (String) payload.get("code") : "";
 

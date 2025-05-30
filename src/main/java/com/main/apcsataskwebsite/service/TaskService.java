@@ -3,6 +3,8 @@ package com.main.apcsataskwebsite.service;
 import com.main.apcsataskwebsite.model.Task;
 import com.main.apcsataskwebsite.model.User;
 import com.main.apcsataskwebsite.repository.TaskRepository;
+import com.main.apcsataskwebsite.repository.UserTaskCompletionRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,9 @@ public class TaskService {
     public TaskService(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
+
+    @Autowired
+    private UserTaskCompletionRepository userTaskCompletionRepository;
 
     public List<Task> getAllTasks() {
         return taskRepository.findAllByOrderByCreatedAtDesc();
@@ -68,7 +73,8 @@ public class TaskService {
         
         return null; // Not found or not authorized
     }
-    
+
+    @Transactional
     public boolean deleteTask(Long id, User user) {
         Optional<Task> task = taskRepository.findById(id);
         
@@ -78,7 +84,9 @@ public class TaskService {
             // Admin can delete any task, moderators only their own
             if (user.isAdmin() || 
                 (taskToDelete.getCreatedBy() != null && taskToDelete.getCreatedBy().equals(user))) {
-                
+
+                //userTaskCompletionRepository.deleteByTask(taskToDelete);
+
                 taskRepository.delete(taskToDelete);
                 return true;
             }

@@ -17,15 +17,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    
-    // Maximum number of regular users allowed
-    private static final int MAX_USERS = 10;
-    
-    @Value("${docker.max_concurrent:8}")
-    private int maxConcurrentExecutions;
-    
+
     // Track current executions
-    private int currentExecutions = 0;
+    private boolean currentExecutions = false;
 
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
@@ -143,31 +137,11 @@ public class UserService {
         }
         return false;
     }
-    
-    /**
-     * Check if a code execution slot is available
-     */
-    public synchronized boolean acquireExecutionSlot() {
-        if (currentExecutions < maxConcurrentExecutions) {
-            currentExecutions++;
-            return true;
-        }
-        return false;
-    }
-    
-    /**
-     * Release a code execution slot
-     */
-    public synchronized void releaseExecutionSlot() {
-        if (currentExecutions > 0) {
-            currentExecutions--;
-        }
-    }
-    
+
     /**
      * Get current number of execution slots in use
      */
-    public int getCurrentExecutions() {
+    public boolean getCurrentExecutions() {
         return currentExecutions;
     }
     

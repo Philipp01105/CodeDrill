@@ -3,11 +3,9 @@ package com.main.apcsataskwebsite.controller;
 import com.main.apcsataskwebsite.model.Task;
 import com.main.apcsataskwebsite.model.User;
 import com.main.apcsataskwebsite.model.UserTaskCompletion;
-import com.main.apcsataskwebsite.service.CodeExecutionService;
-import com.main.apcsataskwebsite.service.JUnitTestService;
-import com.main.apcsataskwebsite.service.TaskCompletionService;
-import com.main.apcsataskwebsite.service.TaskService;
-import com.main.apcsataskwebsite.service.UserService;
+import com.main.apcsataskwebsite.service.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -138,15 +136,11 @@ public class CodeRunnerController {
     }
 
     @GetMapping("/status")
-    public ResponseEntity<Map<String, Object>> getExecutionStatus() {
-        Map<String, Object> status = new HashMap<>();
+    public ResponseEntity<Boolean> getExecutionStatus() {
 
-        int current = userService.getCurrentExecutions();
-        status.put("currentExecutions", current);
-        status.put("maxExecutions", maxConcurrentExecutions);
-        status.put("availableSlots", maxConcurrentExecutions - current);
+        boolean inQueue = userService.getCurrentExecutions();
 
-        return ResponseEntity.ok(status);
+        return ResponseEntity.ok(inQueue);
     }
 
     @GetMapping("/completions")
@@ -164,4 +158,5 @@ public class CodeRunnerController {
 
         return ResponseEntity.ok(response);
     }
+
 } 

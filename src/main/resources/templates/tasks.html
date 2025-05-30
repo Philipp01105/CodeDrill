@@ -339,7 +339,7 @@
                         <p id="codeRunnerDescription" class="text-gray-700 dark:text-gray-200 mb-4 leading-relaxed transition-colors duration-300"></p>
                         <div class="mb-4">
                             <div id="executionStatusContainer" class="text-sm text-gray-600 dark:text-gray-300 flex items-center justify-end transition-colors duration-300">
-                                <span id="executionStatus">Checking execution slots...</span>
+                                <span id="executionStatus">Execution slots available</span>
                             </div>
                         </div>
                         <div id="codeEditorContainer" class="border rounded-xl border-gray-300 dark:border-darkblue-700 bg-gray-50 dark:bg-darkpurple-800 p-4 shadow-elevation-1 transition-colors duration-300">
@@ -476,18 +476,14 @@
                         return response.json();
                     })
                     .then(data => {
-                        const current = data.currentExecutions;
-                        const max = data.maxExecutions;
-                        const available = data.availableSlots;
+                        const notAvailable = data.current;
 
-                        statusText.textContent = `${current}/${max} execution slots in use`;
-
-                        if (available === 0) {
-                            statusContainer.className = 'text-sm text-red-600 flex items-center justify-end';
-                        } else if (available < 3) {
-                            statusContainer.className = 'text-sm text-yellow-600 flex items-center justify-end';
-                        } else {
+                        if (notAvailable === false) {
+                            statusText.textContent = `Execution slots available`;
                             statusContainer.className = 'text-sm text-green-600 flex items-center justify-end';
+                        } else if (notAvailable === true && document.getElementById("codeOutput").textContent === "Executing code...") {
+                            statusText.textContent = `In queue`;
+                            statusContainer.className = 'text-sm text-red-600 flex items-center justify-end';
                         }
                     })
                     .catch(error => {
@@ -733,6 +729,23 @@
                     alert('Please enter some code to run.');
                     return;
                 }
+                const taskId = window.location.pathname.match(/\/tasks\/(\d+)/) ? window.location.pathname.match(/\/tasks\/(\d+)/)[1] : null;
+
+                if (taskId) {
+                    // Track task view
+                    fetch(`/analytics/track/view/${taskId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            console.log('Task view tracked');
+                        }
+                    }).catch(error => {
+                        console.error('Error tracking task view:', error);
+                    });
+                }
 
                 // Show loading state
                 runCodeBtn.disabled = true;
@@ -799,14 +812,14 @@
                         // Add completion checkmark if task was completed
                         if (data.taskCompleted) {
                             const taskCard = document.querySelector(`.task-card[data-task-id="${currentTask.id}"]`);
-                            if (taskCard && !taskCard.querySelector('.absolute.top-2.right-2')) {
+                            if (taskCard && !taskCard.querySelector('.bg-green-500')) {
                                 const checkmark = document.createElement('div');
-                                checkmark.className = 'absolute top-2 right-2 bg-green-500 text-white rounded-full p-1 shadow-md z-10';
+                                checkmark.className = 'absolute top-3 right-3 bg-green-500 dark:bg-darkgreen-500 text-white rounded-full p-1.5 shadow-md z-10 animate-bounce-in transition-colors duration-300';
                                 checkmark.innerHTML = `
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                `;
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+        `;
                                 taskCard.appendChild(checkmark);
                             }
                         }

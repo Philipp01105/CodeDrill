@@ -24,4 +24,6 @@ public interface UserTaskCompletionRepository extends JpaRepository<UserTaskComp
     
     @Query("SELECT utc.task.id FROM UserTaskCompletion utc WHERE utc.user = :user")
     List<Long> findTaskIdsByUser(@Param("user") User user);
+
+    void deleteByTask(Task task);
 } 
