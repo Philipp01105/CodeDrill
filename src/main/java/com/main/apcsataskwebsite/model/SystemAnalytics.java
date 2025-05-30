@@ -119,6 +119,12 @@ public class SystemAnalytics {
         }
     }
     
+    public void decrementActiveUsers() {
+        if (this.activeUsers != null && this.activeUsers > 0) {
+            this.activeUsers--;
+        }
+    }
+
     public Integer getNewUsers() {
         return newUsers;
     }
@@ -361,3 +367,4 @@ public class SystemAnalytics {
         this.lastUpdated = LocalDateTime.now();
     }
 }
+

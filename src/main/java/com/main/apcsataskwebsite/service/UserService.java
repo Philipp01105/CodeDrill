@@ -17,12 +17,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AnalyticsService analyticsService;
 
     // Track current executions
     private boolean currentExecutions = false;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AnalyticsService analyticsService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         
@@ -30,6 +31,7 @@ public class UserService {
         if (userRepository.count() == 0) {
             createAdminUser();
         }
+        this.analyticsService = analyticsService;
     }
 
     // WARNING: Reset password after application startup
@@ -75,6 +77,7 @@ public class UserService {
         user.setRole("USER");
         user.setFullName(fullName);
         user.setRegistrationDate(LocalDateTime.now());
+        analyticsService.trackNewUserRegistration();
         
         return userRepository.save(user);
     }

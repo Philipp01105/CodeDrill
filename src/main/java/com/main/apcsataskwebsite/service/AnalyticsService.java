@@ -35,7 +35,7 @@ public class AnalyticsService {
     }
 
     @Transactional
-    public UserAnalytics trackUserLogin(User user, String sessionId, HttpServletRequest request) {
+    public void trackUserLogin(User user, String sessionId, HttpServletRequest request) {
         String browserInfo = extractBrowserInfo(request);
         String deviceType = extractDeviceType(request);
         String ipAddress = extractIpAddress(request);
@@ -46,7 +46,6 @@ public class AnalyticsService {
         // Update system analytics
         updateSystemAnalyticsForLogin(browserInfo, deviceType);
 
-        return userAnalytics;
     }
 
     @Transactional
@@ -76,7 +75,7 @@ public class AnalyticsService {
     }
 
     @Transactional
-    public TaskAttempt trackTaskAttempt(User user, Task task, String codeSubmitted, boolean successful, String sessionId, String errorMessage) {
+    public void trackTaskAttempt(User user, Task task, String codeSubmitted, boolean successful, String sessionId, String errorMessage) {
         TaskAttempt attempt = new TaskAttempt(user, task, codeSubmitted, successful, sessionId);
         attempt.setErrorMessage(errorMessage);
         taskAttemptRepository.save(attempt);
@@ -95,7 +94,6 @@ public class AnalyticsService {
         // Update system analytics
         updateSystemAnalyticsForTaskAttempt(successful);
 
-        return attempt;
     }
 
     @Transactional(readOnly = true)
@@ -460,6 +458,9 @@ public class AnalyticsService {
         SystemAnalytics systemAnalytics = systemAnalyticsRepository.findByDate(today)
                 .orElse(new SystemAnalytics());
 
+        // Reduziere die Anzahl der aktiven Nutzer beim Logout
+        systemAnalytics.decrementActiveUsers();
+
         // Update average session time
         Long currentAvg = systemAnalytics.getAverageSessionTimeSeconds();
         Integer totalSessions = systemAnalytics.getTotalSessions();
@@ -499,6 +500,17 @@ public class AnalyticsService {
         }
 
         systemAnalytics.calculateSuccessRate();
+        systemAnalytics.updateLastUpdated();
+        systemAnalyticsRepository.save(systemAnalytics);
+    }
+
+    @Transactional
+    protected void trackNewUserRegistration() {
+        LocalDate today = LocalDate.now();
+        SystemAnalytics systemAnalytics = systemAnalyticsRepository.findByDate(today)
+                .orElse(new SystemAnalytics());
+
+        systemAnalytics.incrementNewUsers();
         systemAnalytics.updateLastUpdated();
         systemAnalyticsRepository.save(systemAnalytics);
     }
