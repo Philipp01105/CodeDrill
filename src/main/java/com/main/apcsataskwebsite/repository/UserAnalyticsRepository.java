@@ -54,4 +54,6 @@ public interface UserAnalyticsRepository extends JpaRepository<UserAnalytics, Lo
             @Param("endDate") LocalDateTime endDate);
 
     List<UserAnalytics> findByUserAndLoginTimeAfter(User user, LocalDateTime twentyFourHoursAgo);
+
+    List<UserAnalytics> findByLogoutTimeIsNull();
 }

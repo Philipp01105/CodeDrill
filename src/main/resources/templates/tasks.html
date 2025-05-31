@@ -243,8 +243,8 @@
         <main class="animate-fade-in" style="animation-delay: 0.2s;">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <!-- Task Cards -->
-                <div th:each="task, iterStat : ${tasks}" class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-1 hover:shadow-elevation-3 overflow-hidden task-card relative transition-colors duration-300" 
-                     th:data-task-id="${task.id}" 
+                <div th:each="task, iterStat : ${tasks}" class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-1 hover:shadow-elevation-3 overflow-hidden task-card relative transition-colors duration-300 flex flex-col h-[280px]"
+                     th:data-task-id="${task.id}"
                      th:style="'animation-delay: ' + ${0.1 + iterStat.index * 0.05} + 's;'"
                      th:classappend="${iterStat.index < 8} ? 'animate-scale-in' : ''">
                     <!-- Completed icon for authenticated users -->
@@ -254,16 +254,16 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                         </svg>
                     </div>
-                    <div class="p-6">
+                    <div class="p-6 flex flex-col flex-grow">
                         <div class="flex flex-wrap gap-1.5 mb-4">
                             <span th:each="tag : ${task.tags}" 
                                   th:class="${tag == 'Methods and Control Structures'} ? 'inline-block px-3 py-1 text-xs font-medium bg-blue-100 dark:bg-darkblue-900/50 text-blue-800 dark:text-darkblue-300 rounded-full shadow-sm transition-colors duration-300' : (${tag == 'Class Design'} ? 'inline-block px-3 py-1 text-xs font-medium bg-green-100 dark:bg-darkgreen-900/50 text-green-800 dark:text-darkgreen-300 rounded-full shadow-sm transition-colors duration-300' : (${tag == 'Array/ArrayList'} ? 'inline-block px-3 py-1 text-xs font-medium bg-purple-100 dark:bg-darkpurple-900/50 text-purple-800 dark:text-darkpurple-300 rounded-full shadow-sm transition-colors duration-300' : (${tag == 'Recursion'} ? 'inline-block px-3 py-1 text-xs font-medium bg-yellow-100 dark:bg-darkyellow-900/50 text-yellow-800 dark:text-darkyellow-300 rounded-full shadow-sm transition-colors duration-300' : 'inline-block px-3 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-full shadow-sm transition-colors duration-300')))"
-                                   th:text="${tag}"></span>
+                                  th:text="${tag}"></span>
                         </div>
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 cursor-pointer view-task hover:text-primary-700 dark:hover:text-darkblue-400 transition-colors duration-300" th:text="${task.title}">Task Title</h3>
-                        <p class="text-gray-600 dark:text-gray-200 text-sm cursor-pointer view-task mb-5 transition-colors duration-300" th:text="${task.description}">Task description goes here.</p>
+                        <p class="text-gray-600 dark:text-gray-200 text-sm cursor-pointer view-task line-clamp-2 transition-colors duration-300 flex-grow" th:text="${task.description}">Task description goes here.</p>
 
-                        <div class="mt-4 flex justify-end">
+                        <div class="mt-auto pt-4 flex justify-end">
                             <button class="material-btn bg-primary-600 dark:bg-darkblue-600 hover:bg-primary-700 dark:hover:bg-darkblue-700 text-white px-4 py-2 rounded-full text-sm font-medium train-btn shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" th:data-task-id="${task.id}">
                                 Train
                             </button>
