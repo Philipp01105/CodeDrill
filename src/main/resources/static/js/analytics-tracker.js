@@ -14,9 +14,49 @@ document.addEventListener('DOMContentLoaded', function() {
         trackLogout();
     });
 
-    // Track task views if on a task page
-    trackTaskView();
+    // Add event listeners for tracking task views on specific interactions
+    setupTaskViewTracking();
 });
+
+/**
+ * Set up event listeners for tracking task views on interactions
+ */
+function setupTaskViewTracking() {
+    // Track when a user clicks on the train button
+    document.querySelectorAll('.train-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const taskId = this.getAttribute('data-task-id');
+            if (taskId) {
+                trackSpecificTaskView(taskId);
+            }
+        });
+    });
+
+    // Track when a user opens a task modal
+    document.querySelectorAll('.view-task').forEach(element => {
+        element.addEventListener('click', function() {
+            // Find the parent task card to get the task ID
+            const taskCard = this.closest('.task-card');
+            if (taskCard) {
+                const taskId = taskCard.getAttribute('data-task-id');
+                if (taskId) {
+                    trackSpecificTaskView(taskId);
+                }
+            }
+        });
+    });
+
+    // Track when a user clicks train button in modal
+    const modalTrainBtn = document.getElementById('modalTrainBtn');
+    if (modalTrainBtn) {
+        modalTrainBtn.addEventListener('click', function() {
+            const taskId = this.getAttribute('data-task-id');
+            if (taskId) {
+                trackSpecificTaskView(taskId);
+            }
+        });
+    }
+}
 
 /**
  * Track user login
@@ -60,25 +100,36 @@ function trackLogout() {
 }
 
 /**
- * Track task view
+ * Track task view on page load
+ * NOTE: This function is now just a utility function and is not called automatically
  */
 function trackTaskView() {
     // Check if we're on a task page by looking for task-specific elements
     const taskIdElement = document.querySelector('[data-task-id]');
     if (taskIdElement) {
         const taskId = taskIdElement.getAttribute('data-task-id');
-
-        fetch(`/analytics/track/view/${taskId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).catch(error => {
-            console.error('Error tracking task view:', error);
-        });
+        trackSpecificTaskView(taskId);
     }
 }
 
+/**
+ * Track a specific task view by ID
+ * This is called when a user interacts with a task (opens modal or clicks train)
+ *
+ * @param {string} taskId - The ID of the task to track
+ */
+function trackSpecificTaskView(taskId) {
+    if (!taskId) return;
+
+    fetch(`/analytics/track/view/${taskId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).catch(error => {
+        console.error('Error tracking task view:', error);
+    });
+}
 
 /**
  * Add data-task-id attribute to task elements

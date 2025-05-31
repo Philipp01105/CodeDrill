@@ -4,4 +4,3 @@ system_analytics table &rarr; summarised information about all user sessions wit
 
 ## Backlog
 - [ ] User Activity Trend Chart with real data
-- [ ] Task specific analytics
