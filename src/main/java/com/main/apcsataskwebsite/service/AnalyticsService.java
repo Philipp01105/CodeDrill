@@ -85,15 +85,26 @@ public class AnalyticsService {
         if (analyticsOpt.isPresent()) {
             UserAnalytics analytics = analyticsOpt.get();
             analytics.incrementTasksAttempted();
+
             if (successful) {
-                analytics.incrementTasksCompleted();
+                // Prüfe, ob der Benutzer die Aufgabe bereits erfolgreich gelöst hat
+                // Beachte: Der aktuelle Versuch ist bereits gespeichert, daher muss der Schwellenwert 1 sein
+                long previousSuccessfulAttempts = taskAttemptRepository.findByUserAndTaskAndSuccessful(user, task, true)
+                        .stream()
+                        .filter(att -> !att.getId().equals(attempt.getId()))
+                        .count();
+
+                // Inkrementiere nur, wenn es kein früherer erfolgreicher Versuch existiert
+                if (previousSuccessfulAttempts == 0) {
+                    analytics.incrementTasksCompleted();
+                }
             }
+
             userAnalyticsRepository.save(analytics);
         }
 
         // Update system analytics
         updateSystemAnalyticsForTaskAttempt(successful);
-
     }
 
     @Transactional(readOnly = true)
@@ -163,7 +174,7 @@ public class AnalyticsService {
 
     /**
      * Get user activity data over a specified number of days
-     * 
+     *
      * @param user The user to get activity for
      * @param days Number of days to include
      * @return Map containing activity data
@@ -202,8 +213,8 @@ public class AnalyticsService {
             LocalDate attemptDate = attempt.getAttemptTime().toLocalDate();
 
             // Only include dates within our range
-            if (attemptDate.isAfter(startDate.toLocalDate().minusDays(1)) && 
-                attemptDate.isBefore(endDate.toLocalDate().plusDays(1))) {
+            if (attemptDate.isAfter(startDate.toLocalDate().minusDays(1)) &&
+                    attemptDate.isBefore(endDate.toLocalDate().plusDays(1))) {
 
                 // Increment the attempted count for this day
                 attemptedByDay.put(attemptDate, attemptedByDay.getOrDefault(attemptDate, 0) + 1);
@@ -226,8 +237,8 @@ public class AnalyticsService {
             LocalDate loginDate = ua.getLoginTime().toLocalDate();
 
             // Only include dates within our range
-            if (loginDate.isAfter(startDate.toLocalDate().minusDays(1)) && 
-                loginDate.isBefore(endDate.toLocalDate().plusDays(1))) {
+            if (loginDate.isAfter(startDate.toLocalDate().minusDays(1)) &&
+                    loginDate.isBefore(endDate.toLocalDate().plusDays(1))) {
 
                 // Add the number of tasks viewed in this session
                 int tasksViewed = ua.getTasksViewed() != null ? ua.getTasksViewed() : 0;
@@ -530,3 +541,4 @@ public class AnalyticsService {
         systemAnalyticsRepository.save(systemAnalytics);
     }
 }
+

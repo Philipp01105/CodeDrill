@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @Repository
@@ -61,4 +62,8 @@ public interface TaskAttemptRepository extends JpaRepository<TaskAttempt, Long> 
     Long countSuccessfulAttemptsBetween(
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
+
+    boolean existsByUserAndTaskAndSuccessful(User user, Task task, boolean b);
+
+    List<TaskAttempt> findByUserAndTaskAndSuccessful(User user, Task task, boolean successful);
 }

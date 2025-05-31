@@ -548,6 +548,9 @@
 
                     modalTitle.textContent = task.title;
 
+                    // Set the task ID attribute on the modal train button for tracking
+                    modalTrainBtn.setAttribute('data-task-id', task.id);
+
                     // Create HTML for displaying multiple tags
                     modalTag.innerHTML = '';
                     if (task.tags && task.tags.length > 0) {
@@ -634,7 +637,7 @@
                     return;
                 }
 
-                if (!currentTask || currentTask.id != taskId) {
+                if (!currentTask || currentTask.id !== taskId) {
                     // Fetch task details first if not already loaded
                     fetch(`/api/tasks/${taskId}`, {
                         credentials: 'same-origin',
@@ -720,6 +723,23 @@
                 codeMirror.setCursor({line: 3, ch: 8});
             });
 
+            // Function to track code attempts
+            function trackAttempt(taskId, successful, errorMessage, code) {
+                fetch(`/analytics/track/attempt/${taskId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        successful: successful,
+                        errorMessage: errorMessage,
+                        code: code
+                    })
+                }).catch(error => {
+                    console.error('Error tracking attempt:', error);
+                });
+            }
+
             // Run code button
             runCodeBtn.addEventListener('click', function() {
                 if (!currentTask) return;
@@ -728,23 +748,6 @@
                 if (!code) {
                     alert('Please enter some code to run.');
                     return;
-                }
-                const taskId = window.location.pathname.match(/\/tasks\/(\d+)/) ? window.location.pathname.match(/\/tasks\/(\d+)/)[1] : null;
-
-                if (taskId) {
-                    // Track task view
-                    fetch(`/analytics/track/view/${taskId}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    }).then(response => {
-                        if (response.ok) {
-                            console.log('Task view tracked');
-                        }
-                    }).catch(error => {
-                        console.error('Error tracking task view:', error);
-                    });
                 }
 
                 // Show loading state
@@ -781,6 +784,10 @@
                                     </svg>
                                     <span>${data.message || 'Server busy. The maximum number of concurrent code executions has been reached. Please try again in a moment.'}</span>
                                 </div>`;
+
+                            // Track failed attempt
+                            trackAttempt(currentTask.id, false, "Too many concurrent executions", code);
+
                             throw new Error('Too many concurrent executions');
                         });
                     } else if (!response.ok) {
@@ -790,6 +797,8 @@
                     // Check content type to ensure it's JSON
                     const contentType = response.headers.get('content-type');
                     if (!contentType || !contentType.includes('application/json')) {
+                        // Track failed attempt with error message
+                        trackAttempt(currentTask.id, false, "Invalid response format", code);
                         throw new Error('Received non-JSON response from server');
                     }
 
@@ -798,6 +807,9 @@
                 .then(data => {
                     // Display output
                     codeOutput.textContent = data.output || 'No output';
+
+                    // Track the attempt with the correct success state and code
+                    trackAttempt(currentTask.id, data.correct, data.correct ? "" : "Output doesn't match expected result", code);
 
                     // Check if correct
                     if (data.correct) {
@@ -923,5 +935,8 @@
             });
         });
     </script>
+
+    <!-- Analytics tracking script -->
+    <script src="/js/analytics-tracker.js"></script>
 </body>
-</html> 
+</html>

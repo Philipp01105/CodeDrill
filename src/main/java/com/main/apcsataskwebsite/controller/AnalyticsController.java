@@ -95,6 +95,7 @@ public class AnalyticsController {
 
         User user = userService.findByUsername(auth.getName());
         Task task = taskService.getTaskById(taskId);
+        System.out.println("Tracking task view for user: " + (user != null ? user.getUsername() : "null") + ", task: " + (task != null ? task.getTitle() : "null"));
 
         if (user != null && task != null) {
             HttpSession session = request.getSession(true);
