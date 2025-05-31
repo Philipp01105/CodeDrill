@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="light" lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fehler</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="/js/darkMode.js"></script>
+</head>
+<body class="bg-gray-50 dark:bg-darkpurple-950 min-h-screen font-sans transition-colors duration-300">
+    <div class="container mx-auto px-4 py-8 animate-fade-in">
+        <header class="mb-12 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-1 p-6 transition-colors duration-300">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="animate-slide-up">
+                    <h1 class="text-4xl font-bold text-primary-700 dark:text-darkpurple-300 mb-2 tracking-tight transition-colors duration-300">AP CSA FRQ Practice Hub</h1>
+                    <p class="text-lg text-gray-600 dark:text-gray-200 transition-colors duration-300">Master your AP Computer Science A skills through practice</p>
+                </div>
+                <div class="flex space-x-4 items-center mt-4 md:mt-0 animate-slide-in-right">
+                    <!-- Dark mode toggle -->
+                    <button id="theme-toggle" class="theme-toggle bg-gray-200 dark:bg-darkpurple-800 p-2 rounded-full transition-colors duration-300" aria-label="Toggle dark mode" aria-checked="false">
+                        <svg class="moon-icon w-5 h-5 text-gray-700 dark:text-darkpurple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                        <svg class="sun-icon w-5 h-5 text-yellow-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </button>
+                    <a href="/" class="text-primary-600 dark:text-darkblue-300 hover:text-primary-800 dark:hover:text-darkblue-200 transition-colors duration-300 font-medium">Startseite</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-4xl mx-auto bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-8 mb-8 animate-slide-up transition-colors duration-300" style="animation-delay: 0.1s;">
+            <div class="text-center mb-8 pb-6 border-b dark:border-darkpurple-700">
+                <h2 class="text-3xl font-bold text-red-600 dark:text-red-400 mb-2">Fehler <span th:text="${errorCode}">404</span></h2>
+                <p class="text-xl text-gray-700 dark:text-gray-300 transition-colors duration-300" th:text="${errorMessage}">Seite nicht gefunden</p>
+            </div>
+
+            <!-- Detaillierte Fehlerinformationen nur für Admins -->
+            <div th:if="${isAdmin}" class="bg-red-50 dark:bg-darkpurple-800/50 p-6 rounded-lg mb-8 border-l-4 border-red-500 dark:border-red-700">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-300 mb-3">Admin-Informationen</h3>
+
+                <div class="space-y-3 text-gray-700 dark:text-gray-200">
+                    <p><strong class="font-medium">Pfad:</strong> <span th:text="${path}" class="font-mono bg-gray-100 dark:bg-darkpurple-700 px-2 py-1 rounded text-sm">Unbekannter Pfad</span></p>
+                    <p><strong class="font-medium">Fehlerdetails:</strong> <span th:text="${exception}" class="font-mono bg-gray-100 dark:bg-darkpurple-700 px-2 py-1 rounded text-sm">Kein Fehler</span></p>
+                </div>
+
+                <div th:if="${trace != null}" class="mt-4 pt-4 border-t dark:border-darkpurple-700">
+                    <h4 class="text-md font-semibold text-gray-800 dark:text-darkpurple-300 mb-2">Stack Trace:</h4>
+                    <div class="overflow-x-auto bg-gray-100 dark:bg-darkpurple-900/50 p-3 rounded-lg">
+                        <pre th:each="stackTrace : ${trace}" th:text="${stackTrace}" class="text-sm font-mono text-gray-800 dark:text-gray-300 whitespace-pre-wrap"></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a href="/" class="material-btn inline-block bg-primary-600 dark:bg-darkblue-600 hover:bg-primary-700 dark:hover:bg-darkblue-700 text-white font-medium py-3 px-8 rounded-full shadow-elevation-2 hover:shadow-elevation-3 transition-all duration-300 transform hover:-translate-y-1">
+                    Zurück zur Startseite
+                </a>
+            </div>
+        </main>
+
+        <footer class="text-center text-gray-500 dark:text-gray-300 text-sm mt-12 animate-fade-in transition-colors duration-300" style="animation-delay: 0.3s;">
+            <p>&copy; 2025 AP CSA FRQ Practice Hub. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

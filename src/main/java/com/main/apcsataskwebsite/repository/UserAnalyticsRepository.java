@@ -52,4 +52,6 @@ public interface UserAnalyticsRepository extends JpaRepository<UserAnalytics, Lo
     List<Object[]> countByDeviceTypeBetween(
             @Param("startDate") LocalDateTime startDate, 
             @Param("endDate") LocalDateTime endDate);
+
+    List<UserAnalytics> findByUserAndLoginTimeAfter(User user, LocalDateTime twentyFourHoursAgo);
 }

@@ -1,6 +1,7 @@
 package com.main.apcsataskwebsite.service;
 
 import com.main.apcsataskwebsite.model.User;
+import com.main.apcsataskwebsite.model.UserAnalytics;
 import com.main.apcsataskwebsite.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +27,7 @@ public class UserService {
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AnalyticsService analyticsService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        
+
         // Initialize admin if no users exist
         if (userRepository.count() == 0) {
             createAdminUser();

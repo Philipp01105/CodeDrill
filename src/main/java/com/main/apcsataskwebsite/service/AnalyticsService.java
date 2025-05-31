@@ -40,11 +40,11 @@ public class AnalyticsService {
         String deviceType = extractDeviceType(request);
         String ipAddress = extractIpAddress(request);
 
-        UserAnalytics userAnalytics = new UserAnalytics(user, sessionId, browserInfo, deviceType, ipAddress);
-        userAnalyticsRepository.save(userAnalytics);
+        UserAnalytics userAnalyticsT = new UserAnalytics(user, sessionId, browserInfo, deviceType, ipAddress);
+        userAnalyticsRepository.save(userAnalyticsT);
 
         // Update system analytics
-        updateSystemAnalyticsForLogin(browserInfo, deviceType);
+        updateSystemAnalyticsForLogin(user, browserInfo, deviceType);
 
     }
 
@@ -414,15 +414,22 @@ public class AnalyticsService {
     }
 
     // Helper methods for updating system analytics
-    protected void updateSystemAnalyticsForLogin(String browserInfo, String deviceType) {
+    @Transactional
+    protected void updateSystemAnalyticsForLogin(User user, String browserInfo, String deviceType) {
         LocalDate today = LocalDate.now();
         SystemAnalytics systemAnalytics = systemAnalyticsRepository.findByDate(today)
                 .orElse(new SystemAnalytics());
 
-        systemAnalytics.incrementActiveUsers();
+        // Inkrementiere nur, wenn es der erste Login in 24 Stunden ist
+        if (isFirstLoginIn24Hours(user)) {
+            systemAnalytics.incrementActiveUsers();
+            System.out.println("Active user incremented for: " + user.getUsername());
+        }else {
+            System.out.println("Active user not incremented for: " + user.getUsername());
+        }
         systemAnalytics.incrementTotalSessions();
 
-        // Update browser counts
+        // Browser-Zähler aktualisieren
         if ("Chrome".equals(browserInfo)) {
             systemAnalytics.incrementChromeUsers();
         } else if ("Firefox".equals(browserInfo)) {
@@ -435,7 +442,7 @@ public class AnalyticsService {
             systemAnalytics.incrementOtherBrowsers();
         }
 
-        // Update device type counts
+        // Gerätetyp-Zähler aktualisieren
         if ("Desktop".equals(deviceType)) {
             systemAnalytics.incrementDesktopUsers();
         } else if ("Mobile".equals(deviceType)) {
@@ -448,6 +455,17 @@ public class AnalyticsService {
         systemAnalyticsRepository.save(systemAnalytics);
     }
 
+    /**
+     * Prüft, ob der Benutzer in den letzten 24 Stunden bereits aktiv war
+     * @param user Der zu prüfende Benutzer
+     * @return true, wenn es der erste Login innerhalb 24 Stunden ist
+     */
+    private boolean isFirstLoginIn24Hours(User user) {
+        LocalDateTime twentyFourHoursAgo = LocalDateTime.now().minusHours(24);
+        List<UserAnalytics> recentActivity = userAnalyticsRepository.findByUserAndLoginTimeAfter(user, twentyFourHoursAgo);
+        return recentActivity.size() <= 1;
+    }
+
     @Transactional
     protected void updateSystemAnalyticsForLogout(UserAnalytics userAnalytics) {
         if (userAnalytics.getTimeSpentSeconds() == null) {
@@ -457,9 +475,6 @@ public class AnalyticsService {
         LocalDate today = LocalDate.now();
         SystemAnalytics systemAnalytics = systemAnalyticsRepository.findByDate(today)
                 .orElse(new SystemAnalytics());
-
-        // Reduziere die Anzahl der aktiven Nutzer beim Logout
-        systemAnalytics.decrementActiveUsers();
 
         // Update average session time
         Long currentAvg = systemAnalytics.getAverageSessionTimeSeconds();
