@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.main</groupId>
-    <artifactId>apcsa-Task-website</artifactId>
+    <artifactId>CodeDrill</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>apcsa-Task-website</name>
     <description>apcsa-Task-website</description>

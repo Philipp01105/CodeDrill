@@ -1,6 +1,8 @@
 package com.main.apcsataskwebsite.controller;
 
 import com.main.apcsataskwebsite.model.User;
+import com.main.apcsataskwebsite.repository.TaskRepository;
+import com.main.apcsataskwebsite.service.TaskService;
 import com.main.apcsataskwebsite.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -20,11 +22,13 @@ public class AdminController {
 
     private final UserService userService;
     private final ApplicationContext applicationContext;
+    private final TaskRepository taskRepository;
 
     @Autowired
-    public AdminController(UserService userService, ApplicationContext applicationContext) {
+    public AdminController(UserService userService, ApplicationContext applicationContext, TaskRepository taskRepository) {
         this.userService = userService;
         this.applicationContext = applicationContext;
+        this.taskRepository = taskRepository;
     }
 
     @GetMapping
@@ -38,6 +42,7 @@ public class AdminController {
         model.addAttribute("user", user);
         model.addAttribute("userCount", userCount);
         model.addAttribute("moderatorCount", moderatorCount);
+        model.addAttribute("taskCount", taskRepository.count());
         
         return "admin/dashboard";
     }

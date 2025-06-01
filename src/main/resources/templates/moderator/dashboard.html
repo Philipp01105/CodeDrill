@@ -94,7 +94,7 @@
         <!-- Sidebar -->
         <div class="bg-primary-800 text-white w-64 py-8 px-4 hidden md:block shadow-elevation-2 animate-slide-in-left">
             <div class="mb-8">
-                <h1 class="text-xl font-bold">AP CSA FRQ Practice</h1>
+                <h1 class="text-xl font-bold">CodeDrill</h1>
                 <p class="text-primary-200 text-sm">Moderator Panel</p>
             </div>
 
@@ -264,9 +264,9 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex flex-wrap gap-1">
                                             <span th:each="tag : ${task.tags}" th:switch="${tag}" class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
-                                                <span th:case="'Methods and Control Structures'" class="bg-blue-100 text-blue-800" th:text="${tag}"></span>
-                                                <span th:case="'Class Design'" class="bg-green-100 text-green-800" th:text="${tag}"></span>
-                                                <span th:case="'Array/ArrayList'" class="bg-purple-100 text-purple-800" th:text="${tag}"></span>
+                                                <span th:case="'Java Methods & Logic'" class="bg-blue-100 text-blue-800" th:text="${tag}"></span>
+                                                <span th:case="'Object-Oriented Design'" class="bg-green-100 text-green-800" th:text="${tag}"></span>
+                                                <span th:case="'Data Structures'" class="bg-purple-100 text-purple-800" th:text="${tag}"></span>
                                                 <span th:case="'Recursion'" class="bg-yellow-100 text-yellow-800" th:text="${tag}"></span>
                                                 <span th:case="*" class="bg-gray-100 text-gray-800" th:text="${tag}"></span>
                                             </span>
@@ -301,11 +301,11 @@
                 <div class="bg-white rounded-xl shadow-elevation-2 p-6 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up" style="animation-delay: 0.5s;">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Guidelines for Task Creation</h3>
                     <ul class="list-disc pl-5 text-gray-600 space-y-3 animate-fade-in" style="animation-delay: 0.6s;">
-                        <li class="hover:text-gray-800 transition-colors duration-300">Create tasks that are relevant to the AP CSA curriculum and properly categorized.</li>
+                        <li class="hover:text-gray-800 transition-colors duration-300">Create tasks that are relevant to Java coding and properly categorized.</li>
                         <li class="hover:text-gray-800 transition-colors duration-300">Provide clear and concise instructions in the task content.</li>
                         <li class="hover:text-gray-800 transition-colors duration-300">Include a working Java solution that solves the problem correctly.</li>
                         <li class="hover:text-gray-800 transition-colors duration-300">Specify the expected output to help students verify their solutions.</li>
-                        <li class="hover:text-gray-800 transition-colors duration-300">Use appropriate difficulty levels for high school AP CSA students.</li>
+                        <li class="hover:text-gray-800 transition-colors duration-300">Use appropriate difficulty levels.</li>
                     </ul>
                 </div>
 

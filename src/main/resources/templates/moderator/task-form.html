@@ -134,7 +134,7 @@
         <!-- Sidebar -->
         <div class="bg-primary-800 text-white w-64 py-8 px-4 hidden md:block shadow-elevation-2 animate-slide-in-left">
             <div class="mb-8">
-                <h1 class="text-xl font-bold">AP CSA FRQ Practice</h1>
+                <h1 class="text-xl font-bold">CodeDrill</h1>
                 <p class="text-primary-200 text-sm">Moderator Panel</p>
             </div>
 
@@ -254,22 +254,22 @@
                                 <label class="block text-gray-700 font-medium mb-3">FRQ Types (Select all that apply)</label>
                                 <div class="space-y-3 bg-gray-50 p-4 rounded-lg shadow-elevation-1">
                                     <div class="flex items-center hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200">
-                                        <input type="checkbox" id="tag1" name="tags" value="Methods and Control Structures" 
-                                               th:checked="${#lists.contains(task.tags, 'Methods and Control Structures')}"
+                                        <input type="checkbox" id="tag1" name="tags" value="Java Methods & Logic"
+                                               th:checked="${#lists.contains(task.tags, 'Java Methods & Logic')}"
                                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                        <label for="tag1" class="ml-2 text-sm font-medium text-gray-700">Methods and Control Structures</label>
+                                        <label for="tag1" class="ml-2 text-sm font-medium text-gray-700">Java Methods & Logic</label>
                                     </div>
                                     <div class="flex items-center hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200">
-                                        <input type="checkbox" id="tag2" name="tags" value="Class Design"
-                                               th:checked="${#lists.contains(task.tags, 'Class Design')}"
+                                        <input type="checkbox" id="tag2" name="tags" value="Object-Oriented Design"
+                                               th:checked="${#lists.contains(task.tags, 'Object-Oriented Design')}"
                                                class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
-                                        <label for="tag2" class="ml-2 text-sm font-medium text-gray-700">Class Design</label>
+                                        <label for="tag2" class="ml-2 text-sm font-medium text-gray-700">Object-Oriented Design</label>
                                     </div>
                                     <div class="flex items-center hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200">
-                                        <input type="checkbox" id="tag3" name="tags" value="Array/ArrayList"
-                                               th:checked="${#lists.contains(task.tags, 'Array/ArrayList')}"
+                                        <input type="checkbox" id="tag3" name="tags" value="Data Structures"
+                                               th:checked="${#lists.contains(task.tags, 'Data Structures')}"
                                                class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
-                                        <label for="tag3" class="ml-2 text-sm font-medium text-gray-700">Array/ArrayList</label>
+                                        <label for="tag3" class="ml-2 text-sm font-medium text-gray-700">Data Structures</label>
                                     </div>
                                     <div class="flex items-center hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200">
                                         <input type="checkbox" id="tag4" name="tags" value="Recursion"
@@ -278,8 +278,8 @@
                                         <label for="tag4" class="ml-2 text-sm font-medium text-gray-700">Recursion</label>
                                     </div>
                                     <!-- Additional tags from database if any -->
-                                    <div th:each="existingTag : ${allTags}" 
-                                         th:if="${existingTag != 'Methods and Control Structures' && existingTag != 'Class Design' && existingTag != 'Array/ArrayList' && existingTag != 'Recursion'}"
+                                    <div th:each="existingTag : ${allTags}"
+                                         th:if="${existingTag != 'Java Methods & Logic' && existingTag != 'Object-Oriented Design' && existingTag != 'Data Structures' && existingTag != 'Recursion'}"
                                          class="flex items-center hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200">
                                         <input type="checkbox" th:id="${'tag-' + existingTag}" name="tags" th:value="${existingTag}"
                                                th:checked="${#lists.contains(task.tags, existingTag)}"
@@ -370,4 +370,7 @@
         });
     </script>
 </body>
-</html> 
+</html>
+
+
+
