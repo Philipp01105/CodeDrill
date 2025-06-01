@@ -1,7 +1,7 @@
 {
-  "name": "apcsa-task-website",
+  "name": "codedrill",
   "version": "1.0.0",
-  "description": "AP CSA FRQ Practice Hub",
+  "description": "CodeDrill",
   "scripts": {
     "build:css": "tailwindcss -i src/main/resources/static/css/main.css -o src/main/resources/static/css/styles.css --minify",
     "watch:css": "tailwindcss -i src/main/resources/static/css/main.css -o src/main/resources/static/css/styles.css --watch"
