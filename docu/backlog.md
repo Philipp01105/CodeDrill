@@ -4,3 +4,4 @@ system_analytics table &rarr; summarised information about all user sessions wit
 
 ## Backlog
 - [ ] User Activity Trend Chart with real data
+- [ ] Revamp Text's mainly on [index](../src/main/resources/templates/index.html) and [tasks](../src/main/resources/templates/tasks.html) 

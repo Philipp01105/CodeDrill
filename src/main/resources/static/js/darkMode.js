@@ -1,4 +1,4 @@
-// Dark mode functionality for AP CSA FRQ Practice Hub
+// Dark mode functionality for CodeDrill
 // This script handles toggling between light and dark modes and persists the user's preference
 
 // Check for saved theme preference or use the system preference

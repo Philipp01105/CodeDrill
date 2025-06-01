@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AP CSA FRQ Practice Hub</title>
+    <title>CodeDrill</title>
     <link rel="stylesheet" href="/css/styles.css">
     <script src="/js/darkMode.js"></script>
 </head>
@@ -12,8 +12,8 @@
         <header class="mb-12 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-1 p-6 transition-colors duration-300">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="animate-slide-up">
-                    <h1 class="text-4xl font-bold text-primary-700 dark:text-darkpurple-300 mb-2 tracking-tight transition-colors duration-300">AP CSA FRQ Practice Hub</h1>
-                    <p class="text-lg text-gray-600 dark:text-gray-200 transition-colors duration-300">Master your AP Computer Science A skills through practice</p>
+                    <h1 class="text-4xl font-bold text-primary-700 dark:text-darkpurple-300 mb-2 tracking-tight transition-colors duration-300">CodeDrill</h1>
+                    <p class="text-lg text-gray-600 dark:text-gray-200 transition-colors duration-300">Master Java skills through structured problem-solving</p>
                 </div>
                 <div class="flex space-x-4 items-center mt-4 md:mt-0 animate-slide-in-right">
                     <!-- Dark mode toggle -->
@@ -36,7 +36,7 @@
                     <div th:unless="${#authentication.principal == 'anonymousUser'}" class="flex space-x-4 items-center">
                         <!-- Dashboard link for moderators and admins -->
                         <div th:if="${#authorization.expression('hasAnyAuthority(''MODERATOR'', ''ADMIN'')')}">
-                            <a th:href="${#authorization.expression('hasAuthority(''ADMIN'')')} ? '/admin' : '/moderator'" 
+                            <a th:href="${#authorization.expression('hasAuthority(''ADMIN'')')} ? '/admin' : '/moderator'"
                                class="material-btn text-white bg-green-600 dark:bg-darkgreen-600 hover:bg-green-700 dark:hover:bg-darkgreen-700 px-6 py-2 rounded-full shadow-md hover:shadow-lg transition-all duration-300 font-medium">Dashboard</a>
                         </div>
 
@@ -50,32 +50,32 @@
         </header>
 
         <main class="max-w-4xl mx-auto bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-8 mb-8 animate-slide-up transition-colors duration-300" style="animation-delay: 0.1s;">
-            <h2 class="text-2xl font-semibold text-gray-800 dark:text-darkpurple-300 mb-6 border-b dark:border-darkpurple-700 pb-3 transition-colors duration-300">Welcome to the AP CSA FRQ Practice Hub</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 dark:text-darkpurple-300 mb-6 border-b dark:border-darkpurple-700 pb-3 transition-colors duration-300">Welcome to CodeDrill</h2>
 
             <p class="text-gray-700 dark:text-gray-200 mb-8 leading-relaxed transition-colors duration-300">
-                This platform is designed to help AP Computer Science A students practice their Free Response Questions (FRQ) skills. 
-                We provide a variety of practice tasks that cover the main FRQ types you'll encounter on the AP exam:
+                Practice your Java skills through free-response style challenges focused on real-world coding problems.
+                We provide a variety of practice tasks that cover important programming concepts:
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
                 <div class="bg-blue-50 dark:bg-darkblue-900/30 p-6 rounded-lg shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1 border-l-4 border-blue-500 dark:border-darkblue-600">
-                    <h3 class="font-semibold text-blue-800 dark:text-darkblue-300 text-lg mb-2 transition-colors duration-300">Methods and Control Structures</h3>
-                    <p class="text-gray-700 dark:text-gray-200 transition-colors duration-300">Practice implementing methods with conditional statements, loops, and other control structures.</p>
+                    <h3 class="font-semibold text-blue-800 dark:text-darkblue-300 text-lg mb-2 transition-colors duration-300">Java Methods & Logic</h3>
+                    <p class="text-gray-700 dark:text-gray-200 transition-colors duration-300">Practice conditional logic, loops, and method implementation.</p>
                 </div>
 
                 <div class="bg-green-50 dark:bg-darkgreen-900/30 p-6 rounded-lg shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1 border-l-4 border-green-500 dark:border-darkgreen-600">
-                    <h3 class="font-semibold text-green-800 dark:text-darkgreen-300 text-lg mb-2 transition-colors duration-300">Class Design</h3>
-                    <p class="text-gray-700 dark:text-gray-200 transition-colors duration-300">Create classes with fields, constructors, methods, and implement object-oriented concepts.</p>
+                    <h3 class="font-semibold text-green-800 dark:text-darkgreen-300 text-lg mb-2 transition-colors duration-300">Object-Oriented Design</h3>
+                    <p class="text-gray-700 dark:text-gray-200 transition-colors duration-300">Design Java classes with constructors, fields, and methods.</p>
                 </div>
 
                 <div class="bg-purple-50 dark:bg-darkpurple-900/30 p-6 rounded-lg shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1 border-l-4 border-purple-500 dark:border-darkpurple-600">
-                    <h3 class="font-semibold text-purple-800 dark:text-darkpurple-300 text-lg mb-2 transition-colors duration-300">Array/ArrayList</h3>
-                    <p class="text-gray-700 dark:text-gray-200 transition-colors duration-300">Work with arrays and ArrayLists to solve problems involving collections of data.</p>
+                    <h3 class="font-semibold text-purple-800 dark:text-darkpurple-300 text-lg mb-2 transition-colors duration-300">Data Structures</h3>
+                    <p class="text-gray-700 dark:text-gray-200 transition-colors duration-300">Solve problems using arrays and ArrayLists.</p>
                 </div>
 
                 <div class="bg-yellow-50 dark:bg-darkyellow-900/30 p-6 rounded-lg shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1 border-l-4 border-yellow-500 dark:border-darkyellow-600">
-                    <h3 class="font-semibold text-yellow-800 dark:text-darkyellow-300 text-lg mb-2 transition-colors duration-300">Recursion</h3>
-                    <p class="text-gray-700 dark:text-gray-200 transition-colors duration-300">Solve problems using recursive methods and understand recursive thinking.</p>
+                    <h3 class="font-semibold text-yellow-800 dark:text-darkyellow-300 text-lg mb-2 transition-colors duration-300">Recursive Thinking</h3>
+                    <p class="text-gray-700 dark:text-gray-200 transition-colors duration-300">Tackle algorithmic problems using recursion and nested logic.</p>
                 </div>
             </div>
 
@@ -86,7 +86,7 @@
 
                 <!-- Dashboard button for moderators and admins -->
                 <div th:if="${#authorization.expression('hasAnyAuthority(''MODERATOR'', ''ADMIN'')')}" class="mt-4">
-                    <a th:href="${#authorization.expression('hasAuthority(''ADMIN'')')} ? '/admin' : '/moderator'" 
+                    <a th:href="${#authorization.expression('hasAuthority(''ADMIN'')')} ? '/admin' : '/moderator'"
                        class="material-btn inline-block bg-green-600 dark:bg-darkgreen-600 hover:bg-green-700 dark:hover:bg-darkgreen-700 text-white font-medium py-3 px-8 rounded-full shadow-elevation-2 hover:shadow-elevation-3 transition-all duration-300 transform hover:-translate-y-1">
                         Go to Dashboard
                     </a>
@@ -96,8 +96,9 @@
 
         <footer class="text-center text-gray-500 dark:text-gray-300 text-sm mt-12 animate-fade-in transition-colors duration-300" style="animation-delay: 0.3s;">
             <p>If you want to contribute tasks feel free to dm me on Discord: nomnom2</p>
-            <p>&copy; 2025 AP CSA FRQ Practice Hub. All rights reserved.</p>
+            <p>&copy; 2025 CodeDrill. All rights reserved. This site is independently developed and not affiliated with College Board.</p>
         </footer>
     </div>
 </body>
-</html> 
+</html>
+
