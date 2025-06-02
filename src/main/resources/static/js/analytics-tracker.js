@@ -100,19 +100,6 @@ function trackLogout() {
 }
 
 /**
- * Track task view on page load
- * NOTE: This function is now just a utility function and is not called automatically
- */
-function trackTaskView() {
-    // Check if we're on a task page by looking for task-specific elements
-    const taskIdElement = document.querySelector('[data-task-id]');
-    if (taskIdElement) {
-        const taskId = taskIdElement.getAttribute('data-task-id');
-        trackSpecificTaskView(taskId);
-    }
-}
-
-/**
  * Track a specific task view by ID
  * This is called when a user interacts with a task (opens modal or clicks train)
  *
@@ -148,27 +135,3 @@ function initTaskTracking(taskId) {
     }
 }
 
-/**
- * Track code submission attempt
- * This function should be called when a user submits code for a task
- * 
- * @param {string} taskId - The ID of the task
- * @param {boolean} successful - Whether the attempt was successful
- * @param {string} errorMessage - Error message if the attempt failed
- * @param {string} code - The code submitted by the user
- */
-function trackTaskAttempt(taskId, successful, errorMessage = '', code = '') {
-    fetch(`/analytics/track/attempt/${taskId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            successful: successful,
-            errorMessage: errorMessage,
-            code: code
-        })
-    }).catch(error => {
-        console.error('Error tracking task attempt:', error);
-    });
-}

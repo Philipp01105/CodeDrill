@@ -84,7 +84,7 @@ public class CodeExecutionService {
         int maxConcurrentExecutions = Math.min(maxByCpu, maxByMemory);
 
         // Ensure we have at least 1 concurrent execution and not more than 16
-        maxConcurrentExecutions = Math.max(1, Math.min(16, maxConcurrentExecutions));
+        maxConcurrentExecutions = Math.min(16, maxConcurrentExecutions);
 
         this.resourceSemaphore = new Semaphore(maxConcurrentExecutions);
 
@@ -172,7 +172,7 @@ public class CodeExecutionService {
         }
     }
 
-    private String addToQueueAndWait(String code) throws Exception {
+    private String addToQueueAndWait(String code) {
         CompletableFuture<String> future = new CompletableFuture<>();
 
         // Add a task to the queue that will execute when resources become available

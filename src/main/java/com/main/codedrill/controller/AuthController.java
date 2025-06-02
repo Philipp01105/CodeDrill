@@ -10,6 +10,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.regex.Pattern;
+
 @Controller
 public class AuthController {
 
@@ -40,6 +42,7 @@ public class AuthController {
     public String register(@RequestParam String username, 
                            @RequestParam String password, 
                            @RequestParam String confirmPassword,
+                           @RequestParam String email,
                            @RequestParam(required = false) String fullName,
                            Model model, 
                            RedirectAttributes redirectAttributes) {
@@ -55,9 +58,16 @@ public class AuthController {
             model.addAttribute("error", "Password must be at least 6 characters");
             return "register";
         }
+
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        if (email == null || !pattern.matcher(email).matches()) {
+            model.addAttribute("error", "Bitte gib eine gültige E-Mail-Adresse ein");
+            return "register";
+        }
         
         // Attempt to create user
-        User user = userService.registerUser(username, password, fullName);
+        User user = userService.registerUser(username, password, fullName, email);
         
         if (user == null) {
             model.addAttribute("error", "Username already exists");

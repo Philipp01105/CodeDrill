@@ -58,6 +58,11 @@
 
                 <form th:unless="${registrationClosed}" th:action="@{/register}" method="post" class="space-y-6">
                     <div class="form-field">
+                        <input type="email" id="email" name="email" required placeholder=" ">
+                        <label for="email">Email</label>
+                    </div>
+
+                    <div class="form-field">
                         <input type="text" id="username" name="username" required placeholder=" ">
                         <label for="username">Username</label>
                     </div>
