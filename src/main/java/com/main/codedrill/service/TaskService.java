@@ -95,10 +95,12 @@ public class TaskService {
         return false;
     }
     
+    @Transactional
     public List<String> getAllTags() {
         return getAllTasks().stream()
                 .flatMap(task -> task.getTags().stream())
                 .distinct()
                 .collect(Collectors.toList());
     }
-} 
+}
+

@@ -218,7 +218,7 @@
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Description
                                 </th>
-                                <th scope="col" th:if="${#authentication.principal.authorities[0].authority == 'ADMIN'}" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th scope="col" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Created By
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -250,7 +250,7 @@
                                 <td class="px-6 py-4">
                                     <div class="text-sm text-gray-900 line-clamp-2" th:text="${task.description}">Task description</div>
                                 </td>
-                                <td th:if="${#authentication.principal.authorities[0].authority == 'ADMIN'}" class="px-6 py-4 whitespace-nowrap">
+                                <td th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}" class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900" th:text="${task.createdBy != null ? task.createdBy.username : 'System'}">Creator</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

@@ -72,10 +72,10 @@ public class CodeRunnerController {
             String executionOutput = codeExecutionService.executeJavaCode(code);
 
             // Check if execution was blocked due to concurrent limit
-            if (executionOutput.startsWith("ERROR: Too many concurrent executions")) {
+            if (executionOutput.startsWith("️🛡️ SECURITY ALERT: Code execution blocked")) {
                 response.put("success", false);
                 response.put("output", executionOutput);
-                response.put("message", "Too many concurrent code executions. Please try again in a moment.");
+                response.put("message", "");
                 return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(response);
             }
 
