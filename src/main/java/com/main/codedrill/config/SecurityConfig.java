@@ -1,8 +1,11 @@
 package com.main.codedrill.config;
 
 import com.main.codedrill.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -16,10 +19,20 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final UserService userService;
+    private final CustomAuthenticationProvider authenticationProvider;
 
-    public SecurityConfig(UserDetailsService userDetailsService, UserService userService) {
+    @Autowired
+    public SecurityConfig(UserDetailsService userDetailsService,
+                         UserService userService,
+                         CustomAuthenticationProvider authenticationProvider) {
         this.userDetailsService = userDetailsService;
         this.userService = userService;
+        this.authenticationProvider = authenticationProvider;
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authenticationProvider);
     }
 
     @Bean
@@ -32,7 +45,7 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/tasks", "/api/tasks/**", "/css/**", "/js/**", "/register", "/error/**", "/analytics/track/**").permitAll()
+                .requestMatchers("/", "/tasks", "/api/tasks/**", "/css/**", "/js/**", "/register", "/error/**", "/analytics/track/**", "/verify", "/resend-verification").permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
                 .requestMatchers("/analytics/admin").hasAuthority("ADMIN")
                 .requestMatchers("/analytics/task/**").hasAnyAuthority("ADMIN", "MODERATOR")
@@ -53,9 +66,8 @@ public class SecurityConfig {
             )
             .exceptionHandling(ex -> ex
                 .accessDeniedPage("/access-denied")
-            )
-            .userDetailsService(userDetailsService);
+            );
 
         return http.build();
     }
-} 
+}

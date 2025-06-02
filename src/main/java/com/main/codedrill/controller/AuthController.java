@@ -10,8 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.regex.Pattern;
-
 @Controller
 public class AuthController {
 
@@ -58,24 +56,25 @@ public class AuthController {
             model.addAttribute("error", "Password must be at least 6 characters");
             return "register";
         }
-
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        Pattern pattern = Pattern.compile(emailRegex);
-        if (email == null || !pattern.matcher(email).matches()) {
-            model.addAttribute("error", "Bitte gib eine gültige E-Mail-Adresse ein");
+        
+        // Basic email validation
+        if (!email.contains("@") || !email.contains(".")) {
+            model.addAttribute("error", "Please enter a valid email address");
             return "register";
         }
-        
+
         // Attempt to create user
         User user = userService.registerUser(username, password, fullName, email);
-        
+
         if (user == null) {
-            model.addAttribute("error", "Username already exists");
+            model.addAttribute("error", "Username or email already exists");
             return "register";
         }
         
         // Registration successful
         redirectAttributes.addFlashAttribute("registrationSuccess", true);
+        redirectAttributes.addFlashAttribute("verificationEmailSent", true);
+        redirectAttributes.addFlashAttribute("email", email);
         return "redirect:/login";
     }
     
@@ -167,6 +166,7 @@ public class AuthController {
     
     @GetMapping("/access-denied")
     public String accessDenied() {
-        return "error/access-denied";
+        return "auth/access-denied";
     }
-} 
+}
+

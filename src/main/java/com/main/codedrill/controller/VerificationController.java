@@ -1,59 +1,76 @@
 package com.main.codedrill.controller;
 
+import com.main.codedrill.model.User;
+import com.main.codedrill.model.VerificationToken;
+import com.main.codedrill.service.EmailService;
 import com.main.codedrill.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Map;
-
 @Controller
-@RequestMapping("/api/verification")
 public class VerificationController {
 
+    private final UserService userService;
+    private final EmailService emailService;
+
     @Autowired
-    private UserService userService;
+    public VerificationController(UserService userService, EmailService emailService) {
+        this.userService = userService;
+        this.emailService = emailService;
+    }
 
     @GetMapping("/verify")
-    public String verifyEmail(@RequestParam String code,
-                              @RequestParam(required = false) Boolean api,
-                              RedirectAttributes redirectAttributes) {
-        boolean verified = userService.verifyEmail(code);
+    public String verifyAccount(@RequestParam String token, Model model) {
+        boolean isVerified = userService.verifyUser(token);
 
-        if (Boolean.TRUE.equals(api)) {
-            return "forward:/api/verification/verify-api?code=" + code;
-        }
-
-        if (verified) {
-            redirectAttributes.addFlashAttribute("verificationSuccess", true);
-            redirectAttributes.addFlashAttribute("message", "Email successfully verified! You can now log in.");
-            return "redirect:/login";
+        if (isVerified) {
+            model.addAttribute("verificationSuccess", true);
+            model.addAttribute("message", "Your email address has been successfully verified. You can now log in.");
         } else {
-            redirectAttributes.addFlashAttribute("verificationError", true);
-            redirectAttributes.addFlashAttribute("message", "Invalid or expired verification code.");
-            return "redirect:/login";
+            model.addAttribute("verificationSuccess", false);
+            model.addAttribute("message", "The verification link is invalid or has expired.");
         }
+
+        return "verification-result";
     }
 
-    @GetMapping("/verify-api")
-    @ResponseBody
-    public ResponseEntity<String> verifyEmailApi(@RequestParam String code) {
-        boolean verified = userService.verifyEmail(code);
-
-        if (verified) {
-            return ResponseEntity.ok("Email successfully verified!");
-        } else {
-            return ResponseEntity.badRequest().body("Invalid or expired verification code.");
-        }
+    @GetMapping("/resend-verification")
+    public String resendVerificationForm() {
+        return "resend-verification";
     }
 
-    @PostMapping("/resend")
-    @ResponseBody
-    public ResponseEntity<String> resendVerificationCode(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
-        userService.resendVerificationCode(email);
-        return ResponseEntity.ok("A new verification code has been sent if the email is associated with an unverified account.");
+    @PostMapping("/resend-verification")
+    public String resendVerification(@RequestParam String email, RedirectAttributes redirectAttributes) {
+        User user = userService.findByEmail(email);
+
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("error", "This email address was not found.");
+            return "redirect:/resend-verification";
+        }
+
+        if (user.isEnabled()) {
+            redirectAttributes.addFlashAttribute("error", "Your account is already verified.");
+            return "redirect:/resend-verification";
+        }
+
+        // Create a new token and send email
+        VerificationToken token = userService.generateNewVerificationToken(user);
+        try {
+            emailService.sendVerificationEmail(
+                user.getEmail(),
+                "CodeDrill - Verify Your Email Address",
+                token.getToken()
+            );
+            redirectAttributes.addFlashAttribute("success", "A new verification link has been sent to your email address.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "An error occurred while sending the email. Please try again later.");
+        }
+
+        return "redirect:/resend-verification";
     }
 }

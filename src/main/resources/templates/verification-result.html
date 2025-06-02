@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification - CodeDrill</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="/js/darkMode.js"></script>
+</head>
+<body class="bg-gray-50 dark:bg-darkpurple-950 min-h-screen font-sans transition-colors duration-300">
+    <div class="container mx-auto px-4 py-8 animate-fade-in">
+        <header class="mb-8 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-1 p-6 flex flex-col md:flex-row justify-between items-center transition-colors duration-300">
+            <div class="animate-slide-up">
+                <h1 class="text-3xl font-bold text-primary-700 dark:text-darkpurple-300 mb-2 tracking-tight transition-colors duration-300">CodeDrill</h1>
+                <p class="text-gray-600 dark:text-gray-200 transition-colors duration-300">Email Verification</p>
+            </div>
+            <div class="flex items-center space-x-4 mt-4 md:mt-0 animate-slide-in-right">
+                <!-- Dark mode toggle -->
+                <button id="theme-toggle" class="theme-toggle bg-gray-200 dark:bg-darkpurple-800 p-2 rounded-full transition-colors duration-300" aria-label="Toggle dark mode" aria-checked="false">
+                    <svg class="moon-icon w-5 h-5 text-gray-700 dark:text-darkpurple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    </svg>
+                    <svg class="sun-icon w-5 h-5 text-yellow-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                </button>
+
+                <a href="/" class="text-primary-600 dark:text-darkblue-300 hover:text-primary-800 dark:hover:text-darkblue-200 transition-colors duration-300 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Home
+                </a>
+            </div>
+        </header>
+
+        <div class="max-w-md mx-auto bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 overflow-hidden animate-slide-up transition-colors duration-300" style="animation-delay: 0.1s;">
+            <div class="p-8">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-darkpurple-300 mb-6 border-b dark:border-darkpurple-700 pb-3 transition-colors duration-300">Email Verification</h2>
+
+                <!-- Success message -->
+                <div th:if="${verificationSuccess}" class="bg-green-100 dark:bg-green-900/20 border-l-4 border-green-500 dark:border-green-600 text-green-700 dark:text-green-400 p-4 rounded-lg mb-6 animate-fade-in transition-colors duration-300" role="alert">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <span th:text="${message}">Your email address has been successfully verified.</span>
+                    </div>
+                </div>
+
+                <!-- Error message -->
+                <div th:unless="${verificationSuccess}" class="bg-red-100 dark:bg-red-900/20 border-l-4 border-red-500 dark:border-red-600 text-red-700 dark:text-red-400 p-4 rounded-lg mb-6 animate-fade-in transition-colors duration-300" role="alert">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                        <span th:text="${message}">The verification link is invalid or has expired.</span>
+                    </div>
+
+                    <div class="mt-4">
+                        <a th:href="@{/resend-verification}" class="text-blue-600 dark:text-blue-400 hover:underline">
+                            Request a new verification link
+                        </a>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <a href="/login" class="material-btn inline-block bg-primary-600 dark:bg-darkblue-600 hover:bg-primary-700 dark:hover:bg-darkblue-700 text-white font-medium py-2 px-6 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
+                        Go to Login
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <footer class="text-center text-gray-500 dark:text-gray-300 text-sm mt-12 animate-fade-in transition-colors duration-300" style="animation-delay: 0.3s;">
+            <p>&copy; 2025 CodeDrill. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>
+

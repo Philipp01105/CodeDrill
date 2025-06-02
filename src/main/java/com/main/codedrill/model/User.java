@@ -25,7 +25,7 @@ public class User {
 
     @Column
     private String fullName;
-
+    
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -34,10 +34,10 @@ public class User {
 
     @Column(name = "using_temp_password")
     private Boolean usingTempPassword = false;
-
+    
     @Column(name = "last_password_reset_date")
     private LocalDateTime lastPasswordResetDate;
-
+    
     @Column
     private LocalDateTime registrationDate;
 
@@ -97,7 +97,15 @@ public class User {
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
-
+    
+    public boolean isUsingTempPassword() {
+        return usingTempPassword != null && usingTempPassword;
+    }
+    
+    public void setUsingTempPassword(Boolean usingTempPassword) {
+        this.usingTempPassword = usingTempPassword;
+    }
+    
     public String getEmail() {
         return email;
     }
@@ -109,17 +117,17 @@ public class User {
     public boolean isEnabled() {
         return enabled;
     }
-
+    
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-
-    public boolean isUsingTempPassword() {
-        return usingTempPassword != null && usingTempPassword;
+    
+    public LocalDateTime getRegistrationDate() {
+        return registrationDate;
     }
-
-    public void setUsingTempPassword(Boolean usingTempPassword) {
-        this.usingTempPassword = usingTempPassword;
+    
+    public void setRegistrationDate(LocalDateTime registrationDate) {
+        this.registrationDate = registrationDate;
     }
 
     public LocalDateTime getLastPasswordResetDate() {
@@ -130,14 +138,6 @@ public class User {
         this.lastPasswordResetDate = lastPasswordResetDate;
     }
 
-    public LocalDateTime getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(LocalDateTime registrationDate) {
-        this.registrationDate = registrationDate;
-    }
-
     public Set<Task> getCreatedTasks() {
         return createdTasks;
     }
@@ -146,19 +146,17 @@ public class User {
         this.createdTasks = createdTasks;
     }
 
+    // Helper methods
     public boolean isAdmin() {
         return "ADMIN".equals(role);
     }
-
+    
     public boolean isModerator() {
         return "MODERATOR".equals(role);
     }
-
+    
     public boolean isUser() {
         return "USER".equals(role);
     }
-
-    public User orElse(Object o) {
-        return this;
-    }
 }
+

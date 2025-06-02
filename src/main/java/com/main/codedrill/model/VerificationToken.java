@@ -2,29 +2,43 @@ package com.main.codedrill.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
+@Table(name = "verification_tokens")
 public class VerificationToken {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String token;
-    private LocalDateTime expiryDate;
 
-    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
-    public VerificationToken() {}
+    @Column(nullable = false)
+    private LocalDateTime expiryDate;
 
-    public VerificationToken(String token, User user) {
-        this.token = token;
-        this.user = user;
-        this.expiryDate = LocalDateTime.now().plusHours(24); // Token 24 Stunden gültig
+    public VerificationToken() {
+        // Default constructor
     }
 
-    // Getter und Setter
+    public VerificationToken(User user) {
+        this.user = user;
+        token = UUID.randomUUID().toString();
+        expiryDate = LocalDateTime.now().plusDays(1); // Token expires after 24 hours
+    }
+
+    public VerificationToken(User user, String token) {
+        this.user = user;
+        this.token = token;
+        expiryDate = LocalDateTime.now().plusDays(1); // Token expires after 24 hours
+    }
+
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -41,6 +55,14 @@ public class VerificationToken {
         this.token = token;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public LocalDateTime getExpiryDate() {
         return expiryDate;
     }
@@ -49,11 +71,8 @@ public class VerificationToken {
         this.expiryDate = expiryDate;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
+    // Helper methods
+    public boolean isExpired() {
+        return LocalDateTime.now().isAfter(expiryDate);
     }
 }

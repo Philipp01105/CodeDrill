@@ -4,7 +4,6 @@ import com.main.codedrill.model.User;
 import com.main.codedrill.model.VerificationToken;
 import com.main.codedrill.repository.UserRepository;
 import com.main.codedrill.repository.VerificationTokenRepository;
-import com.main.codedrill.utility.VerificationCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -50,9 +49,11 @@ public class UserService {
         User admin = new User();
         admin.setUsername("admin");
         admin.setPassword(passwordEncoder.encode("password"));
+        admin.setUsingTempPassword(true);
         admin.setRole("ADMIN");
         admin.setFullName("System Administrator");
-        admin.setEnabled(true);
+        admin.setEmail("admin@example.com"); // Add email for admin
+        admin.setEnabled(true); // Admin is enabled by default
         userRepository.save(admin);
     }
 
@@ -82,12 +83,10 @@ public class UserService {
      */
     @Transactional
     public User registerUser(String username, String password, String fullName, String email) {
-        // Check if username already exists
         if (userRepository.existsByUsername(username)) {
             return null;
         }
 
-        // Check if email already exists
         if (userRepository.existsByEmail(email)) {
             return null;
         }
@@ -98,77 +97,80 @@ public class UserService {
         user.setRole("USER");
         user.setFullName(fullName);
         user.setEmail(email);
-        user.setEnabled(false); // Nutzer ist erst nach E-Mail-Verifizierung aktiviert
+        user.setEnabled(false); // User is disabled until email verification
         user.setRegistrationDate(LocalDateTime.now());
         analyticsService.trackNewUserRegistration();
 
         User savedUser = userRepository.save(user);
 
-        // Verifizierungscode generieren und speichern
-        String verificationCode = VerificationCodeGenerator.generateVerificationCode();
-        VerificationToken token = new VerificationToken(verificationCode, savedUser);
+        VerificationToken token = new VerificationToken(savedUser);
         verificationTokenRepository.save(token);
 
-        // E-Mail mit Verifizierungscode senden
-        emailService.sendVerificationEmail(email, verificationCode);
+        try {
+            emailService.sendVerificationEmail(
+                savedUser.getEmail(),
+                "CodeDrill - Verify Your Email Address",
+                token.getToken()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return savedUser;
     }
 
     /**
-     * Verifiziert die E-Mail-Adresse eines Nutzers anhand des Verifizierungscodes
+     * Verifies a user based on a token
+     * @param token The verification token
+     * @return true if verification was successful, false otherwise
      */
     @Transactional
-    public boolean verifyEmail(String verificationCode) {
-        VerificationToken token = verificationTokenRepository.findByToken(verificationCode);
+    public boolean verifyUser(String token) {
+        VerificationToken verificationToken = verificationTokenRepository.findByToken(token);
 
-        if (token == null || token.getExpiryDate().isBefore(LocalDateTime.now())) {
+        if (verificationToken == null || verificationToken.isExpired()) {
             return false;
         }
 
-        User user = token.getUser();
+        User user = verificationToken.getUser();
         user.setEnabled(true);
         userRepository.save(user);
 
-        // Token nach erfolgreicher Verifizierung löschen
-        verificationTokenRepository.delete(token);
+        verificationTokenRepository.delete(verificationToken);
 
         return true;
     }
 
     /**
-     * Sendet einen neuen Verifizierungscode, falls der Nutzer noch nicht verifiziert ist
+     * Creates a new verification token for a user
+     * @param user The user for whom to create a new token
+     * @return The new VerificationToken
      */
     @Transactional
-    public boolean resendVerificationCode(String email) {
-        User user = userRepository.findByEmail(email).orElse(null);
-        if (user != null && !user.isEnabled()) {
-            VerificationToken token = verificationTokenRepository.findByUser(user);
-
-            // Alten Token löschen und neuen erstellen
-            if (token != null) {
-                verificationTokenRepository.delete(token);
-            }
-
-            String newCode = VerificationCodeGenerator.generateVerificationCode();
-            verificationTokenRepository.save(new VerificationToken(newCode, user));
-            emailService.sendVerificationEmail(email, newCode);
-            return true;
+    public VerificationToken generateNewVerificationToken(User user) {
+        VerificationToken existingToken = verificationTokenRepository.findByUser(user);
+        if (existingToken != null) {
+            verificationTokenRepository.delete(existingToken);
         }
-        return false;
+
+        VerificationToken newToken = new VerificationToken(user);
+        return verificationTokenRepository.save(newToken);
     }
 
     public User createModerator(User moderator, User admin) {
-        // Ensure only admin can create moderators
         if (admin != null && admin.isAdmin()) {
             if (userRepository.existsByUsername(moderator.getUsername())) {
-                return null; // Username already exists
+                return null;
             }
 
-            // Set moderator role and encode password
+            if (userRepository.existsByEmail(moderator.getEmail())) {
+                return null;
+            }
+
+
             moderator.setRole("MODERATOR");
             moderator.setPassword(passwordEncoder.encode(moderator.getPassword()));
-            moderator.setEnabled(true); // Moderatoren werden direkt aktiviert
+            moderator.setEnabled(true); // Moderators are enabled by default
 
             return userRepository.save(moderator);
         }
@@ -181,7 +183,6 @@ public class UserService {
      * @return the temporary password
      */
     public String resetPasswordWithTemp(Long userId, User admin) {
-        // Only admin can reset passwords
         if (admin != null && admin.isAdmin()) {
             Optional<User> userOpt = userRepository.findById(userId);
 
@@ -191,7 +192,6 @@ public class UserService {
                 // Generate a random temporary password
                 String tempPassword = generateTempPassword();
 
-                // Update user record
                 user.setPassword(passwordEncoder.encode(tempPassword));
                 user.setUsingTempPassword(true);
                 user.setLastPasswordResetDate(LocalDateTime.now());
@@ -233,7 +233,6 @@ public class UserService {
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
 
-        // Generate a 12-char password
         for (int i = 0; i < 12; i++) {
             int index = random.nextInt(chars.length());
             sb.append(chars.charAt(index));
@@ -243,7 +242,6 @@ public class UserService {
     }
 
     public boolean deleteUser(Long userId, User admin) {
-        // Only admin can delete users
         if (admin != null && admin.isAdmin()) {
             Optional<User> userOpt = userRepository.findById(userId);
 
@@ -283,3 +281,4 @@ public class UserService {
         return Math.toIntExact(userRepository.countByRole("MODERATOR"));
     }
 }
+
