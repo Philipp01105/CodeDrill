@@ -17,4 +17,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByTagsContainingOrderByCreatedAtDesc(@Param("tag") String tag);
     
     List<Task> findByCreatedByOrderByCreatedAtDesc(User user);
-} 
+
+    Iterable<? extends Task> findBycreatedBy(User user);
+}

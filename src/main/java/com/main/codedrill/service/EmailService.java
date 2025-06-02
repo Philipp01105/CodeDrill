@@ -34,7 +34,7 @@ public class EmailService {
         String confirmationUrl = baseUrl + "/verify?token=" + token;
 
         String emailBody = "Hello,\n\n" +
-                "Thank you for registering with CodeDrill. " +
+                "Thank you for registering at CodeDrill. " +
                 "Please confirm your email address by clicking on the link below:\n\n" +
                 confirmationUrl + "\n\n" +
                 "This link is valid for 24 hours.\n\n" +

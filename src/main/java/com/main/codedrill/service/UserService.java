@@ -4,6 +4,10 @@ import com.main.codedrill.model.User;
 import com.main.codedrill.model.VerificationToken;
 import com.main.codedrill.repository.UserRepository;
 import com.main.codedrill.repository.VerificationTokenRepository;
+import com.main.codedrill.repository.UserTaskCompletionRepository;
+import com.main.codedrill.repository.TaskAttemptRepository;
+import com.main.codedrill.repository.UserAnalyticsRepository;
+import com.main.codedrill.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +26,10 @@ public class UserService {
     private final AnalyticsService analyticsService;
     private final EmailService emailService;
     private final VerificationTokenRepository verificationTokenRepository;
+    private final UserTaskCompletionRepository userTaskCompletionRepository;
+    private final TaskAttemptRepository taskAttemptRepository;
+    private final UserAnalyticsRepository userAnalyticsRepository;
+    private final TaskRepository taskRepository;
 
     // Track current executions
     private boolean currentExecutions = false;
@@ -31,12 +39,20 @@ public class UserService {
                        PasswordEncoder passwordEncoder,
                        AnalyticsService analyticsService,
                        EmailService emailService,
-                       VerificationTokenRepository verificationTokenRepository) {
+                       VerificationTokenRepository verificationTokenRepository,
+                       UserTaskCompletionRepository userTaskCompletionRepository,
+                       TaskAttemptRepository taskAttemptRepository,
+                       UserAnalyticsRepository userAnalyticsRepository,
+                       TaskRepository taskRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.analyticsService = analyticsService;
         this.emailService = emailService;
         this.verificationTokenRepository = verificationTokenRepository;
+        this.userTaskCompletionRepository = userTaskCompletionRepository;
+        this.taskAttemptRepository = taskAttemptRepository;
+        this.userAnalyticsRepository = userAnalyticsRepository;
+        this.taskRepository = taskRepository;
 
         // Initialize admin if no users exist
         if (userRepository.count() == 0) {
@@ -241,12 +257,34 @@ public class UserService {
         return sb.toString();
     }
 
+    /**
+     * Deletes a user and all associated data
+     * @param userId ID of the user to delete
+     * @param admin The admin performing the deletion
+     * @return true if successful, false otherwise
+     */
+    @Transactional
     public boolean deleteUser(Long userId, User admin) {
         if (admin != null && admin.isAdmin()) {
             Optional<User> userOpt = userRepository.findById(userId);
 
             if (userOpt.isPresent() && !userOpt.get().isAdmin()) {
-                userRepository.deleteById(userId);
+                User userToDelete = userOpt.get();
+
+                // First delete all UserTaskCompletions of the user
+                userTaskCompletionRepository.deleteAll(userTaskCompletionRepository.findByUser(userToDelete));
+
+                // Delete all TaskAttempts of the user
+                taskAttemptRepository.deleteAll(taskAttemptRepository.findByUser(userToDelete));
+
+                // Delete all UserAnalytics of the user
+                userAnalyticsRepository.deleteAll(userAnalyticsRepository.findByUser(userToDelete));
+
+                // Delete all Tasks associated with the user
+                taskRepository.deleteAll(taskRepository.findBycreatedBy(userToDelete));
+
+                // Now delete the user itself
+                userRepository.delete(userToDelete);
                 return true;
             }
         }
