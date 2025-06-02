@@ -1,4 +1,4 @@
-package com.main.codedrill.config;
+package com.main.codedrill.component;
 
 import com.main.codedrill.model.User;
 import com.main.codedrill.service.AnalyticsService;
