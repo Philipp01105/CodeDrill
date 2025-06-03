@@ -136,6 +136,7 @@ public class CodeExecutionService {
      */
     private void startQueueProcessor() {
         queueProcessor.submit(() -> {
+            boolean wasProcessing = false;
             while (!Thread.currentThread().isInterrupted()) {
                 CompletableFuture<String> task = null;
 
@@ -147,8 +148,14 @@ public class CodeExecutionService {
 
                 if (task != null) {
                     processingQueue = true;
+                    wasProcessing = true;
                 } else {
+                    boolean previouslyProcessing = processingQueue;
                     processingQueue = false;
+                    if (previouslyProcessing && wasProcessing) {
+                        userService.setCurrentExecutions(false);
+                        wasProcessing = false;
+                    }
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
@@ -201,6 +208,7 @@ public class CodeExecutionService {
                 processNextInQueue();
             }
         } else {
+            userService.setCurrentExecutions(true);
             return addToQueueAndWait(code);
         }
     }

@@ -184,7 +184,7 @@ public class AdminController {
         }
         
         // Verify password
-        if (!userService.validatePassword(admin, password)) {
+        if (userService.validatePassword(admin, password)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Invalid password. Emergency shutdown aborted.");
             return "redirect:/admin";
         }

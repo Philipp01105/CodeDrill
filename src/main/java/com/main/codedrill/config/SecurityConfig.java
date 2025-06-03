@@ -21,15 +21,14 @@ public class SecurityConfig {
     private final CustomAuthenticationProvider authenticationProvider;
 
     @Autowired
-    public SecurityConfig(UserDetailsService userDetailsService,
-                         UserService userService,
+    public SecurityConfig(UserService userService,
                          CustomAuthenticationProvider authenticationProvider) {
         this.userService = userService;
         this.authenticationProvider = authenticationProvider;
     }
 
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+    public void configureGlobal(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(authenticationProvider);
     }
 

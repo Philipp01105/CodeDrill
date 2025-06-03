@@ -131,7 +131,7 @@ public class AuthController {
         }
         
         // For regular password changes, validate current password
-        if (!userService.validatePassword(user, currentPassword)) {
+        if (userService.validatePassword(user, currentPassword)) {
             redirectAttributes.addFlashAttribute("error", "Current password is incorrect");
             return "redirect:/change-password";
         }
