@@ -17,7 +17,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final UserDetailsService userDetailsService;
     private final UserService userService;
     private final CustomAuthenticationProvider authenticationProvider;
 
@@ -25,7 +24,6 @@ public class SecurityConfig {
     public SecurityConfig(UserDetailsService userDetailsService,
                          UserService userService,
                          CustomAuthenticationProvider authenticationProvider) {
-        this.userDetailsService = userDetailsService;
         this.userService = userService;
         this.authenticationProvider = authenticationProvider;
     }

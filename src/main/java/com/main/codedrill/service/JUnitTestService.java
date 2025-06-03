@@ -14,7 +14,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -30,9 +29,9 @@ public class JUnitTestService {
 
     /**
      * Compiles and runs JUnit tests against student code
-     * 
+     *
      * @param studentCode The student's Java code
-     * @param junitTests The JUnit tests to run against the student code
+     * @param junitTests  The JUnit tests to run against the student code
      * @return A map containing test results
      */
     public Map<String, Object> runTests(String studentCode, String junitTests) {
@@ -51,7 +50,7 @@ public class JUnitTestService {
             }
 
             Path studentFile = tempDir.resolve(className + ".java");
-            Files.write(studentFile, studentCode.getBytes(StandardCharsets.UTF_8));
+            Files.writeString(studentFile, studentCode);
 
             // Write test code to file
             String testClassName = extractClassName(junitTests);
@@ -62,7 +61,7 @@ public class JUnitTestService {
             }
 
             Path testFile = tempDir.resolve(testClassName + ".java");
-            Files.write(testFile, junitTests.getBytes(StandardCharsets.UTF_8));
+            Files.writeString(testFile, junitTests);
 
             // Compile files
             boolean compilationSuccess = compileFiles(tempDir, studentFile, testFile);
@@ -134,16 +133,7 @@ public class JUnitTestService {
     private boolean compileFiles(Path directory, Path... files) throws IOException, InterruptedException {
         List<String> command = new ArrayList<>();
 
-        // Check if we're on Windows or Unix-based system
-        boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
-
-        if (isWindows) {
-            // On Windows, we might need to use the full path to javac or ensure it's in the PATH
-            command.add("javac");
-        } else {
-            // On Unix-based systems like Ubuntu
-            command.add("javac");
-        }
+        command.add("javac");
 
         // Add classpath with JUnit
         command.add("-cp");
@@ -178,10 +168,11 @@ public class JUnitTestService {
     private TestExecutionSummary runJUnitTests(Path directory, String testClassName) throws Exception {
         // Create class loader for the compiled classes
         URL url = directory.toUri().toURL();
-        URLClassLoader classLoader = new URLClassLoader(new URL[] { url }, getClass().getClassLoader());
 
+        URLClassLoader classLoader = new URLClassLoader(new URL[]{url}, getClass().getClassLoader());
         // Load the test class
         Class<?> testClass = classLoader.loadClass(testClassName);
+
 
         // Create launcher and run tests
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()

@@ -28,11 +28,11 @@ public class ServerShutdownHandler implements ApplicationListener<ContextClosedE
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {
         LocalDateTime shutdownTime = LocalDateTime.now();
-        logger.info("Server wird heruntergefahren. Beende offene Sessions...");
+        logger.info("Server is shutting down. Closing open sessions...");
 
         // Hole alle UserAnalytics-Einträge ohne Logout-Zeit
         List<UserAnalytics> openAnalytics = userAnalyticsRepository.findByLogoutTimeIsNull();
-        logger.info("{} offene Sessions gefunden", openAnalytics.size());
+        logger.info("{} open sessions found", openAnalytics.size());
 
         for (UserAnalytics analytics : openAnalytics) {
             analytics.setLogoutTime(shutdownTime);
@@ -47,7 +47,7 @@ public class ServerShutdownHandler implements ApplicationListener<ContextClosedE
         // Speichere alle aktualisierten Einträge
         if (!openAnalytics.isEmpty()) {
             userAnalyticsRepository.saveAll(openAnalytics);
-            logger.info("Alle offenen Sessions wurden geschlossen");
+            logger.info("All open sessions have been closed and saved successfully.");
         }
     }
 }

@@ -5,7 +5,7 @@ import com.main.codedrill.service.AnalyticsService;
 import com.main.codedrill.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
@@ -16,11 +16,15 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Component
 public class AuthenticationEventListener {
 
-    @Autowired
-    private AnalyticsService analyticsService;
+    private final Logger logger = org.slf4j.LoggerFactory.getLogger(AuthenticationEventListener.class);
 
-    @Autowired
-    private UserService userService;
+    private final AnalyticsService analyticsService;
+    private final UserService userService;
+
+    public AuthenticationEventListener(AnalyticsService analyticsService, UserService userService) {
+        this.analyticsService = analyticsService;
+        this.userService = userService;
+    }
 
     @EventListener
     public void handleAuthenticationSuccess(AuthenticationSuccessEvent event) {
@@ -35,11 +39,10 @@ public class AuthenticationEventListener {
             User user = userService.findByUsername(username);
             if (user != null) {
                 analyticsService.trackUserLogin(user, session.getId(), request);
-                System.out.println("Tracked login for user: " + username);
+                logger.info("Tracked login for user: {}", username);
             }
         } catch (Exception e) {
-            System.err.println("Error tracking login: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error tracking login: {}", e.getMessage());
         }
     }
 }

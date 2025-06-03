@@ -97,7 +97,7 @@ public class CodeExecutionService {
         long containerMemoryBytes = parseMemoryLimit(memoryLimit);
         int maxByMemory = Math.max(1, (int) (availableMemory / containerMemoryBytes)); // Allow containers based on memory
 
-        int maxConcurrentExecutions = Math.min(maxByCpu*2, maxByMemory);
+        int maxConcurrentExecutions = Math.min(maxByCpu * 2, maxByMemory);
 
         // Ensure we have at least 1 concurrent execution and not more than 16
         maxConcurrentExecutions = Math.min(16, maxConcurrentExecutions);
@@ -110,7 +110,7 @@ public class CodeExecutionService {
 
     private long parseMemoryLimit(String memoryLimit) {
         if (memoryLimit == null || memoryLimit.trim().isEmpty()) {
-            return 128 * 1024 * 1024; // Default to 128MB
+            return 128 * 1024 * 1024;
         }
 
         String limit = memoryLimit.toLowerCase().trim();
@@ -122,7 +122,6 @@ public class CodeExecutionService {
         } else if (limit.endsWith("k")) {
             return Long.parseLong(limit.replace("k", "")) * 1024;
         } else {
-            // Assume bytes if no unit specified
             try {
                 return Long.parseLong(limit);
             } catch (NumberFormatException e) {
@@ -147,12 +146,11 @@ public class CodeExecutionService {
                 }
 
                 if (task != null) {
-                    // Process the task (this will be handled by the CompletableFuture logic)
                     processingQueue = true;
                 } else {
                     processingQueue = false;
                     try {
-                        Thread.sleep(100); // Wait 100ms before checking again
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         break;
@@ -174,20 +172,19 @@ public class CodeExecutionService {
         if (securityEnabled) {
             DockerAwareMaliciousCodeDetector.MaliciousCodeResult securityResult = codeDetector.analyzeCode(code);
 
-            if (securityResult.isMalicious()) {
+            if (securityResult.malicious()) {
                 String securityMessage = formatSecurityMessage(securityResult);
 
                 // Log security violation for monitoring
                 System.err.println("SECURITY VIOLATION - User: " + getCurrentUserInfo() +
-                        " - Risk Level: " + securityResult.getRiskLevel() +
-                        " - Reasons: " + securityResult.getReasons());
+                        " - Risk Level: " + securityResult.riskLevel() +
+                        " - Reasons: " + securityResult.reasons());
 
-                // In strict mode, block all malicious code
-                if (strictMode || securityResult.getRiskLevel() == DockerAwareMaliciousCodeDetector.RiskLevel.CRITICAL) {
+                // In strict mode -> block all malicious code
+                if (strictMode || securityResult.riskLevel() == DockerAwareMaliciousCodeDetector.RiskLevel.CRITICAL) {
                     return securityMessage;
                 }
 
-                // In non-strict mode, warn but continue for MEDIUM/HIGH risk
                 System.out.println("WARNING: Potentially risky code detected but execution allowed in non-strict mode");
             }
         }
@@ -196,16 +193,14 @@ public class CodeExecutionService {
             return simulateExecution(code);
         }
 
-        // Try to acquire a resource slot immediately
         if (resourceSemaphore.tryAcquire()) {
             try {
                 return executeInDocker(code);
             } finally {
                 resourceSemaphore.release();
-                processNextInQueue(); // Process next task in queue if any
+                processNextInQueue();
             }
         } else {
-            // Add to queue if resources are unavailable
             return addToQueueAndWait(code);
         }
     }
@@ -213,10 +208,10 @@ public class CodeExecutionService {
     private String formatSecurityMessage(DockerAwareMaliciousCodeDetector.MaliciousCodeResult result) {
         StringBuilder message = new StringBuilder();
         message.append("🛡️ SECURITY ALERT: Code execution blocked\n\n");
-        message.append("Risk Level: ").append(result.getRiskLevel()).append("\n");
+        message.append("Risk Level: ").append(result.riskLevel()).append("\n");
         message.append("Detected Issues:\n");
 
-        String[] reasons = result.getReasons().split(";");
+        String[] reasons = result.reasons().split(";");
         for (String reason : reasons) {
             if (!reason.trim().isEmpty()) {
                 message.append("• ").append(reason.trim()).append("\n");
@@ -234,7 +229,6 @@ public class CodeExecutionService {
 
     private String getCurrentUserInfo() {
         try {
-            // Try to get current user info, fallback to "unknown" if not available
             return userService != null ? "UserService available" : "unknown";
         } catch (Exception e) {
             return "unknown";
@@ -242,18 +236,15 @@ public class CodeExecutionService {
     }
 
     private String addToQueueAndWait(String code) {
-        CompletableFuture<String> future = new CompletableFuture<>();
 
-        // Add a task to the queue that will execute when resources become available
         CompletableFuture<String> queuedTask = CompletableFuture.supplyAsync(() -> {
             try {
-                // Wait for resource availability
                 resourceSemaphore.acquire();
                 try {
                     return executeInDocker(code);
                 } finally {
                     resourceSemaphore.release();
-                    processNextInQueue(); // Process next task in queue if any
+                    processNextInQueue();
                 }
             } catch (Exception e) {
                 return "ERROR: " + e.getMessage();
@@ -264,7 +255,6 @@ public class CodeExecutionService {
             executionQueue.offer(queuedTask);
         }
 
-        // Return the result when it's ready (with timeout)
         try {
             return queuedTask.get(timeoutSeconds * 2L, TimeUnit.SECONDS); // Allow double timeout for queued tasks
         } catch (Exception e) {
@@ -275,7 +265,6 @@ public class CodeExecutionService {
     private void processNextInQueue() {
         synchronized (queueLock) {
             if (!executionQueue.isEmpty() && !processingQueue) {
-                // Let the queue processor handle the next task
                 queueLock.notify();
             }
         }
@@ -318,7 +307,6 @@ public class CodeExecutionService {
 
             return output.toString();
         } catch (Exception e) {
-            // Cleanup container in case of error
             try {
                 new ProcessBuilder("docker", "rm", "-f", containerId).start();
             } catch (Exception cleanupEx) {
@@ -339,7 +327,6 @@ public class CodeExecutionService {
                 dockerImage
         );
 
-        // Remove empty arguments
         pb.command().removeIf(String::isEmpty);
 
         Process process = pb.start();
@@ -391,8 +378,8 @@ public class CodeExecutionService {
                                 output.append("\n");
                             }
                         }
-                    } catch (Exception e) {
-                        // Ignore parsing errors
+                    } catch (Exception ignored) {
+                        // Ignore
                     }
                 }
             }
@@ -408,7 +395,7 @@ public class CodeExecutionService {
      */
     @PreDestroy
     public void destroy() {
-        if (queueProcessor != null && !queueProcessor.isShutdown()) {
+        if (!queueProcessor.isShutdown()) {
             queueProcessor.shutdown();
             try {
                 if (!queueProcessor.awaitTermination(5, TimeUnit.SECONDS)) {
@@ -448,8 +435,8 @@ public class CodeExecutionService {
                         "(?:buffered|print)writer|randomaccessfile|nio\\.file\\.files|" +
                         "path\\.of|paths\\.get)\\s*\\.|" +
                         "\\.(?:write|delete|mkdir|createdirectories|copy|move|createfile)\\s*\\(|" +
-                        "\\.\\.[\\/\\\\]|[\\/\\\\]etc[\\/\\\\]|[\\/\\\\]proc[\\/\\\\]|" +
-                        "[\\/\\\\]sys[\\/\\\\]|[\\/\\\\]dev[\\/\\\\]|[\\/\\\\]tmp[\\/\\\\]",
+                        "\\.\\.[/\\\\]|[/\\\\]etc[/\\\\]|[/\\\\]proc[/\\\\]|" +
+                        "[/\\\\]sys[/\\\\]|[/\\\\]dev[/\\\\]|[/\\\\]tmp[/\\\\]",
                 Pattern.CASE_INSENSITIVE
         );
 
@@ -484,7 +471,7 @@ public class CodeExecutionService {
         private static final Pattern RESOURCE_ATTACK_PATTERN = Pattern.compile(
                 "(?i)while\\s*\\(\\s*true\\s*\\)|for\\s*\\(\\s*;\\s*;\\s*\\)|" +
                         "thread\\.sleep\\s*\\(\\s*0\\s*\\)|new\\s+thread|" +
-                        "executorservice|threadpool|\\bnew\\s+\\w+\\[\\s*\\d{6,}\\s*\\]|" +
+                        "executorservice|threadpool|\\bnew\\s+\\w+\\[\\s*\\d{6,}\\s*]|" +
                         "arraylist\\s*\\(\\s*\\d{6,}\\s*\\)",
                 Pattern.CASE_INSENSITIVE
         );
@@ -561,7 +548,6 @@ public class CodeExecutionService {
                 }
             }
 
-            // Additional heuristic checks
             maxRiskLevel = performHeuristicChecks(normalizedCode, maxRiskLevel, detectionReasons);
 
             boolean isMalicious = maxRiskLevel.ordinal() >= RiskLevel.MEDIUM.ordinal();
@@ -574,21 +560,18 @@ public class CodeExecutionService {
         private RiskLevel performHeuristicChecks(String code, RiskLevel currentMax, StringBuilder reasons) {
             RiskLevel maxLevel = currentMax;
 
-            // Check for suspicious string patterns that might indicate obfuscation
             if (code.matches(".*\"[^\"]*\\\\x[0-9a-fA-F]{2}[^\"]*\".*")) {
                 maxLevel = updateRiskLevel(RiskLevel.MEDIUM, maxLevel);
                 reasons.append("Hex-encoded strings detected (possible obfuscation); ");
             }
 
-            // Check for excessive nested loops (potential DoS)
             int nestedLoopCount = countNestedLoops(code);
             if (nestedLoopCount > 3) {
                 maxLevel = updateRiskLevel(RiskLevel.MEDIUM, maxLevel);
                 reasons.append("Excessive nested loops detected (DoS risk); ");
             }
 
-            // Check for large array allocations
-            if (code.matches(".*new\\s+\\w+\\[\\s*\\d{5,}\\s*\\].*")) {
+            if (code.matches(".*new\\s+\\w+\\[\\s*\\d{5,}\\s*].*")) {
                 maxLevel = updateRiskLevel(RiskLevel.MEDIUM, maxLevel);
                 reasons.append("Large array allocation detected (memory exhaustion risk); ");
             }
@@ -609,7 +592,6 @@ public class CodeExecutionService {
                     currentNesting++;
                     maxNesting = Math.max(maxNesting, currentNesting);
                 }
-                // Simple heuristic: closing braces reduce nesting
                 int openBraces = line.length() - line.replace("{", "").length();
                 int closeBraces = line.length() - line.replace("}", "").length();
                 currentNesting = Math.max(0, currentNesting + openBraces - closeBraces);
@@ -635,32 +617,15 @@ public class CodeExecutionService {
          * Enhanced code normalization
          */
         private String normalizeCode(String code) {
-            // Remove single line comments
             String normalized = code.replaceAll("//.*$", "");
-            // Remove multi-line comments but preserve structure
             normalized = normalized.replaceAll("/\\*.*?\\*/", " ");
-            // Remove string literals to avoid false positives
             normalized = normalized.replaceAll("\"[^\"]*\"", "\"STRING\"");
-            // Normalize whitespace
             normalized = normalized.replaceAll("\\s+", " ");
             return normalized.trim();
         }
 
         // Result classes
-        public static class MaliciousCodeResult {
-            private final boolean malicious;
-            private final RiskLevel riskLevel;
-            private final String reasons;
-
-            public MaliciousCodeResult(boolean malicious, RiskLevel riskLevel, String reasons) {
-                this.malicious = malicious;
-                this.riskLevel = riskLevel;
-                this.reasons = reasons;
-            }
-
-            public boolean isMalicious() { return malicious; }
-            public RiskLevel getRiskLevel() { return riskLevel; }
-            public String getReasons() { return reasons; }
+        public record MaliciousCodeResult(boolean malicious, RiskLevel riskLevel, String reasons) {
 
             @Override
             public String toString() {

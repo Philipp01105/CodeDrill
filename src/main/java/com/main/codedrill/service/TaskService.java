@@ -2,6 +2,7 @@ package com.main.codedrill.service;
 
 import com.main.codedrill.model.Task;
 import com.main.codedrill.model.User;
+import com.main.codedrill.repository.TaskAttemptRepository;
 import com.main.codedrill.repository.TaskRepository;
 import com.main.codedrill.repository.UserTaskCompletionRepository;
 import jakarta.transaction.Transactional;
@@ -16,14 +17,19 @@ import java.util.stream.Collectors;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final UserTaskCompletionRepository userTaskCompletionRepository;
+    private final TaskAttemptRepository taskAttemptRepository;
 
     @Autowired
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository,
+                       UserTaskCompletionRepository userTaskCompletionRepository,
+                       TaskAttemptRepository taskAttemptRepository) {
         this.taskRepository = taskRepository;
+        this.userTaskCompletionRepository = userTaskCompletionRepository;
+        this.taskAttemptRepository = taskAttemptRepository;
     }
 
-    @Autowired
-    private UserTaskCompletionRepository userTaskCompletionRepository;
+
 
     public List<Task> getAllTasks() {
         return taskRepository.findAllByOrderByCreatedAtDesc();
@@ -85,8 +91,10 @@ public class TaskService {
             if (user.isAdmin() || 
                 (taskToDelete.getCreatedBy() != null && taskToDelete.getCreatedBy().equals(user))) {
 
-                //userTaskCompletionRepository.deleteByTask(taskToDelete);
-
+                taskToDelete.getTags().clear();
+                taskRepository.save(taskToDelete);
+                taskAttemptRepository.deleteByTask(taskToDelete);
+                userTaskCompletionRepository.deleteByTask(taskToDelete);
                 taskRepository.delete(taskToDelete);
                 return true;
             }

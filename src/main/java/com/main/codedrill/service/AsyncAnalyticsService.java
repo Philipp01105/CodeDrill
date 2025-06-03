@@ -2,7 +2,8 @@ package com.main.codedrill.service;
 
 import com.main.codedrill.model.UserAnalytics;
 import com.main.codedrill.repository.UserAnalyticsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,22 +16,27 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class AsyncAnalyticsService {
 
-    @Autowired
-    private UserAnalyticsRepository userAnalyticsRepository;
 
-    @Autowired
-    private AnalyticsService analyticsService;
+    private final Logger logger = LoggerFactory.getLogger(AsyncAnalyticsService.class);
+    private final UserAnalyticsRepository userAnalyticsRepository;
+    private final AnalyticsService analyticsService;
+
+    public AsyncAnalyticsService(UserAnalyticsRepository userAnalyticsRepository, AnalyticsService analyticsService) {
+        this.userAnalyticsRepository = userAnalyticsRepository;
+        this.analyticsService = analyticsService;
+    }
 
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public CompletableFuture<Boolean> trackUserLogoutAsync(String sessionId) {
+    public void trackUserLogoutAsync(String sessionId) {
         try {
             if (sessionId == null || sessionId.isEmpty()) {
-                System.err.println("Warning: Attempted to track logout with null or empty sessionId");
-                return CompletableFuture.completedFuture(false);
+                logger.error("Warning: Attempted to track logout with null or empty sessionId");
+                CompletableFuture.completedFuture(false);
+                return;
             }
 
-            System.out.println("Starting async logout tracking for session: " + sessionId);
+            logger.info("Starting async logout tracking for session: {}", sessionId);
             Optional<UserAnalytics> analyticsOpt = userAnalyticsRepository.findBySessionId(sessionId);
 
             if (analyticsOpt.isPresent()) {
@@ -41,16 +47,15 @@ public class AsyncAnalyticsService {
                 // Update system analytics with session time
                 analyticsService.updateSystemAnalyticsForLogout(analytics);
 
-                System.out.println("Async logout tracking completed for session: " + sessionId);
-                return CompletableFuture.completedFuture(true);
+                logger.info("Async logout tracking completed for session: {}", sessionId);
+                CompletableFuture.completedFuture(true);
             } else {
-                System.out.println("No analytics record found for session: " + sessionId);
-                return CompletableFuture.completedFuture(false);
+                logger.info("No analytics record found for session: {}", sessionId);
+                CompletableFuture.completedFuture(false);
             }
         } catch (Exception e) {
-            System.err.println("Error in async logout tracking: " + e.getMessage());
-            e.printStackTrace();
-            return CompletableFuture.failedFuture(e);
+            logger.error("Error in async logout tracking: {}", e.getMessage());
+            CompletableFuture.failedFuture(e);
         }
     }
 }

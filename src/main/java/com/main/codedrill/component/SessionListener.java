@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
@@ -17,8 +16,11 @@ public class SessionListener implements HttpSessionListener {
 
     private static final Logger logger = LoggerFactory.getLogger(SessionListener.class);
 
-    @Autowired
-    private AsyncAnalyticsService asyncAnalyticsService;
+    private final AsyncAnalyticsService asyncAnalyticsService;
+
+    public SessionListener(AsyncAnalyticsService asyncAnalyticsService) {
+        this.asyncAnalyticsService = asyncAnalyticsService;
+    }
 
     private volatile boolean isShuttingDown = false;
 
@@ -39,11 +41,11 @@ public class SessionListener implements HttpSessionListener {
                 return;
             }
 
-            // Use the injected service directly when possible
+            // Use the service directly when possible
             if (asyncAnalyticsService != null) {
                 asyncAnalyticsService.trackUserLogoutAsync(sessionId);
             } else {
-                // Fallback to WebApplicationContext if service wasn't injected
+                // Fallback to WebApplicationContext
                 ApplicationContext context = WebApplicationContextUtils
                         .getWebApplicationContext(se.getSession().getServletContext());
 

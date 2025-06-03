@@ -3,7 +3,6 @@ package com.main.codedrill.controller;
 import com.main.codedrill.service.UserService;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -15,8 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class CustomErrorController implements ErrorController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public CustomErrorController(UserService userService) {
+        this.userService = userService;
+    }
 
     @RequestMapping("/error")
     public String handleError(HttpServletRequest request, Model model) {

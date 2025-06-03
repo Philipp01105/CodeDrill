@@ -8,6 +8,8 @@ import com.main.codedrill.repository.UserTaskCompletionRepository;
 import com.main.codedrill.repository.TaskAttemptRepository;
 import com.main.codedrill.repository.UserAnalyticsRepository;
 import com.main.codedrill.repository.TaskRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,8 @@ public class UserService {
     private final TaskAttemptRepository taskAttemptRepository;
     private final UserAnalyticsRepository userAnalyticsRepository;
     private final TaskRepository taskRepository;
+
+    private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     // Track current executions
     private boolean currentExecutions = false;
@@ -129,7 +133,7 @@ public class UserService {
                 token.getToken()
             );
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error sending verification email to user: {} - error: {}", savedUser.getEmail(), e.getMessage());
         }
 
         return savedUser;
@@ -271,29 +275,22 @@ public class UserService {
             if (userOpt.isPresent() && !userOpt.get().isAdmin()) {
                 User userToDelete = userOpt.get();
 
-                // First delete all UserTaskCompletions of the user
+                verificationTokenRepository.delete(verificationTokenRepository.findByUser(userToDelete));
+
                 userTaskCompletionRepository.deleteAll(userTaskCompletionRepository.findByUser(userToDelete));
 
-                // Delete all TaskAttempts of the user
                 taskAttemptRepository.deleteAll(taskAttemptRepository.findByUser(userToDelete));
 
-                // Delete all UserAnalytics of the user
                 userAnalyticsRepository.deleteAll(userAnalyticsRepository.findByUser(userToDelete));
 
-                // Delete all Tasks associated with the user
                 taskRepository.deleteAll(taskRepository.findBycreatedBy(userToDelete));
 
-                // Now delete the user itself
                 userRepository.delete(userToDelete);
                 return true;
             }
         }
 
         return false;
-    }
-
-    public User getCurrentUser(String username) {
-        return userRepository.findByUsername(username).orElse(null);
     }
 
     /**

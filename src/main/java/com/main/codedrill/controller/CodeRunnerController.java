@@ -79,8 +79,8 @@ public class CodeRunnerController {
                 return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(response);
             }
 
-            boolean outputCorrect = false;
-            boolean testsPass = false;
+            boolean outputCorrect;
+            boolean testsPass;
 
             // Check output if expected output is provided
             if (task.getExpectedOutput() != null && !task.getExpectedOutput().trim().isEmpty()) {

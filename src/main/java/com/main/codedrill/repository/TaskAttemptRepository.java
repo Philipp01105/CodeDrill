@@ -65,4 +65,6 @@ public interface TaskAttemptRepository extends JpaRepository<TaskAttempt, Long> 
     boolean existsByUserAndTaskAndSuccessful(User user, Task task, boolean b);
 
     List<TaskAttempt> findByUserAndTaskAndSuccessful(User user, Task task, boolean successful);
+
+    void deleteByTask(Task taskToDelete);
 }
