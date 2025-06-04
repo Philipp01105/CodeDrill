@@ -41,17 +41,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         User user = userOptional.get();
 
-        // Check if the user is verified
         if (!user.isEnabled()) {
             throw new DisabledException("Your account is not verified. Please check your email to verify your account.");
         }
 
-        // Validate password
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new BadCredentialsException("Invalid username or password");
         }
 
-        // Create authorities based on user roles
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(user.getRole()));
 

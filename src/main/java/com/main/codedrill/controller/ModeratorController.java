@@ -35,11 +35,9 @@ public class ModeratorController {
             return "redirect:/login";
         }
         
-        // Get tasks created by current user
         List<Task> userTasks = taskService.getTasksByUser(currentUser);
         int userTaskCount = userTasks.size();
         
-        // Get recent tasks (up to 5)
         List<Task> recentTasks = userTasks.stream()
                 .limit(5)
                 .toList();
@@ -51,13 +49,11 @@ public class ModeratorController {
         return "moderator/dashboard";
     }
 
-    // Moderator dashboard for task management
     @GetMapping("/tasks")
     public String moderatorTasks(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = userService.findByUsername(auth.getName());
 
-        // Admin sees all tasks, moderators see only their own
         List<Task> tasks;
         if (currentUser.isAdmin()) {
             tasks = taskService.getAllTasks();
@@ -89,7 +85,6 @@ public class ModeratorController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = userService.findByUsername(auth.getName());
 
-        // Check if user can edit this task (creator or admin)
         if (currentUser.isAdmin() ||
                 (task.getCreatedBy() != null && task.getCreatedBy().equals(currentUser))) {
 
@@ -108,10 +103,8 @@ public class ModeratorController {
         User currentUser = userService.findByUsername(auth.getName());
 
         if (task.getId() == null) {
-            // New task
             taskService.createTask(task, currentUser);
         } else {
-            // Update existing task
             taskService.updateTask(task, currentUser);
         }
 

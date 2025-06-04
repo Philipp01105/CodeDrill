@@ -1,16 +1,10 @@
-// Dark mode functionality for CodeDrill
-// This script handles toggling between light and dark modes and persists the user's preference
-
-// Check for saved theme preference or use the system preference
 function getThemePreference() {
-    // Check if theme is stored in localStorage
     const storedTheme = localStorage.getItem('theme');
 
     if (storedTheme) {
         return storedTheme;
     }
 
-    // If no stored preference, check system preference
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
@@ -22,13 +16,10 @@ function applyTheme(theme) {
         document.documentElement.classList.remove('dark');
     }
 
-    // Store the preference
     localStorage.setItem('theme', theme);
 
-    // Update main toggle button state if it exists
     updateToggleButton('theme-toggle', theme);
 
-    // Update mobile toggle button state if it exists
     updateToggleButton('mobile-theme-toggle', theme);
 }
 
@@ -38,7 +29,6 @@ function updateToggleButton(buttonId, theme) {
     if (toggleButton) {
         toggleButton.setAttribute('aria-checked', theme === 'dark');
 
-        // Update the icon
         const moonIcon = toggleButton.querySelector('.moon-icon');
         const sunIcon = toggleButton.querySelector('.sun-icon');
 
@@ -63,16 +53,13 @@ function toggleTheme() {
 
 // Initialize theme when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Apply the theme
     applyTheme(getThemePreference());
 
-    // Add event listener to main toggle button if it exists
     const toggleButton = document.getElementById('theme-toggle');
     if (toggleButton) {
         toggleButton.addEventListener('click', toggleTheme);
     }
 
-    // Add event listener to mobile toggle button if it exists
     const mobileToggleButton = document.getElementById('mobile-theme-toggle');
     if (mobileToggleButton) {
         mobileToggleButton.addEventListener('click', toggleTheme);

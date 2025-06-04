@@ -58,8 +58,7 @@ public class VerificationController {
             return "redirect:/resend-verification";
         }
 
-        // Create a new token and send email
-        VerificationToken token = userService.generateNewVerificationToken(user);
+         VerificationToken token = userService.generateNewVerificationToken(user);
         try {
             emailService.sendVerificationEmail(
                 user.getEmail(),

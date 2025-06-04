@@ -38,10 +38,8 @@ public class JUnitTestService {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            // Create temporary directory for compilation
-            Path tempDir = Files.createTempDirectory("junit-test");
+             Path tempDir = Files.createTempDirectory("junit-test");
 
-            // Write student code to file
             String className = extractClassName(studentCode);
             if (className == null) {
                 result.put("success", false);
@@ -52,8 +50,7 @@ public class JUnitTestService {
             Path studentFile = tempDir.resolve(className + ".java");
             Files.writeString(studentFile, studentCode);
 
-            // Write test code to file
-            String testClassName = extractClassName(junitTests);
+             String testClassName = extractClassName(junitTests);
             if (testClassName == null) {
                 result.put("success", false);
                 result.put("message", "Could not determine class name from test code");
@@ -63,7 +60,6 @@ public class JUnitTestService {
             Path testFile = tempDir.resolve(testClassName + ".java");
             Files.writeString(testFile, junitTests);
 
-            // Compile files
             boolean compilationSuccess = compileFiles(tempDir, studentFile, testFile);
             if (!compilationSuccess) {
                 result.put("success", false);
@@ -71,10 +67,8 @@ public class JUnitTestService {
                 return result;
             }
 
-            // Run tests
             TestExecutionSummary summary = runJUnitTests(tempDir, testClassName);
 
-            // Process results
             result.put("success", true);
             result.put("testsSucceeded", summary.getTestsSucceededCount());
             result.put("testsFailed", summary.getTestsFailedCount());
@@ -82,8 +76,7 @@ public class JUnitTestService {
             result.put("totalTests", summary.getTestsFoundCount());
             result.put("allTestsPassed", summary.getTestsFailedCount() == 0 && summary.getTestsSucceededCount() > 0);
 
-            // Add failure details if any
-            if (summary.getTestsFailedCount() > 0) {
+             if (summary.getTestsFailedCount() > 0) {
                 List<Map<String, String>> failures = new ArrayList<>();
                 summary.getFailures().forEach(failure -> {
                     Map<String, String> failureInfo = new HashMap<>();
@@ -99,7 +92,6 @@ public class JUnitTestService {
                 result.put("failures", failures);
             }
 
-            // Clean up
             deleteDirectory(tempDir.toFile());
 
             return result;
@@ -118,8 +110,7 @@ public class JUnitTestService {
      * Extract class name from Java code
      */
     private String extractClassName(String code) {
-        // Simple regex to find class name
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("public\\s+class\\s+(\\w+)");
+         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("public\\s+class\\s+(\\w+)");
         java.util.regex.Matcher matcher = pattern.matcher(code);
         if (matcher.find()) {
             return matcher.group(1);
@@ -135,20 +126,16 @@ public class JUnitTestService {
 
         command.add("javac");
 
-        // Add classpath with JUnit
         command.add("-cp");
         command.add(System.getProperty("java.class.path"));
 
-        // Add files to compile
         for (Path file : files) {
-            // Ensure paths are normalized for the current OS
             command.add(file.normalize().toString());
         }
 
         ProcessBuilder pb = new ProcessBuilder(command);
         pb.directory(directory.toFile());
 
-        // Redirect error stream to output stream to capture compilation errors
         pb.redirectErrorStream(true);
 
         Process process = pb.start();
@@ -166,15 +153,12 @@ public class JUnitTestService {
      * Run JUnit tests
      */
     private TestExecutionSummary runJUnitTests(Path directory, String testClassName) throws Exception {
-        // Create class loader for the compiled classes
         URL url = directory.toUri().toURL();
 
         URLClassLoader classLoader = new URLClassLoader(new URL[]{url}, getClass().getClassLoader());
-        // Load the test class
         Class<?> testClass = classLoader.loadClass(testClassName);
 
 
-        // Create launcher and run tests
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
                 .selectors(selectClass(testClass))
                 .build();

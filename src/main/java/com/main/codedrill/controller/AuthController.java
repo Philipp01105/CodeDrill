@@ -45,8 +45,7 @@ public class AuthController {
                            Model model, 
                            RedirectAttributes redirectAttributes) {
 
-        
-        // Validate form
+
         if (!password.equals(confirmPassword)) {
             model.addAttribute("error", "Passwords do not match");
             return "register";
@@ -56,22 +55,19 @@ public class AuthController {
             model.addAttribute("error", "Password must be at least 6 characters");
             return "register";
         }
-        
-        // Basic email validation
+
         if (!email.contains("@") || !email.contains(".")) {
             model.addAttribute("error", "Please enter a valid email address");
             return "register";
         }
 
-        // Attempt to create user
         User user = userService.registerUser(username, password, fullName, email);
 
         if (user == null) {
             model.addAttribute("error", "Username or email already exists");
             return "register";
         }
-        
-        // Registration successful
+
         redirectAttributes.addFlashAttribute("registrationSuccess", true);
         redirectAttributes.addFlashAttribute("verificationEmailSent", true);
         redirectAttributes.addFlashAttribute("email", email);
@@ -105,22 +101,18 @@ public class AuthController {
         if (user == null) {
             return "redirect:/login";
         }
-        
-        // Check if passwords match
+
         if (!newPassword.equals(confirmPassword)) {
             redirectAttributes.addFlashAttribute("error", "New passwords do not match");
             return "redirect:/change-password";
         }
-        
-        // Validate new password
+
         if (newPassword.length() < 6) {
             redirectAttributes.addFlashAttribute("error", "Password must be at least 6 characters");
             return "redirect:/change-password";
         }
-        
-        // First check if user is using a temporary password
+
         if (user.isUsingTempPassword()) {
-            // Skip current password validation for temporary passwords
             if (userService.updatePassword(user, newPassword)) {
                 redirectAttributes.addFlashAttribute("success", "Password updated successfully");
                 return "redirect:/";
@@ -129,14 +121,12 @@ public class AuthController {
                 return "redirect:/change-password";
             }
         }
-        
-        // For regular password changes, validate current password
+
         if (userService.validatePassword(user, currentPassword)) {
             redirectAttributes.addFlashAttribute("error", "Current password is incorrect");
             return "redirect:/change-password";
         }
-        
-        // Update password
+
         if (userService.updatePassword(user, newPassword)) {
             redirectAttributes.addFlashAttribute("success", "Password updated successfully");
             return "redirect:/";

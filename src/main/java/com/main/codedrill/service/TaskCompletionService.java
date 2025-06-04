@@ -26,13 +26,11 @@ public class TaskCompletionService {
         if (user == null || task == null) {
             return null;
         }
-        
-        // Check if already completed
+
         if (completionRepository.existsByUserAndTask(user, task)) {
             return completionRepository.findByUserAndTask(user, task).orElse(null);
         }
-        
-        // Create new completion
+
         UserTaskCompletion completion = new UserTaskCompletion(user, task);
         return completionRepository.save(completion);
     }

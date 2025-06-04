@@ -30,21 +30,18 @@ public class ServerShutdownHandler implements ApplicationListener<ContextClosedE
         LocalDateTime shutdownTime = LocalDateTime.now();
         logger.info("Server is shutting down. Closing open sessions...");
 
-        // Hole alle UserAnalytics-Einträge ohne Logout-Zeit
         List<UserAnalytics> openAnalytics = userAnalyticsRepository.findByLogoutTimeIsNull();
         logger.info("{} open sessions found", openAnalytics.size());
 
         for (UserAnalytics analytics : openAnalytics) {
             analytics.setLogoutTime(shutdownTime);
 
-            // Berechne die Sitzungsdauer
             if (analytics.getLoginTime() != null) {
                 Duration timeSpent = Duration.between(analytics.getLoginTime(), shutdownTime);
                 analytics.setTimeSpentSeconds(timeSpent.getSeconds());
             }
         }
 
-        // Speichere alle aktualisierten Einträge
         if (!openAnalytics.isEmpty()) {
             userAnalyticsRepository.saveAll(openAnalytics);
             logger.info("All open sessions have been closed and saved successfully.");

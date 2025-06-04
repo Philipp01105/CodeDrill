@@ -43,7 +43,6 @@ public class AnalyticsService {
         UserAnalytics userAnalyticsT = new UserAnalytics(user, sessionId, browserInfo, deviceType, ipAddress);
         userAnalyticsRepository.save(userAnalyticsT);
 
-        // Update system analytics
         updateSystemAnalyticsForLogin(user, browserInfo, deviceType);
 
     }
@@ -56,7 +55,6 @@ public class AnalyticsService {
             analytics.setLogoutTime(LocalDateTime.now());
             userAnalyticsRepository.save(analytics);
 
-            // Update system analytics with session time
             updateSystemAnalyticsForLogout(analytics);
         }
     }
@@ -70,7 +68,6 @@ public class AnalyticsService {
             userAnalyticsRepository.save(analytics);
         }
 
-        // Update system analytics
         updateSystemAnalyticsForTaskView();
     }
 
@@ -80,21 +77,16 @@ public class AnalyticsService {
         attempt.setErrorMessage(errorMessage);
         taskAttemptRepository.save(attempt);
 
-        // Update user analytics
         Optional<UserAnalytics> analyticsOpt = userAnalyticsRepository.findBySessionId(sessionId);
         if (analyticsOpt.isPresent()) {
             UserAnalytics analytics = analyticsOpt.get();
             analytics.incrementTasksAttempted();
 
-            if (successful) {
-                // Prüfe, ob der Benutzer die Aufgabe bereits erfolgreich gelöst hat
-                // Beachte: Der aktuelle Versuch ist bereits gespeichert, daher muss der Schwellenwert 1 sein
-                long previousSuccessfulAttempts = taskAttemptRepository.findByUserAndTaskAndSuccessful(user, task, true)
+            if (successful) {long previousSuccessfulAttempts = taskAttemptRepository.findByUserAndTaskAndSuccessful(user, task, true)
                         .stream()
                         .filter(att -> !att.getId().equals(attempt.getId()))
                         .count();
 
-                // Inkrementiere nur, wenn es kein früherer erfolgreicher Versuch existiert
                 if (previousSuccessfulAttempts == 0) {
                     analytics.incrementTasksCompleted();
                 }
@@ -103,7 +95,6 @@ public class AnalyticsService {
             userAnalyticsRepository.save(analytics);
         }
 
-        // Update system analytics
         updateSystemAnalyticsForTaskAttempt(successful);
     }
 
@@ -111,16 +102,13 @@ public class AnalyticsService {
     public Map<String, Object> getUserPerformanceMetrics(User user) {
         Map<String, Object> metrics = new HashMap<>();
 
-        // Get user's analytics data
         List<UserAnalytics> userAnalyticsList = userAnalyticsRepository.findByUserOrderByLoginTimeDesc(user);
 
-        // Calculate total time spent
         long totalTimeSpent = userAnalyticsList.stream()
                 .filter(ua -> ua.getTimeSpentSeconds() != null)
                 .mapToLong(UserAnalytics::getTimeSpentSeconds)
                 .sum();
 
-        // Calculate total tasks viewed, attempted, and completed
         int totalTasksViewed = userAnalyticsList.stream()
                 .filter(ua -> ua.getTasksViewed() != null)
                 .mapToInt(UserAnalytics::getTasksViewed)
@@ -136,10 +124,8 @@ public class AnalyticsService {
                 .mapToInt(UserAnalytics::getTasksCompleted)
                 .sum();
 
-        // Calculate success rate
         double successRate = totalTasksAttempted > 0 ? (double) totalTasksCompleted / totalTasksAttempted : 0;
 
-        // Get most attempted tasks
         List<Object[]> mostAttemptedTasks = taskAttemptRepository.findMostAttemptedTasksByUser(user);
         List<Map<String, Object>> topTasks = new ArrayList<>();
 
@@ -156,10 +142,8 @@ public class AnalyticsService {
             }
         }
 
-        // Get user activity data for the past 7 days
         Map<String, Object> activityData = getUserActivityOverTime(user, 7);
 
-        // Add metrics to the result map
         metrics.put("totalTimeSpent", totalTimeSpent);
         metrics.put("totalTasksViewed", totalTasksViewed);
         metrics.put("totalTasksAttempted", totalTasksAttempted);
@@ -186,21 +170,17 @@ public class AnalyticsService {
         LocalDateTime endDate = LocalDateTime.now();
         LocalDateTime startDate = endDate.minusDays(days);
 
-        // Get task attempts within the date range
         List<TaskAttempt> attempts = taskAttemptRepository.findByUserAndAttemptTimeBetween(user, startDate, endDate);
 
-        // Prepare data structures for the chart
         List<String> labels = new ArrayList<>();
         List<Integer> viewedData = new ArrayList<>();
         List<Integer> attemptedData = new ArrayList<>();
         List<Integer> completedData = new ArrayList<>();
 
-        // Create a map to store counts for each day
         Map<LocalDate, Integer> viewedByDay = new HashMap<>();
         Map<LocalDate, Integer> attemptedByDay = new HashMap<>();
         Map<LocalDate, Integer> completedByDay = new HashMap<>();
 
-        // Initialize with zeros for all days
         for (int i = 0; i < days; i++) {
             LocalDate date = LocalDate.now().minusDays(i);
             viewedByDay.put(date, 0);
@@ -208,50 +188,40 @@ public class AnalyticsService {
             completedByDay.put(date, 0);
         }
 
-        // Count attempts by day
         for (TaskAttempt attempt : attempts) {
             LocalDate attemptDate = attempt.getAttemptTime().toLocalDate();
 
-            // Only include dates within our range
             if (attemptDate.isAfter(startDate.toLocalDate().minusDays(1)) &&
                     attemptDate.isBefore(endDate.toLocalDate().plusDays(1))) {
 
-                // Increment the attempted count for this day
                 attemptedByDay.put(attemptDate, attemptedByDay.getOrDefault(attemptDate, 0) + 1);
 
-                // If successful, increment the completed count
                 if (attempt.getSuccessful() != null && attempt.getSuccessful()) {
                     completedByDay.put(attemptDate, completedByDay.getOrDefault(attemptDate, 0) + 1);
                 }
             }
         }
 
-        // Get user analytics data for task views
         List<UserAnalytics> userAnalytics = userAnalyticsRepository.findByLoginTimeBetween(startDate, endDate);
         userAnalytics = userAnalytics.stream()
                 .filter(ua -> ua.getUser().getId().equals(user.getId()))
                 .toList();
 
-        // Count views by day
         for (UserAnalytics ua : userAnalytics) {
             LocalDate loginDate = ua.getLoginTime().toLocalDate();
 
-            // Only include dates within our range
             if (loginDate.isAfter(startDate.toLocalDate().minusDays(1)) &&
                     loginDate.isBefore(endDate.toLocalDate().plusDays(1))) {
 
-                // Add the number of tasks viewed in this session
                 int tasksViewed = ua.getTasksViewed() != null ? ua.getTasksViewed() : 0;
                 viewedByDay.put(loginDate, viewedByDay.getOrDefault(loginDate, 0) + tasksViewed);
             }
         }
 
-        // Sort the dates and prepare the chart data
         List<LocalDate> sortedDates = new ArrayList<>(viewedByDay.keySet());
         Collections.sort(sortedDates);
 
         for (LocalDate date : sortedDates) {
-            // Format the date as "MMM d" (e.g., "Jan 1")
             String formattedDate = date.getMonth().toString().substring(0, 3) + " " + date.getDayOfMonth();
             labels.add(formattedDate);
 
@@ -260,7 +230,6 @@ public class AnalyticsService {
             completedData.add(completedByDay.get(date));
         }
 
-        // Add the data to the result map
         activityData.put("labels", labels);
         activityData.put("viewedData", viewedData);
         activityData.put("attemptedData", attemptedData);
@@ -277,12 +246,10 @@ public class AnalyticsService {
         LocalDate thirtyDaysAgo = today.minusDays(30);
         LocalDate sevenDaysAgo = today.minusDays(7);
 
-        // Get system analytics for different time periods
         Optional<SystemAnalytics> todayAnalyticsOpt = systemAnalyticsRepository.findByDate(today);
         List<SystemAnalytics> last7DaysAnalytics = systemAnalyticsRepository.findByDateBetween(sevenDaysAgo, today);
         List<SystemAnalytics> last30DaysAnalytics = systemAnalyticsRepository.findByDateBetween(thirtyDaysAgo, today);
 
-        // Today's metrics
         SystemAnalytics todayAnalytics = todayAnalyticsOpt.orElse(new SystemAnalytics());
         metrics.put("todayActiveUsers", todayAnalytics.getActiveUsers());
         metrics.put("todayNewUsers", todayAnalytics.getNewUsers());
@@ -290,7 +257,6 @@ public class AnalyticsService {
         metrics.put("todayTaskAttempts", todayAnalytics.getTotalTaskAttempts());
         metrics.put("todayTaskCompletions", todayAnalytics.getTotalTaskCompletions());
 
-        // Last 7 days metrics
         metrics.put("last7DaysActiveUsers", systemAnalyticsRepository.sumActiveUsersBetween(sevenDaysAgo, today));
         metrics.put("last7DaysNewUsers", systemAnalyticsRepository.sumNewUsersBetween(sevenDaysAgo, today));
         metrics.put("last7DaysTaskViews", systemAnalyticsRepository.sumTaskViewsBetween(sevenDaysAgo, today));
@@ -299,7 +265,6 @@ public class AnalyticsService {
         metrics.put("last7DaysAvgSessionTime", systemAnalyticsRepository.avgSessionTimeBetween(sevenDaysAgo, today));
         metrics.put("last7DaysSuccessRate", systemAnalyticsRepository.avgSuccessRateBetween(sevenDaysAgo, today));
 
-        // Last 30 days metrics
         metrics.put("last30DaysActiveUsers", systemAnalyticsRepository.sumActiveUsersBetween(thirtyDaysAgo, today));
         metrics.put("last30DaysNewUsers", systemAnalyticsRepository.sumNewUsersBetween(thirtyDaysAgo, today));
         metrics.put("last30DaysTaskViews", systemAnalyticsRepository.sumTaskViewsBetween(thirtyDaysAgo, today));
@@ -308,19 +273,16 @@ public class AnalyticsService {
         metrics.put("last30DaysAvgSessionTime", systemAnalyticsRepository.avgSessionTimeBetween(thirtyDaysAgo, today));
         metrics.put("last30DaysSuccessRate", systemAnalyticsRepository.avgSuccessRateBetween(thirtyDaysAgo, today));
 
-        // Browser usage for last 30 days
         metrics.put("chromeUsers", systemAnalyticsRepository.sumChromeUsersBetween(thirtyDaysAgo, today));
         metrics.put("firefoxUsers", systemAnalyticsRepository.sumFirefoxUsersBetween(thirtyDaysAgo, today));
         metrics.put("safariUsers", systemAnalyticsRepository.sumSafariUsersBetween(thirtyDaysAgo, today));
         metrics.put("edgeUsers", systemAnalyticsRepository.sumEdgeUsersBetween(thirtyDaysAgo, today));
         metrics.put("otherBrowsers", systemAnalyticsRepository.sumOtherBrowsersBetween(thirtyDaysAgo, today));
 
-        // Device type usage for last 30 days
         metrics.put("desktopUsers", systemAnalyticsRepository.sumDesktopUsersBetween(thirtyDaysAgo, today));
         metrics.put("mobileUsers", systemAnalyticsRepository.sumMobileUsersBetween(thirtyDaysAgo, today));
         metrics.put("tabletUsers", systemAnalyticsRepository.sumTabletUsersBetween(thirtyDaysAgo, today));
 
-        // Trend data for charts
         metrics.put("activeUsersTrend", systemAnalyticsRepository.findActiveUsersTrendBetween(thirtyDaysAgo, today));
         metrics.put("taskCompletionsTrend", systemAnalyticsRepository.findTaskCompletionsTrendBetween(thirtyDaysAgo, today));
 
@@ -331,22 +293,17 @@ public class AnalyticsService {
     public Map<String, Object> getTaskAnalytics(Task task) {
         Map<String, Object> analytics = new HashMap<>();
 
-        // Get all attempts for this task
         List<TaskAttempt> attempts = taskAttemptRepository.findByTask(task);
 
-        // Calculate total attempts and successful attempts
         long totalAttempts = attempts.size();
         long successfulAttempts = attempts.stream()
                 .filter(ta -> ta.getSuccessful() != null && ta.getSuccessful())
                 .count();
 
-        // Calculate success rate
         double successRate = totalAttempts > 0 ? (double) successfulAttempts / totalAttempts : 0;
 
-        // Calculate average time spent
         Double averageTimeSpent = taskAttemptRepository.averageTimeSpentByTask(task);
 
-        // Get users with most attempts on this task
         List<Object[]> userAttempts = taskAttemptRepository.findUsersByMostAttemptsOnTask(task);
         List<Map<String, Object>> topUsers = new ArrayList<>();
 
@@ -363,7 +320,6 @@ public class AnalyticsService {
             }
         }
 
-        // Add analytics to the result map
         analytics.put("totalAttempts", totalAttempts);
         analytics.put("successfulAttempts", successfulAttempts);
         analytics.put("successRate", successRate);
@@ -431,7 +387,6 @@ public class AnalyticsService {
         SystemAnalytics systemAnalytics = systemAnalyticsRepository.findByDate(today)
                 .orElse(new SystemAnalytics());
 
-        // Inkrementiere nur, wenn es der erste Login in 24 Stunden ist
         if (isFirstLoginIn24Hours(user)) {
             systemAnalytics.incrementActiveUsers();
             System.out.println("Active user incremented for: " + user.getUsername());
@@ -440,7 +395,6 @@ public class AnalyticsService {
         }
         systemAnalytics.incrementTotalSessions();
 
-        // Browser-Zähler aktualisieren
         if ("Chrome".equals(browserInfo)) {
             systemAnalytics.incrementChromeUsers();
         } else if ("Firefox".equals(browserInfo)) {
@@ -453,7 +407,6 @@ public class AnalyticsService {
             systemAnalytics.incrementOtherBrowsers();
         }
 
-        // Gerätetyp-Zähler aktualisieren
         if ("Desktop".equals(deviceType)) {
             systemAnalytics.incrementDesktopUsers();
         } else if ("Mobile".equals(deviceType)) {
@@ -487,14 +440,12 @@ public class AnalyticsService {
         SystemAnalytics systemAnalytics = systemAnalyticsRepository.findByDate(today)
                 .orElse(new SystemAnalytics());
 
-        // Update average session time
         Long currentAvg = systemAnalytics.getAverageSessionTimeSeconds();
         Integer totalSessions = systemAnalytics.getTotalSessions();
 
         if (currentAvg == null || totalSessions == null || totalSessions <= 1) {
             systemAnalytics.setAverageSessionTimeSeconds(userAnalytics.getTimeSpentSeconds());
         } else {
-            // Calculate new average: ((oldAvg * (n-1)) + newValue) / n
             Long newAvg = ((currentAvg * (totalSessions - 1)) + userAnalytics.getTimeSpentSeconds()) / totalSessions;
             systemAnalytics.setAverageSessionTimeSeconds(newAvg);
         }

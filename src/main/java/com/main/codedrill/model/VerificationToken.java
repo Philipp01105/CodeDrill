@@ -23,19 +23,18 @@ public class VerificationToken {
     private LocalDateTime expiryDate;
 
     public VerificationToken() {
-        // Default constructor
     }
 
     public VerificationToken(User user) {
         this.user = user;
         token = UUID.randomUUID().toString();
-        expiryDate = LocalDateTime.now().plusDays(1); // Token expires after 24 hours
+        expiryDate = LocalDateTime.now().plusDays(1);
     }
 
     public VerificationToken(User user, String token) {
         this.user = user;
         this.token = token;
-        expiryDate = LocalDateTime.now().plusDays(1); // Token expires after 24 hours
+        expiryDate = LocalDateTime.now().plusDays(1);
     }
 
     // Getters and Setters
@@ -71,7 +70,6 @@ public class VerificationToken {
         this.expiryDate = expiryDate;
     }
 
-    // Helper methods
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiryDate);
     }

@@ -41,11 +41,9 @@ public class SessionListener implements HttpSessionListener {
                 return;
             }
 
-            // Use the service directly when possible
             if (asyncAnalyticsService != null) {
                 asyncAnalyticsService.trackUserLogoutAsync(sessionId);
             } else {
-                // Fallback to WebApplicationContext
                 ApplicationContext context = WebApplicationContextUtils
                         .getWebApplicationContext(se.getSession().getServletContext());
 

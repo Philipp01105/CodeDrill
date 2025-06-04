@@ -44,7 +44,6 @@ public class AsyncAnalyticsService {
                 analytics.setLogoutTime(LocalDateTime.now());
                 userAnalyticsRepository.save(analytics);
 
-                // Update system analytics with session time
                 analyticsService.updateSystemAnalyticsForLogout(analytics);
 
                 logger.info("Async logout tracking completed for session: {}", sessionId);

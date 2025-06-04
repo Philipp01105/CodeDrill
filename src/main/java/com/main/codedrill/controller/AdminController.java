@@ -182,27 +182,23 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("errorMessage", "Unauthorized access attempt detected");
             return "redirect:/admin";
         }
-        
-        // Verify password
+
         if (userService.validatePassword(admin, password)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Invalid password. Emergency shutdown aborted.");
             return "redirect:/admin";
         }
-        
-        // Log the shutdown
+
         System.out.println("EMERGENCY SHUTDOWN initiated by admin: " + admin.getUsername() + " at " + java.time.LocalDateTime.now());
-        
-        // Schedule shutdown to allow the response to be sent
+
         new Thread(() -> {
             try {
-                Thread.sleep(1000); // Wait for a response to be sent
+                Thread.sleep(1000);
                 SpringApplication.exit(applicationContext, () -> 0);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }).start();
 
-        // We won't reach this point in the UI but include it for completeness
         redirectAttributes.addFlashAttribute("successMessage", "System shutdown initiated");
         return "redirect:/admin";
     }

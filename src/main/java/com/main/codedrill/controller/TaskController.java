@@ -40,19 +40,16 @@ public class TaskController {
             tasks = taskService.getAllTasks();
             model.addAttribute("selectedTag", "all");
         }
-        
-        // Get unique tags for filter dropdown
+
         List<String> tags = taskService.getAllTags();
                 
         model.addAttribute("tasks", tasks);
         model.addAttribute("tags", tags);
-        
-        // Add authentication status
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAuthenticated = auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser");
         model.addAttribute("isAuthenticated", isAuthenticated);
-        
-        // Add user role and completed tasks if authenticated
+
         if (isAuthenticated) {
             User currentUser = userService.findByUsername(auth.getName());
             if (currentUser != null) {

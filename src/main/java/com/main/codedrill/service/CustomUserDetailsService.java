@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
             user.getUsername(),
             user.getPassword(),
-            user.isEnabled(),   // This ensures only verified users can log in
+            user.isEnabled(),
             true,
             true,
             true,

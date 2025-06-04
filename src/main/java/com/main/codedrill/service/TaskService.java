@@ -51,7 +51,7 @@ public class TaskService {
     }
     
     public Task createTask(Task task, User user) {
-        task.setId(null); // Ensure it's a new task
+        task.setId(null);
         task.setCreatedBy(user);
         return taskRepository.save(task);
     }
@@ -62,8 +62,7 @@ public class TaskService {
         if (existingTask.isPresent()) {
             Task taskToUpdate = existingTask.get();
             
-            // Admin can update any task, moderators only their own
-            if (user.isAdmin() || 
+            if (user.isAdmin() ||
                 (taskToUpdate.getCreatedBy() != null && taskToUpdate.getCreatedBy().equals(user))) {
                 
                 taskToUpdate.setTitle(task.getTitle());
@@ -77,7 +76,7 @@ public class TaskService {
             }
         }
         
-        return null; // Not found or not authorized
+        return null;
     }
 
     @Transactional
@@ -87,8 +86,7 @@ public class TaskService {
         if (task.isPresent()) {
             Task taskToDelete = task.get();
             
-            // Admin can delete any task, moderators only their own
-            if (user.isAdmin() || 
+            if (user.isAdmin() ||
                 (taskToDelete.getCreatedBy() != null && taskToDelete.getCreatedBy().equals(user))) {
 
                 taskToDelete.getTags().clear();

@@ -35,8 +35,7 @@ public class CustomErrorController implements ErrorController {
         model.addAttribute("errorCode", httpStatus.value());
         model.addAttribute("errorMessage", httpStatus.getReasonPhrase());
 
-        // Prüfen, ob ein Admin eingeloggt ist
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = false;
 
         if (auth != null && auth.isAuthenticated()) {
@@ -45,8 +44,7 @@ public class CustomErrorController implements ErrorController {
             }
         }
 
-        // Detaillierte Fehlermeldung nur für Admins
-        if (isAdmin) {
+         if (isAdmin) {
             model.addAttribute("isAdmin", true);
             model.addAttribute("exception", exception != null ? exception.getMessage() : "Unbekannter Fehler");
             model.addAttribute("path", path);

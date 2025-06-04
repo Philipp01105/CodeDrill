@@ -21,12 +21,10 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-        
-        // Get current user
+
         String username = authentication.getName();
         User user = userService.findByUsername(username);
         
-        // Redirect to change password page if user is using a temporary password
         if (user != null && user.isUsingTempPassword()) {
             getRedirectStrategy().sendRedirect(request, response, "/change-password");
         } else {

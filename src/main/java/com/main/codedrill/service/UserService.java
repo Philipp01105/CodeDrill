@@ -35,7 +35,6 @@ public class UserService {
 
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    // Track current executions
     private boolean currentExecutions = false;
 
     @Autowired
@@ -58,7 +57,6 @@ public class UserService {
         this.userAnalyticsRepository = userAnalyticsRepository;
         this.taskRepository = taskRepository;
 
-        // Initialize admin if no users exist
         if (userRepository.count() == 0) {
             createAdminUser();
         }
@@ -117,7 +115,7 @@ public class UserService {
         user.setRole("USER");
         user.setFullName(fullName);
         user.setEmail(email);
-        user.setEnabled(false); // User is disabled until email verification
+        user.setEnabled(false);
         user.setRegistrationDate(LocalDateTime.now());
         analyticsService.trackNewUserRegistration();
 
@@ -209,7 +207,6 @@ public class UserService {
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
 
-                // Generate a random temporary password
                 String tempPassword = generateTempPassword();
 
                 user.setPassword(passwordEncoder.encode(tempPassword));

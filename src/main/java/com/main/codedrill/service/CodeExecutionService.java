@@ -62,8 +62,7 @@ public class CodeExecutionService {
     private Semaphore resourceSemaphore;
     private volatile boolean processingQueue = false;
 
-    // Malicious code detector
-    private final DockerAwareMaliciousCodeDetector codeDetector = new DockerAwareMaliciousCodeDetector();
+    private final MaliciousCodeDetector codeDetector = new MaliciousCodeDetector();
 
     @Autowired
     public CodeExecutionService(UserService userService) {
@@ -89,17 +88,14 @@ public class CodeExecutionService {
         long totalMemory = Runtime.getRuntime().totalMemory();
         long maxMemory = Runtime.getRuntime().maxMemory();
 
-        // Use the available memory (max - total + free)
         long availableMemory = maxMemory - totalMemory + Runtime.getRuntime().freeMemory();
 
-        // Calculate maximum concurrent executions based on system resources
-        int maxByCpu = Math.max(1, systemCores / 2); // Allow half of the system cores
+        int maxByCpu = Math.max(1, systemCores / 2);
         long containerMemoryBytes = parseMemoryLimit(memoryLimit);
-        int maxByMemory = Math.max(1, (int) (availableMemory / containerMemoryBytes)); // Allow containers based on memory
+        int maxByMemory = Math.max(1, (int) (availableMemory / containerMemoryBytes));
 
         int maxConcurrentExecutions = Math.min(maxByCpu * 2, maxByMemory);
 
-        // Ensure we have at least 1 concurrent execution and not more than 16
         maxConcurrentExecutions = Math.min(16, maxConcurrentExecutions);
 
         this.resourceSemaphore = new Semaphore(maxConcurrentExecutions);
@@ -175,20 +171,17 @@ public class CodeExecutionService {
      * @throws Exception if execution fails
      */
     public String executeJavaCode(String code) throws Exception {
-        // Security check first
-        if (securityEnabled) {
-            DockerAwareMaliciousCodeDetector.MaliciousCodeResult securityResult = codeDetector.analyzeCode(code);
+         if (securityEnabled) {
+            MaliciousCodeDetector.MaliciousCodeResult securityResult = codeDetector.analyzeCode(code);
 
             if (securityResult.malicious()) {
                 String securityMessage = formatSecurityMessage(securityResult);
 
-                // Log security violation for monitoring
                 System.err.println("SECURITY VIOLATION - User: " + getCurrentUserInfo() +
                         " - Risk Level: " + securityResult.riskLevel() +
                         " - Reasons: " + securityResult.reasons());
 
-                // In strict mode -> block all malicious code
-                if (strictMode || securityResult.riskLevel() == DockerAwareMaliciousCodeDetector.RiskLevel.CRITICAL) {
+                 if (strictMode || securityResult.riskLevel() == MaliciousCodeDetector.RiskLevel.CRITICAL) {
                     return securityMessage;
                 }
 
@@ -213,7 +206,7 @@ public class CodeExecutionService {
         }
     }
 
-    private String formatSecurityMessage(DockerAwareMaliciousCodeDetector.MaliciousCodeResult result) {
+    private String formatSecurityMessage(MaliciousCodeDetector.MaliciousCodeResult result) {
         StringBuilder message = new StringBuilder();
         message.append("🛡️ SECURITY ALERT: Code execution blocked\n\n");
         message.append("Risk Level: ").append(result.riskLevel()).append("\n");
@@ -264,7 +257,7 @@ public class CodeExecutionService {
         }
 
         try {
-            return queuedTask.get(timeoutSeconds * 2L, TimeUnit.SECONDS); // Allow double timeout for queued tasks
+            return queuedTask.get(timeoutSeconds * 2L, TimeUnit.SECONDS);
         } catch (Exception e) {
             return "ERROR: Execution timed out or failed: " + e.getMessage();
         }
@@ -419,7 +412,7 @@ public class CodeExecutionService {
     /**
      * Docker-aware malicious code detector optimized for containerized Java execution
      */
-    private static class DockerAwareMaliciousCodeDetector {
+    private static class MaliciousCodeDetector {
 
         // Container escape and privilege escalation patterns
         private static final Pattern CONTAINER_ESCAPE_PATTERN = Pattern.compile(
@@ -507,7 +500,7 @@ public class CodeExecutionService {
         ));
 
         /**
-         * Comprehensive malicious code analysis for Docker environment
+         * malicious code analysis
          */
         public MaliciousCodeResult analyzeCode(String code) {
             if (code == null || code.isEmpty()) {
@@ -518,7 +511,7 @@ public class CodeExecutionService {
             StringBuilder detectionReasons = new StringBuilder();
             RiskLevel maxRiskLevel = RiskLevel.NONE;
 
-            // Critical security checks for container environment
+            // Critical security checks
             maxRiskLevel = checkAndUpdate(CONTAINER_ESCAPE_PATTERN, normalizedCode,
                     "Container escape attempt detected", RiskLevel.CRITICAL, maxRiskLevel, detectionReasons);
 
