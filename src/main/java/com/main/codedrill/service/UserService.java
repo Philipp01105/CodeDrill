@@ -188,7 +188,7 @@ public class UserService {
 
             moderator.setRole("MODERATOR");
             moderator.setPassword(passwordEncoder.encode(moderator.getPassword()));
-            moderator.setEnabled(true); // Moderators are enabled by default
+            moderator.setEnabled(true);
 
             return userRepository.save(moderator);
         }

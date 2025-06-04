@@ -2,6 +2,8 @@ package com.main.codedrill.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 import java.time.LocalDateTime;
@@ -50,10 +52,12 @@ public class User {
         this.registrationDate = LocalDateTime.now();
     }
 
-    public User(String username, String password, String role) {
+    public User(String username, String password, String role, String email, @Nullable String fullName) {
         this.username = username;
         this.password = password;
         this.role = role;
+        this.email = email;
+        this.fullName = fullName;
         this.registrationDate = LocalDateTime.now();
     }
 
