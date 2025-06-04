@@ -173,6 +173,60 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 
+    @PostMapping("/users/promote/{userid}")
+    public String promoteUserToModerator(@PathVariable Long userid, RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User admin = userService.findByUsername(auth.getName());
+
+        if (admin == null || !admin.isAdmin()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Unauthorized access attempt detected");
+            return "redirect:/admin/users";
+        }
+
+        User user = userService.findById(userid);
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "User not found");
+            return "redirect:/admin/users";
+        }
+
+        User savedModerator = userService.setModerator(user, admin);
+
+        if (savedModerator == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to promote user to moderator");
+        } else {
+            redirectAttributes.addFlashAttribute("successMessage", "User promoted to moderator successfully");
+        }
+
+        return "redirect:/admin/users";
+    }
+
+    @PostMapping("/users/demote/{userid}")
+    public String demoteModeratorToUser(@PathVariable Long userid, RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User admin = userService.findByUsername(auth.getName());
+
+        if (admin == null || !admin.isAdmin()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Unauthorized access attempt detected");
+            return "redirect:/admin/users";
+        }
+
+        User user = userService.findById(userid);
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "User not found");
+            return "redirect:/admin/users";
+        }
+
+        User savedUser = userService.setUser(user, admin);
+
+        if (savedUser == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to demote moderator to user");
+        } else {
+            redirectAttributes.addFlashAttribute("successMessage", "Moderator demoted to user successfully");
+        }
+
+        return "redirect:/admin/users";
+    }
+
     @PostMapping("/emergency-shutdown")
     public String emergencyShutdown(@RequestParam String password, RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

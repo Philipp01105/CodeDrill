@@ -1,4 +1,4 @@
-package com.main.codedrill;
+package com.main.codedrill.browser;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
@@ -57,7 +57,6 @@ public class CodeDrillLoginTest {
 
             wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("body")));
 
-            // Step 2: Click Login
             WebElement loginLink = wait.until(
                     ExpectedConditions.elementToBeClickable(By.xpath("//a[@href='/login'] | //a[contains(text(), 'Login')]"))
             );

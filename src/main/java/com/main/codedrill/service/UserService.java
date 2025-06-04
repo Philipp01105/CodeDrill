@@ -316,5 +316,44 @@ public class UserService {
     public int countAllModerators() {
         return Math.toIntExact(userRepository.countByRole("MODERATOR"));
     }
+
+    public User findById(Long userid) {
+        if (userid == null) {
+            return null;
+        }
+        return userRepository.findById(userid).orElse(null);
+    }
+
+    public User setModerator(User user, User admin) {
+        if (admin != null && admin.isAdmin()) {
+            if (user == null || user.getId() == null) {
+                return null;
+            }
+
+            Optional<User> existingUserOpt = userRepository.findById(user.getId());
+            if (existingUserOpt.isPresent()) {
+                User existingUser = existingUserOpt.get();
+                existingUser.setRole("MODERATOR");
+                return userRepository.save(existingUser);
+            }
+        }
+        return null;
+    }
+
+    public User setUser(User user, User admin) {
+        if (admin != null && admin.isAdmin()) {
+            if (user == null || user.getId() == null) {
+                return null;
+            }
+
+            Optional<User> existingUserOpt = userRepository.findById(user.getId());
+            if (existingUserOpt.isPresent()) {
+                User existingUser = existingUserOpt.get();
+                existingUser.setRole("USER");
+                return userRepository.save(existingUser);
+            }
+        }
+        return null;
+    }
 }
 
