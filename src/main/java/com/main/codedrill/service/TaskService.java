@@ -71,6 +71,7 @@ public class TaskService {
                 taskToUpdate.setContent(task.getContent());
                 taskToUpdate.setSolution(task.getSolution());
                 taskToUpdate.setExpectedOutput(task.getExpectedOutput());
+                taskToUpdate.setJunitTests(task.getJunitTests());
                 
                 return taskRepository.save(taskToUpdate);
             }

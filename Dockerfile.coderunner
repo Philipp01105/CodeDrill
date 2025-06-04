@@ -1,25 +1,41 @@
 FROM openjdk:17-jdk-slim
 
-
 WORKDIR /app
 
-# Install necessary tools
+# Install necessary tools and Maven for JUnit dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
+    maven \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user to run the code
 RUN groupadd -r coderunner && useradd -r -g coderunner coderunner
-RUN mkdir -p /app/code && chown -R coderunner:coderunner /app
+RUN mkdir -p /app/code /app/lib && chown -R coderunner:coderunner /app
+
+# Download JUnit dependencies directly
+RUN cd /app/lib && \
+    wget -q https://repo1.maven.org/maven2/org/junit/jupiter/junit-jupiter-engine/5.9.2/junit-jupiter-engine-5.9.2.jar && \
+    wget -q https://repo1.maven.org/maven2/org/junit/jupiter/junit-jupiter-api/5.9.2/junit-jupiter-api-5.9.2.jar && \
+    wget -q https://repo1.maven.org/maven2/org/junit/platform/junit-platform-launcher/1.9.2/junit-platform-launcher-1.9.2.jar && \
+    wget -q https://repo1.maven.org/maven2/org/junit/platform/junit-platform-engine/1.9.2/junit-platform-engine-1.9.2.jar && \
+    wget -q https://repo1.maven.org/maven2/org/junit/platform/junit-platform-commons/1.9.2/junit-platform-commons-1.9.2.jar && \
+    wget -q https://repo1.maven.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar && \
+    wget -q https://repo1.maven.org/maven2/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar && \
+    wget -q https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.15.2/jackson-databind-2.15.2.jar && \
+    wget -q https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.15.2/jackson-core-2.15.2.jar && \
+    wget -q https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.15.2/jackson-annotations-2.15.2.jar
+
+# Set up classpath for JUnit
+ENV JUNIT_CLASSPATH="/app/lib/*"
 
 # Copy entrypoint script
 COPY --chown=coderunner:coderunner docker-entrypoint.sh /app/
 RUN chmod +x /app/docker-entrypoint.sh
 
 # Set resource limits
-# This would need to be properly configured in a production environment
 ENV MEMORY_LIMIT=256m
 ENV CPU_LIMIT=1
 ENV TIMEOUT=5
@@ -28,4 +44,4 @@ ENV NETWORK_DISABLED=true
 USER coderunner
 WORKDIR /app/code
 
-ENTRYPOINT ["/app/docker-entrypoint.sh"] 
+ENTRYPOINT ["/app/docker-entrypoint.sh"]

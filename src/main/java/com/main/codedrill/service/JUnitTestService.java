@@ -1,193 +1,59 @@
 package com.main.codedrill.service;
 
-import org.junit.platform.launcher.Launcher;
-import org.junit.platform.launcher.LauncherDiscoveryRequest;
-import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
-import org.junit.platform.launcher.core.LauncherFactory;
-import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
-import org.junit.platform.launcher.listeners.TestExecutionSummary;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
 @Service
 public class JUnitTestService {
 
+    private final CodeExecutionService codeExecutionService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    public JUnitTestService(CodeExecutionService codeExecutionService) {
+        this.codeExecutionService = codeExecutionService;
+    }
+
     /**
-     * Compiles and runs JUnit tests against student code
+     * Runs JUnit tests against student code using secure Docker execution
      *
      * @param studentCode The student's Java code
      * @param junitTests  The JUnit tests to run against the student code
      * @return A map containing test results
      */
     public Map<String, Object> runTests(String studentCode, String junitTests) {
-        Map<String, Object> result = new HashMap<>();
-
         try {
-             Path tempDir = Files.createTempDirectory("junit-test");
+            // Use the secure Docker execution service
+            String jsonResult = codeExecutionService.executeJUnitTests(studentCode, junitTests);
 
-            String className = extractClassName(studentCode);
-            if (className == null) {
-                result.put("success", false);
-                result.put("message", "Could not determine class name from student code");
-                return result;
-            }
+            // Parse the JSON result back to a Map
+            return objectMapper.readValue(jsonResult, Map.class);
 
-            Path studentFile = tempDir.resolve(className + ".java");
-            Files.writeString(studentFile, studentCode);
-
-             String testClassName = extractClassName(junitTests);
-            if (testClassName == null) {
-                result.put("success", false);
-                result.put("message", "Could not determine class name from test code");
-                return result;
-            }
-
-            Path testFile = tempDir.resolve(testClassName + ".java");
-            Files.writeString(testFile, junitTests);
-
-            boolean compilationSuccess = compileFiles(tempDir, studentFile, testFile);
-            if (!compilationSuccess) {
-                result.put("success", false);
-                result.put("message", "Compilation failed");
-                return result;
-            }
-
-            TestExecutionSummary summary = runJUnitTests(tempDir, testClassName);
-
-            result.put("success", true);
-            result.put("testsSucceeded", summary.getTestsSucceededCount());
-            result.put("testsFailed", summary.getTestsFailedCount());
-            result.put("testsSkipped", summary.getTestsSkippedCount());
-            result.put("totalTests", summary.getTestsFoundCount());
-            result.put("allTestsPassed", summary.getTestsFailedCount() == 0 && summary.getTestsSucceededCount() > 0);
-
-             if (summary.getTestsFailedCount() > 0) {
-                List<Map<String, String>> failures = new ArrayList<>();
-                summary.getFailures().forEach(failure -> {
-                    Map<String, String> failureInfo = new HashMap<>();
-                    failureInfo.put("testName", failure.getTestIdentifier().getDisplayName());
-
-                    StringWriter sw = new StringWriter();
-                    PrintWriter pw = new PrintWriter(sw);
-                    failure.getException().printStackTrace(pw);
-                    failureInfo.put("exception", sw.toString());
-
-                    failures.add(failureInfo);
-                });
-                result.put("failures", failures);
-            }
-
-            deleteDirectory(tempDir.toFile());
-
-            return result;
         } catch (Exception e) {
+            // Return error result in the expected format
+            Map<String, Object> result = new HashMap<>();
             result.put("success", false);
             result.put("message", "Error running tests: " + e.getMessage());
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            result.put("exception", sw.toString());
+            result.put("testsSucceeded", 0);
+            result.put("testsFailed", 0);
+            result.put("testsSkipped", 0);
+            result.put("totalTests", 0);
+            result.put("allTestsPassed", false);
+            result.put("exception", e.toString());
             return result;
         }
     }
 
     /**
-     * Extract class name from Java code
+     * Convenience method for backward compatibility
      */
-    private String extractClassName(String code) {
-         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("public\\s+class\\s+(\\w+)");
-        java.util.regex.Matcher matcher = pattern.matcher(code);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        return null;
-    }
-
-    /**
-     * Compile Java files
-     */
-    private boolean compileFiles(Path directory, Path... files) throws IOException, InterruptedException {
-        List<String> command = new ArrayList<>();
-
-        command.add("javac");
-
-        command.add("-cp");
-        command.add(System.getProperty("java.class.path"));
-
-        for (Path file : files) {
-            command.add(file.normalize().toString());
-        }
-
-        ProcessBuilder pb = new ProcessBuilder(command);
-        pb.directory(directory.toFile());
-
-        pb.redirectErrorStream(true);
-
-        Process process = pb.start();
-
-        boolean completed = process.waitFor(30, TimeUnit.SECONDS);
-        if (!completed) {
-            process.destroyForcibly();
-            return false;
-        }
-
-        return process.exitValue() == 0;
-    }
-
-    /**
-     * Run JUnit tests
-     */
-    private TestExecutionSummary runJUnitTests(Path directory, String testClassName) throws Exception {
-        URL url = directory.toUri().toURL();
-
-        URLClassLoader classLoader = new URLClassLoader(new URL[]{url}, getClass().getClassLoader());
-        Class<?> testClass = classLoader.loadClass(testClassName);
-
-
-        LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-                .selectors(selectClass(testClass))
-                .build();
-
-        Launcher launcher = LauncherFactory.create();
-        SummaryGeneratingListener listener = new SummaryGeneratingListener();
-
-        launcher.registerTestExecutionListeners(listener);
-        launcher.execute(request);
-
-        return listener.getSummary();
-    }
-
-    /**
-     * Recursively delete a directory
-     */
-    private void deleteDirectory(File directory) {
-        if (directory.exists()) {
-            File[] files = directory.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isDirectory()) {
-                        deleteDirectory(file);
-                    } else {
-                        file.delete();
-                    }
-                }
-            }
-            directory.delete();
-        }
+    @Deprecated
+    public Map<String, Object> runTestsLocally(String studentCode, String junitTests) {
+        // Redirect to secure Docker execution
+        return runTests(studentCode, junitTests);
     }
 }

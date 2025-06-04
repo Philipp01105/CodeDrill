@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 import java.util.Set;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 
 @Service
 public class CodeExecutionService {
@@ -30,17 +31,32 @@ public class CodeExecutionService {
     @Value("${docker.timeout_seconds:10}")
     private int timeoutSeconds;
 
-    @Value("${docker.image:apcsa-coderunner:latest}")
+    @Value("${docker.test_timeout_seconds:30}")
+    private int testTimeoutSeconds;
+
+    @Value("${docker.image:codedrill:latest}")
     private String dockerImage;
+
+    @Value("${docker.junit_image:codedrill:latest}")
+    private String junitDockerImage;
 
     @Value("${docker.memory_limit:128m}")
     private String memoryLimit;
 
+    @Value("${docker.test_memory_limit:256m}")
+    private String testMemoryLimit;
+
     @Value("${docker.cpu_limit:0.5}")
     private String cpuLimit;
 
+    @Value("${docker.test_cpu_limit:1.0}")
+    private String testCpuLimit;
+
     @Value("${docker.process_limit:32}")
     private int processLimit;
+
+    @Value("${docker.test_process_limit:64}")
+    private int testProcessLimit;
 
     @Value("${docker.network_disabled:true}")
     private boolean networkDisabled;
@@ -54,6 +70,9 @@ public class CodeExecutionService {
 
     @Value("${security.strict_mode:true}")
     private boolean strictMode;
+
+    @Value("${security.junit_relaxed_mode:true}")
+    private boolean junitRelaxedMode;
 
     private final UserService userService;
     private final Queue<CompletableFuture<String>> executionQueue = new LinkedList<>();
@@ -78,6 +97,7 @@ public class CodeExecutionService {
         startQueueProcessor();
         System.out.println("Security scanning " + (securityEnabled ? "ENABLED" : "DISABLED"));
         System.out.println("Strict mode " + (strictMode ? "ENABLED" : "DISABLED"));
+        System.out.println("JUnit relaxed mode " + (junitRelaxedMode ? "ENABLED" : "DISABLED"));
     }
 
     /**
@@ -171,44 +191,126 @@ public class CodeExecutionService {
      * @throws Exception if execution fails
      */
     public String executeJavaCode(String code) throws Exception {
-         if (securityEnabled) {
-            MaliciousCodeDetector.MaliciousCodeResult securityResult = codeDetector.analyzeCode(code);
+        return executeCode(code, false, null);
+    }
 
-            if (securityResult.malicious()) {
-                String securityMessage = formatSecurityMessage(securityResult);
+    /**
+     * Execute JUnit tests in a Docker container with security scanning
+     *
+     * @param studentCode The student's Java code
+     * @param junitTests  The JUnit test code
+     * @return The test execution results as JSON string
+     * @throws Exception if execution fails
+     */
+    public String executeJUnitTests(String studentCode, String junitTests) throws Exception {
+        return executeCode(null, true, Map.of("studentCode", studentCode, "testCode", junitTests));
+    }
 
-                System.err.println("SECURITY VIOLATION - User: " + getCurrentUserInfo() +
-                        " - Risk Level: " + securityResult.riskLevel() +
-                        " - Reasons: " + securityResult.reasons());
+    /**
+     * Internal method to execute code with optional JUnit test mode
+     */
+    private String executeCode(String code, boolean isJUnitTest, Map<String, String> testData) throws Exception {
+        if (securityEnabled) {
+            if (isJUnitTest) {
+                // Separate analysis for student code and test code
+                String studentCode = testData.get("studentCode");
+                String testCode = testData.get("testCode");
 
-                 if (strictMode || securityResult.riskLevel() == MaliciousCodeDetector.RiskLevel.CRITICAL) {
-                    return securityMessage;
+                // Always apply strict security to student code
+                MaliciousCodeDetector.MaliciousCodeResult studentSecurityResult =
+                        codeDetector.analyzeCode(studentCode, false); // false = strict mode for student code
+
+                if (studentSecurityResult.malicious()) {
+                    String securityMessage = formatSecurityMessage(studentSecurityResult, "Student Code");
+
+                    System.err.println("SECURITY VIOLATION - User: " + getCurrentUserInfo() +
+                            " - Risk Level: " + studentSecurityResult.riskLevel() +
+                            " - Reasons: " + studentSecurityResult.reasons() +
+                            " - Type: Student Code in JUnit Test");
+
+                    if (strictMode || studentSecurityResult.riskLevel() == MaliciousCodeDetector.RiskLevel.CRITICAL) {
+                        return formatTestErrorResult(securityMessage);
+                    }
                 }
 
-                System.out.println("WARNING: Potentially risky code detected but execution allowed in non-strict mode");
+                // Apply relaxed security to test code if enabled
+                if (junitRelaxedMode) {
+                    MaliciousCodeDetector.MaliciousCodeResult testSecurityResult =
+                            codeDetector.analyzeCode(testCode, true); // true = relaxed mode for test code
+
+                    // Only block test code for CRITICAL violations
+                    if (testSecurityResult.malicious() && testSecurityResult.riskLevel() == MaliciousCodeDetector.RiskLevel.CRITICAL) {
+                        String securityMessage = formatSecurityMessage(testSecurityResult, "Test Code");
+
+                        System.err.println("CRITICAL SECURITY VIOLATION - User: " + getCurrentUserInfo() +
+                                " - Risk Level: " + testSecurityResult.riskLevel() +
+                                " - Reasons: " + testSecurityResult.reasons() +
+                                " - Type: Test Code");
+
+                        return formatTestErrorResult(securityMessage);
+                    } else if (testSecurityResult.malicious()) {
+                        System.out.println("WARNING: JUnit test code has suspicious patterns but execution allowed in relaxed mode - " +
+                                testSecurityResult.reasons());
+                    }
+                } else {
+                    // Apply strict mode to test code as well
+                    MaliciousCodeDetector.MaliciousCodeResult testSecurityResult =
+                            codeDetector.analyzeCode(testCode, false);
+
+                    if (testSecurityResult.malicious()) {
+                        String securityMessage = formatSecurityMessage(testSecurityResult, "Test Code");
+
+                        System.err.println("SECURITY VIOLATION - User: " + getCurrentUserInfo() +
+                                " - Risk Level: " + testSecurityResult.riskLevel() +
+                                " - Reasons: " + testSecurityResult.reasons() +
+                                " - Type: Test Code (Strict Mode)");
+
+                        if (strictMode || testSecurityResult.riskLevel() == MaliciousCodeDetector.RiskLevel.CRITICAL) {
+                            return formatTestErrorResult(securityMessage);
+                        }
+                    }
+                }
+            } else {
+                // Regular code execution - always strict
+                MaliciousCodeDetector.MaliciousCodeResult securityResult = codeDetector.analyzeCode(code, false);
+
+                if (securityResult.malicious()) {
+                    String securityMessage = formatSecurityMessage(securityResult, "Code");
+
+                    System.err.println("SECURITY VIOLATION - User: " + getCurrentUserInfo() +
+                            " - Risk Level: " + securityResult.riskLevel() +
+                            " - Reasons: " + securityResult.reasons() +
+                            " - Type: Regular Code Execution");
+
+                    if (strictMode || securityResult.riskLevel() == MaliciousCodeDetector.RiskLevel.CRITICAL) {
+                        return securityMessage;
+                    }
+
+                    System.out.println("WARNING: Potentially risky code detected but execution allowed in non-strict mode");
+                }
             }
         }
 
         if (!dockerEnabled) {
-            return simulateExecution(code);
+            return isJUnitTest ? simulateTestExecution(testData) : simulateExecution(code);
         }
 
         if (resourceSemaphore.tryAcquire()) {
             try {
-                return executeInDocker(code);
+                return isJUnitTest ? executeJUnitInDocker(testData) : executeInDocker(code);
             } finally {
                 resourceSemaphore.release();
                 processNextInQueue();
             }
         } else {
             userService.setCurrentExecutions(true);
-            return addToQueueAndWait(code);
+            return addToQueueAndWait(code, isJUnitTest, testData);
         }
     }
 
-    private String formatSecurityMessage(MaliciousCodeDetector.MaliciousCodeResult result) {
+    private String formatSecurityMessage(MaliciousCodeDetector.MaliciousCodeResult result, String codeType) {
         StringBuilder message = new StringBuilder();
-        message.append("🛡️ SECURITY ALERT: Code execution blocked\n\n");
+        message.append("🛡️ SECURITY ALERT: ").append(codeType).append(" execution blocked\n\n");
         message.append("Risk Level: ").append(result.riskLevel()).append("\n");
         message.append("Detected Issues:\n");
 
@@ -220,12 +322,31 @@ public class CodeExecutionService {
         }
 
         message.append("\n📋 Security Guidelines:\n");
-        message.append("• Use only standard Java APIs for assignments\n");
-        message.append("• Avoid system calls, file operations, and network access\n");
-        message.append("• Focus on algorithm implementation and data structures\n");
+        if ("Student Code".equals(codeType)) {
+            message.append("• Use only standard Java APIs for assignments\n");
+            message.append("• Avoid system calls, file operations, and network access\n");
+            message.append("• Focus on algorithm implementation and data structures\n");
+        } else {
+            message.append("• JUnit tests should focus on testing functionality\n");
+            message.append("• Avoid system manipulation and dangerous operations\n");
+        }
         message.append("• Contact instructor if you believe this is a false positive\n");
 
         return message.toString();
+    }
+
+    private String formatTestErrorResult(String errorMessage) {
+        return String.format("""
+            {
+                "success": false,
+                "message": "%s",
+                "testsSucceeded": 0,
+                "testsFailed": 0,
+                "testsSkipped": 0,
+                "totalTests": 0,
+                "allTestsPassed": false
+            }
+            """, errorMessage.replace("\"", "\\\"").replace("\n", "\\n"));
     }
 
     private String getCurrentUserInfo() {
@@ -236,19 +357,18 @@ public class CodeExecutionService {
         }
     }
 
-    private String addToQueueAndWait(String code) {
-
+    private String addToQueueAndWait(String code, boolean isJUnitTest, Map<String, String> testData) {
         CompletableFuture<String> queuedTask = CompletableFuture.supplyAsync(() -> {
             try {
                 resourceSemaphore.acquire();
                 try {
-                    return executeInDocker(code);
+                    return isJUnitTest ? executeJUnitInDocker(testData) : executeInDocker(code);
                 } finally {
                     resourceSemaphore.release();
                     processNextInQueue();
                 }
             } catch (Exception e) {
-                return "ERROR: " + e.getMessage();
+                return isJUnitTest ? formatTestErrorResult("ERROR: " + e.getMessage()) : "ERROR: " + e.getMessage();
             }
         });
 
@@ -257,9 +377,11 @@ public class CodeExecutionService {
         }
 
         try {
-            return queuedTask.get(timeoutSeconds * 2L, TimeUnit.SECONDS);
+            int timeout = isJUnitTest ? testTimeoutSeconds * 2 : timeoutSeconds * 2;
+            return queuedTask.get(timeout, TimeUnit.SECONDS);
         } catch (Exception e) {
-            return "ERROR: Execution timed out or failed: " + e.getMessage();
+            String errorMsg = "ERROR: Execution timed out or failed: " + e.getMessage();
+            return isJUnitTest ? formatTestErrorResult(errorMsg) : errorMsg;
         }
     }
 
@@ -278,7 +400,7 @@ public class CodeExecutionService {
         String containerId = "coderunner-" + UUID.randomUUID().toString().substring(0, 8);
 
         try {
-            Process process = getProcess(code, containerId);
+            Process process = getExecutionProcess(code, containerId, false);
 
             boolean completed = process.waitFor(timeoutSeconds, TimeUnit.SECONDS);
             if (!completed) {
@@ -286,56 +408,141 @@ public class CodeExecutionService {
                 return "Execution timeout - your code took too long to run";
             }
 
-            StringBuilder output = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    output.append(line).append("\n");
-                }
-            }
-
-            StringBuilder errors = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    errors.append(line).append("\n");
-                }
-            }
-
-            if (!errors.isEmpty()) {
-                return extractMainError(errors.toString());
-            }
-
-            return output.toString();
+            return processExecutionResult(process);
         } catch (Exception e) {
-            try {
-                new ProcessBuilder("docker", "rm", "-f", containerId).start();
-            } catch (Exception cleanupEx) {
-                // Ignore cleanup errors
-            }
+            cleanupContainer(containerId);
             throw e;
         }
     }
 
-    private Process getProcess(String code, String containerId) throws IOException {
+    /**
+     * Execute JUnit tests in a Docker container for security
+     */
+    private String executeJUnitInDocker(Map<String, String> testData) throws Exception {
+        String containerId = "codedrill-" + UUID.randomUUID().toString().substring(0, 8);
+
+        try {
+            Process process = getJUnitProcess(testData, containerId);
+
+            boolean completed = process.waitFor(testTimeoutSeconds, TimeUnit.SECONDS);
+            if (!completed) {
+                process.destroyForcibly();
+                return formatTestErrorResult("Test execution timeout - tests took too long to run");
+            }
+
+            return processJUnitResult(process);
+        } catch (Exception e) {
+            cleanupContainer(containerId);
+            throw e;
+        }
+    }
+
+    private Process getExecutionProcess(String code, String containerId, boolean isTest) throws IOException {
         ProcessBuilder pb = new ProcessBuilder(
                 "docker", "run", "--name", containerId,
                 "--rm", "-i",
                 networkDisabled ? "--network=none" : "",
-                "--memory=" + memoryLimit,
-                "--cpus=" + cpuLimit,
-                "--ulimit", "nproc=" + processLimit + ":" + (processLimit * 2),
+                "--memory=" + (isTest ? testMemoryLimit : memoryLimit),
+                "--cpus=" + (isTest ? testCpuLimit : cpuLimit),
+                "--ulimit", "nproc=" + (isTest ? testProcessLimit : processLimit) + ":" + (isTest ? testProcessLimit * 2 : processLimit * 2),
                 dockerImage
         );
 
         pb.command().removeIf(String::isEmpty);
-
         Process process = pb.start();
 
         try (OutputStreamWriter writer = new OutputStreamWriter(process.getOutputStream())) {
             writer.write(code);
         }
         return process;
+    }
+
+    private Process getJUnitProcess(Map<String, String> testData, String containerId) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder(
+                "docker", "run", "--name", containerId,
+                "--rm", "-i",
+                networkDisabled ? "--network=none" : "",
+                "--memory=" + testMemoryLimit,
+                "--cpus=" + testCpuLimit,
+                "--ulimit", "nproc=" + testProcessLimit + ":" + (testProcessLimit * 2),
+                junitDockerImage
+        );
+
+        pb.command().removeIf(String::isEmpty);
+        Process process = pb.start();
+
+        try (OutputStreamWriter writer = new OutputStreamWriter(process.getOutputStream())) {
+            writer.write("===STUDENT_CODE===\n");
+            writer.write(testData.get("studentCode"));
+            writer.write("\n===TEST_CODE===\n");
+            writer.write(testData.get("testCode"));
+            writer.write("\n===END===\n");
+        }
+        return process;
+    }
+
+    private String processExecutionResult(Process process) throws IOException {
+        StringBuilder output = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+        }
+
+        StringBuilder errors = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                errors.append(line).append("\n");
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            return extractMainError(errors.toString());
+        }
+
+        return output.toString();
+    }
+
+    private String processJUnitResult(Process process) throws IOException {
+        StringBuilder output = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+        }
+
+        StringBuilder errors = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                errors.append(line).append("\n");
+            }
+        }
+
+        String result = output.toString().trim();
+
+        // If there are errors but no output, format as error result
+        if (result.isEmpty() && !errors.isEmpty()) {
+            return formatTestErrorResult("Test execution failed: " + extractMainError(errors.toString()));
+        }
+
+        // If output doesn't look like JSON, wrap it in an error result
+        if (!result.startsWith("{")) {
+            return formatTestErrorResult("Unexpected test output: " + result);
+        }
+
+        return result;
+    }
+
+    private void cleanupContainer(String containerId) {
+        try {
+            new ProcessBuilder("docker", "rm", "-f", containerId).start();
+        } catch (Exception cleanupEx) {
+            // Ignore cleanup errors
+        }
     }
 
     private String extractMainError(String errorOutput) {
@@ -391,6 +598,20 @@ public class CodeExecutionService {
         return "Code executed successfully, but no output was detected.";
     }
 
+    private String simulateTestExecution(Map<String, String> testData) {
+        return """
+            {
+                "success": true,
+                "message": "Simulated test execution (Docker disabled)",
+                "testsSucceeded": 1,
+                "testsFailed": 0,
+                "testsSkipped": 0,
+                "totalTests": 1,
+                "allTestsPassed": true
+            }
+            """;
+    }
+
     /**
      * Cleanup method called when the service is destroyed
      */
@@ -410,9 +631,19 @@ public class CodeExecutionService {
     }
 
     /**
-     * Docker-aware malicious code detector optimized for containerized Java execution
+     * Enhanced malicious code detector with proper JUnit test support
      */
     private static class MaliciousCodeDetector {
+
+        // JUnit-specific allowed patterns (when in relaxed mode)
+        private static final Set<String> JUNIT_ALLOWED_OPERATIONS = new HashSet<>(Arrays.asList(
+                "system.out", "system.err", "system.setin", "system.setout", "system.seterr",
+                "bytearrayoutputstream", "printstream", "bytearrayinputstream",
+                "assertequals", "asserttrue", "assertfalse", "assertthrows", "assertnotequals",
+                "beforeeach", "aftereach", "beforeall", "afterall", "test", "junit",
+                "mockito", "mock", "verify", "when", "thenreturn", "capture",
+                "stringwriter", "printwriter", "bufferedreader", "stringreader"
+        ));
 
         // Container escape and privilege escalation patterns
         private static final Pattern CONTAINER_ESCAPE_PATTERN = Pattern.compile(
@@ -422,18 +653,22 @@ public class CodeExecutionService {
                 Pattern.CASE_INSENSITIVE
         );
 
-        // System execution - more restrictive for container environment
+        // System execution - FIXED to exclude JUnit testing operations
         private static final Pattern SYSTEM_EXEC_PATTERN = Pattern.compile(
-                "(?i)runtime\\.getruntime\\(\\)\\.exec|processbuilder|" +
-                        "new\\s+process(?:builder)?|exec|system\\s*\\(|" +
-                        "bash|sh|cmd|powershell|/bin/",
+                "(?i)(?<!system\\.)runtime\\.getruntime\\(\\)\\.exec|" +
+                        "(?<!system\\.)processbuilder|" +
+                        "new\\s+process(?:builder)?|" +
+                        "(?<!system\\.)exec|" +
+                        "bash|sh|cmd|powershell|/bin/|" +
+                        "\\bexec\\s*\\((?!.*test)|" + // Allow exec in test context
+                        "(?<!\\.)system\\s*\\(", // system() calls but not System. methods
                 Pattern.CASE_INSENSITIVE
         );
 
-        // File system attacks specific to containers
+        // File system attacks specific to containers - UPDATED to exclude JUnit I/O
         private static final Pattern DANGEROUS_FILE_PATTERN = Pattern.compile(
                 "(?i)(?:file(?:writer|outputstream|inputstream|reader)|" +
-                        "(?:buffered|print)writer|randomaccessfile|nio\\.file\\.files|" +
+                        "randomaccessfile|nio\\.file\\.files|" +
                         "path\\.of|paths\\.get)\\s*\\.|" +
                         "\\.(?:write|delete|mkdir|createdirectories|copy|move|createfile)\\s*\\(|" +
                         "\\.\\.[/\\\\]|[/\\\\]etc[/\\\\]|[/\\\\]proc[/\\\\]|" +
@@ -450,15 +685,19 @@ public class CodeExecutionService {
                 Pattern.CASE_INSENSITIVE
         );
 
-        // Reflection and dynamic code loading
+        // Reflection and dynamic code loading - UPDATED to allow JUnit reflection
         private static final Pattern REFLECTION_PATTERN = Pattern.compile(
-                "(?i)class\\.forname|getdeclaredmethod|setaccessible|invoke\\s*\\(|" +
-                        "method\\.invoke|field\\.set|constructor\\.newinstance|" +
+                "(?i)class\\.forname(?!.*test)|" +
+                        "getdeclaredmethod(?!.*test)|" +
+                        "setaccessible(?!.*test)|" +
+                        "method\\.invoke(?!.*test)|" +
+                        "field\\.set(?!.*test)|" +
+                        "constructor\\.newinstance(?!.*test)|" +
                         "unsafe|sun\\.misc|methodhandle",
                 Pattern.CASE_INSENSITIVE
         );
 
-        // JVM and system manipulation
+        // JVM and system manipulation - UPDATED to exclude legitimate System methods
         private static final Pattern JVM_MANIPULATION_PATTERN = Pattern.compile(
                 "(?i)system\\.(?:exit|halt|gc|load|loadlibrary|setproperty|" +
                         "setsecuritymanager|getenv|getproperty)|" +
@@ -500,9 +739,12 @@ public class CodeExecutionService {
         ));
 
         /**
-         * malicious code analysis
+         * Enhanced malicious code analysis with relaxed mode for JUnit tests
+         *
+         * @param code The code to analyze
+         * @param isJUnitRelaxedMode Whether to apply relaxed checking for JUnit test code
          */
-        public MaliciousCodeResult analyzeCode(String code) {
+        public MaliciousCodeResult analyzeCode(String code, boolean isJUnitRelaxedMode) {
             if (code == null || code.isEmpty()) {
                 return new MaliciousCodeResult(false, RiskLevel.NONE, "No code provided");
             }
@@ -511,15 +753,21 @@ public class CodeExecutionService {
             StringBuilder detectionReasons = new StringBuilder();
             RiskLevel maxRiskLevel = RiskLevel.NONE;
 
-            // Critical security checks
+            // Pre-analyze to determine if this looks like JUnit test code
+            boolean looksLikeJUnitTest = isJUnitRelaxedMode && isLikelyJUnitCode(normalizedCode);
+
+            // Always check critical security patterns regardless of mode
             maxRiskLevel = checkAndUpdate(CONTAINER_ESCAPE_PATTERN, normalizedCode,
                     "Container escape attempt detected", RiskLevel.CRITICAL, maxRiskLevel, detectionReasons);
 
-            maxRiskLevel = checkAndUpdate(SYSTEM_EXEC_PATTERN, normalizedCode,
-                    "System command execution detected", RiskLevel.CRITICAL, maxRiskLevel, detectionReasons);
-
-            maxRiskLevel = checkAndUpdate(JVM_MANIPULATION_PATTERN, normalizedCode,
-                    "JVM manipulation detected", RiskLevel.HIGH, maxRiskLevel, detectionReasons);
+            // Check system execution with JUnit awareness
+            if (looksLikeJUnitTest) {
+                // For JUnit code, use more lenient system execution checking
+                maxRiskLevel = checkJUnitAwareSystemExecution(normalizedCode, maxRiskLevel, detectionReasons);
+            } else {
+                maxRiskLevel = checkAndUpdate(SYSTEM_EXEC_PATTERN, normalizedCode,
+                        "System command execution detected", RiskLevel.CRITICAL, maxRiskLevel, detectionReasons);
+            }
 
             maxRiskLevel = checkAndUpdate(BYTECODE_PATTERN, normalizedCode,
                     "Bytecode manipulation detected", RiskLevel.HIGH, maxRiskLevel, detectionReasons);
@@ -527,32 +775,148 @@ public class CodeExecutionService {
             maxRiskLevel = checkAndUpdate(SERIALIZATION_PATTERN, normalizedCode,
                     "Serialization attack patterns detected", RiskLevel.HIGH, maxRiskLevel, detectionReasons);
 
-            // Medium risk patterns
-            maxRiskLevel = checkAndUpdate(DANGEROUS_FILE_PATTERN, normalizedCode,
-                    "Dangerous file operations detected", RiskLevel.MEDIUM, maxRiskLevel, detectionReasons);
+            // Apply different checking based on mode
+            if (isJUnitRelaxedMode && looksLikeJUnitTest) {
+                // Relaxed mode for JUnit tests - only flag truly dangerous operations
+                maxRiskLevel = checkJUnitSpecificPatterns(normalizedCode, maxRiskLevel, detectionReasons);
+            } else {
+                // Strict mode for student code
+                maxRiskLevel = checkAndUpdate(JVM_MANIPULATION_PATTERN, normalizedCode,
+                        "JVM manipulation detected", RiskLevel.HIGH, maxRiskLevel, detectionReasons);
 
-            maxRiskLevel = checkAndUpdate(NETWORK_PATTERN, normalizedCode,
-                    "Network operations detected", RiskLevel.MEDIUM, maxRiskLevel, detectionReasons);
+                maxRiskLevel = checkAndUpdate(DANGEROUS_FILE_PATTERN, normalizedCode,
+                        "Dangerous file operations detected", RiskLevel.MEDIUM, maxRiskLevel, detectionReasons);
 
-            maxRiskLevel = checkAndUpdate(REFLECTION_PATTERN, normalizedCode,
-                    "Reflection API abuse detected", RiskLevel.MEDIUM, maxRiskLevel, detectionReasons);
+                maxRiskLevel = checkAndUpdate(NETWORK_PATTERN, normalizedCode,
+                        "Network operations detected", RiskLevel.MEDIUM, maxRiskLevel, detectionReasons);
 
-            maxRiskLevel = checkAndUpdate(RESOURCE_ATTACK_PATTERN, normalizedCode,
-                    "Resource exhaustion patterns detected", RiskLevel.MEDIUM, maxRiskLevel, detectionReasons);
+                maxRiskLevel = checkAndUpdate(REFLECTION_PATTERN, normalizedCode,
+                        "Reflection API abuse detected", RiskLevel.MEDIUM, maxRiskLevel, detectionReasons);
 
-            // Check forbidden keywords
-            String lowerCode = normalizedCode.toLowerCase();
-            for (String keyword : FORBIDDEN_KEYWORDS) {
-                if (lowerCode.contains(keyword.toLowerCase())) {
-                    maxRiskLevel = updateRiskLevel(RiskLevel.HIGH, maxRiskLevel);
-                    detectionReasons.append("Forbidden keyword detected: ").append(keyword).append("; ");
+                maxRiskLevel = checkAndUpdate(RESOURCE_ATTACK_PATTERN, normalizedCode,
+                        "Resource exhaustion patterns detected", RiskLevel.MEDIUM, maxRiskLevel, detectionReasons);
+
+                // Check forbidden keywords in strict mode
+                String lowerCode = normalizedCode.toLowerCase();
+                for (String keyword : FORBIDDEN_KEYWORDS) {
+                    if (lowerCode.contains(keyword.toLowerCase())) {
+                        maxRiskLevel = updateRiskLevel(RiskLevel.HIGH, maxRiskLevel);
+                        detectionReasons.append("Forbidden keyword detected: ").append(keyword).append("; ");
+                    }
                 }
-            }
 
-            maxRiskLevel = performHeuristicChecks(normalizedCode, maxRiskLevel, detectionReasons);
+                maxRiskLevel = performHeuristicChecks(normalizedCode, maxRiskLevel, detectionReasons);
+            }
 
             boolean isMalicious = maxRiskLevel.ordinal() >= RiskLevel.MEDIUM.ordinal();
             return new MaliciousCodeResult(isMalicious, maxRiskLevel, detectionReasons.toString());
+        }
+
+        /**
+         * Check if code likely contains JUnit test patterns
+         */
+        private boolean isLikelyJUnitCode(String code) {
+            String lowerCode = code.toLowerCase();
+            int junitIndicators = 0;
+
+            // Count JUnit-specific indicators
+            if (lowerCode.contains("@test")) junitIndicators++;
+            if (lowerCode.contains("@beforeeach")) junitIndicators++;
+            if (lowerCode.contains("@aftereach")) junitIndicators++;
+            if (lowerCode.contains("assertequals")) junitIndicators++;
+            if (lowerCode.contains("asserttrue")) junitIndicators++;
+            if (lowerCode.contains("assertfalse")) junitIndicators++;
+            if (lowerCode.contains("junit")) junitIndicators++;
+            if (lowerCode.contains("test") && lowerCode.contains("class")) junitIndicators++;
+            if (lowerCode.contains("bytearrayoutputstream")) junitIndicators++;
+            if (lowerCode.contains("system.setout")) junitIndicators++;
+
+            // If we have 2 or more JUnit indicators, treat as JUnit code
+            return junitIndicators >= 2;
+        }
+
+        /**
+         * JUnit-aware system execution checking
+         */
+        private RiskLevel checkJUnitAwareSystemExecution(String code, RiskLevel currentMax, StringBuilder reasons) {
+            String lowerCode = code.toLowerCase();
+
+            // Check for dangerous system execution patterns that are NOT JUnit-related
+            if (code.matches("(?i).*runtime\\.getruntime\\(\\)\\.exec.*") ||
+                    code.matches("(?i).*processbuilder.*") ||
+                    code.matches("(?i).*\\bbash\\b.*") ||
+                    code.matches("(?i).*\\bsh\\b.*") ||
+                    code.matches("(?i).*\\bcmd\\b.*") ||
+                    code.matches("(?i).*\\bpowershell\\b.*")) {
+
+                // These are truly dangerous - flag them
+                reasons.append("Dangerous system command execution detected; ");
+                return updateRiskLevel(RiskLevel.CRITICAL, currentMax);
+            }
+
+            // System.setOut, System.setErr are allowed in JUnit tests
+            if (lowerCode.contains("system.setout") ||
+                    lowerCode.contains("system.seterr") ||
+                    lowerCode.contains("system.setin")) {
+                // These are legitimate JUnit operations - don't flag
+                return currentMax;
+            }
+
+            return currentMax;
+        }
+
+        /**
+         * JUnit-specific pattern checking with relaxed rules
+         */
+        private RiskLevel checkJUnitSpecificPatterns(String code, RiskLevel currentMax, StringBuilder reasons) {
+            RiskLevel maxLevel = currentMax;
+            String lowerCode = code.toLowerCase();
+
+            // Check dangerous file operations - allow test-related I/O
+            if (DANGEROUS_FILE_PATTERN.matcher(code).find()) {
+                // Allow JUnit testing I/O operations
+                if (!containsAnyJUnitPattern(lowerCode, "stringwriter", "printwriter", "stringreader",
+                        "bytearrayoutputstream", "bytearrayinputstream", "test")) {
+                    maxLevel = updateRiskLevel(RiskLevel.MEDIUM, maxLevel);
+                    reasons.append("Non-test file operations detected; ");
+                }
+            }
+
+            // Network operations still not allowed
+            if (NETWORK_PATTERN.matcher(code).find()) {
+                maxLevel = updateRiskLevel(RiskLevel.MEDIUM, maxLevel);
+                reasons.append("Network operations detected; ");
+            }
+
+            // Allow reflection only for JUnit-related operations
+            if (REFLECTION_PATTERN.matcher(code).find()) {
+                if (!containsAnyJUnitPattern(lowerCode, "test", "junit", "assertequals", "invoke", "mock")) {
+                    maxLevel = updateRiskLevel(RiskLevel.MEDIUM, maxLevel);
+                    reasons.append("Non-JUnit reflection detected; ");
+                }
+            }
+
+            // Check for forbidden keywords (still critical even in relaxed mode)
+            for (String keyword : FORBIDDEN_KEYWORDS) {
+                if (lowerCode.contains(keyword.toLowerCase())) {
+                    maxLevel = updateRiskLevel(RiskLevel.HIGH, maxLevel);
+                    reasons.append("Forbidden keyword in test: ").append(keyword).append("; ");
+                }
+            }
+
+            return maxLevel;
+        }
+
+        /**
+         * Check if code contains any JUnit-allowed patterns
+         */
+        private boolean containsAnyJUnitPattern(String lowerCode, String... patterns) {
+            for (String pattern : patterns) {
+                if (lowerCode.contains(pattern.toLowerCase())) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /**
@@ -599,6 +963,11 @@ public class CodeExecutionService {
             }
 
             return maxNesting;
+        }
+
+        // Backward compatibility method
+        public MaliciousCodeResult analyzeCode(String code) {
+            return analyzeCode(code, false); // Default to strict mode
         }
 
         private RiskLevel checkAndUpdate(Pattern pattern, String code, String reason,
