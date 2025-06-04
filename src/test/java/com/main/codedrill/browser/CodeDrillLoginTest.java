@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.time.Duration;
+import java.util.Objects;
 
 public class CodeDrillLoginTest {
 
@@ -97,6 +98,7 @@ public class CodeDrillLoginTest {
             boolean loginSuccessful = false;
             try {
                 String currentUrl = driver.getCurrentUrl();
+                Assertions.assertNotNull(currentUrl);
                 if (!currentUrl.contains("login")) {
                     loginSuccessful = true;
                     System.out.println("✓ Login successful - redirected from login page");
@@ -125,7 +127,7 @@ public class CodeDrillLoginTest {
             }
 
             // Step 6: Navigate to Browse Practice Tasks
-            WebElement browsePracticeTasksButton = null;
+            WebElement browsePracticeTasksButton;
             try {
                 browsePracticeTasksButton = wait.until(
                         ExpectedConditions.elementToBeClickable(
@@ -289,7 +291,7 @@ public class CodeDrillLoginTest {
             System.out.println("\n=== DEBUG INFORMATION ===");
             System.out.println("Current URL: " + driver.getCurrentUrl());
             System.out.println("Page title: " + driver.getTitle());
-            System.out.println("Page source length: " + driver.getPageSource().length());
+            System.out.println("Page source length: " + Objects.requireNonNull(driver.getPageSource()).length());
 
             System.out.println("\nAvailable form elements:");
             var formElements = driver.findElements(By.xpath("//input | //button | //a"));
