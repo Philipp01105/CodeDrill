@@ -2,14 +2,12 @@ package com.main.codedrill.browser;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.Duration;
 import java.util.Objects;
@@ -20,10 +18,13 @@ public class CodeDrillLoginTest {
     private WebDriverWait wait;
     private static final String BASE_URL = "https://codedrill.org";
 
-    private static final String USERNAME = "test";
-    private static final String PASSWORD = "testtest";
+    @Value("${codedrill.username}")
+    private static final String USERNAME = "your_username";
 
-    static void main(String[] args) {
+    @Value("${codedrill.password}")
+    private static final String PASSWORD = "your_password";
+
+    public static void main(String[] args) {
         CodeDrillLoginTest test = new CodeDrillLoginTest();
         test.setUp();
         try {
@@ -44,7 +45,7 @@ public class CodeDrillLoginTest {
     void setUp() {
         FirefoxOptions options = new FirefoxOptions();
 
-        //options.addArguments("--headless");
+        options.addArguments("--headless");
         options.addArguments("--width=1920");
         options.addArguments("--height=1080");
         options.addPreference("dom.webnotifications.enabled", false);
@@ -262,64 +263,67 @@ public class CodeDrillLoginTest {
 
 
             // Step 9: Fill in task details and submit
-            WebElement taskNameField = wait.until(
-                    ExpectedConditions.presenceOfElementLocated(By.id("title"))
-            );
-            WebElement taskShortDescriptionField = wait.until(
-                    ExpectedConditions.presenceOfElementLocated(By.id("description"))
-            );
-            WebElement taskLongDescriptionField = wait.until(
-                    ExpectedConditions.presenceOfElementLocated(By.id("content"))
-            );
-            WebElement taskJavaSolutionField = wait.until(
-                    ExpectedConditions.presenceOfElementLocated(By.id("solution"))
-            );
-            WebElement taskExpectedOutputField = wait.until(
-                    ExpectedConditions.presenceOfElementLocated(By.id("expectedOutput"))
-            );
-            WebElement taskJUnitTestField = wait.until(
-                    ExpectedConditions.presenceOfElementLocated(By.id("junitTests"))
-            );
-            WebElement taskTag = wait.until(
-                    ExpectedConditions.presenceOfElementLocated(By.id("tag1"))
-            );
-            createTaskButton = wait.until(
-                    ExpectedConditions.presenceOfElementLocated(By.xpath("//button[contains(@Class, 'material-btn px-6 py-2 bg-primary-600 text-white rounded-full hover:bg-primary-700 shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1')]"))
-            );
+            {
+                WebElement taskNameField = wait.until(
+                        ExpectedConditions.presenceOfElementLocated(By.id("title"))
+                );
+                WebElement taskShortDescriptionField = wait.until(
+                        ExpectedConditions.presenceOfElementLocated(By.id("description"))
+                );
+                WebElement taskLongDescriptionField = wait.until(
+                        ExpectedConditions.presenceOfElementLocated(By.id("content"))
+                );
+                WebElement taskJavaSolutionField = wait.until(
+                        ExpectedConditions.presenceOfElementLocated(By.id("solution"))
+                );
+                WebElement taskExpectedOutputField = wait.until(
+                        ExpectedConditions.presenceOfElementLocated(By.id("expectedOutput"))
+                );
+                WebElement taskJUnitTestField = wait.until(
+                        ExpectedConditions.presenceOfElementLocated(By.id("junitTests"))
+                );
+                WebElement taskTag = wait.until(
+                        ExpectedConditions.presenceOfElementLocated(By.id("tag1"))
+                );
+                createTaskButton = wait.until(
+                        ExpectedConditions.presenceOfElementLocated(By.xpath("//button[contains(@Class, 'material-btn px-6 py-2 bg-primary-600 text-white rounded-full hover:bg-primary-700 shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1')]"))
+                );
 
-            taskNameField.clear();
-            taskNameField.sendKeys("Test Task");
-            System.out.println("✓ Entered task name");
-            taskShortDescriptionField.clear();
-            taskShortDescriptionField.sendKeys("This is a test task for CodeDrill.");
-            System.out.println("✓ Entered task short description");
-            taskLongDescriptionField.clear();
-            taskLongDescriptionField.sendKeys("This task is designed to test the task creation and management features of CodeDrill.");
-            System.out.println("✓ Entered task long description");
-            taskJavaSolutionField.clear();
-            taskJavaSolutionField.sendKeys("public class Solution {\n" +
-                    "    public static void main(String[] args) {\n" +
-                    "        System.out.println(\"Hello, CodeDrill!\");\n" +
-                    "    }\n" +
-                    "}");
-            System.out.println("✓ Entered task Java solution");
-            taskExpectedOutputField.clear();
-            taskExpectedOutputField.sendKeys("Hello, CodeDrill!");
-            System.out.println("✓ Entered task expected output");
-            taskJUnitTestField.clear();
-            taskJUnitTestField.sendKeys("import org.junit.jupiter.api.Test;\n" +
-                    "import static org.junit.jupiter.api.Assertions.assertEquals;\n" +
-                    "\n" +
-                    "public class SolutionTest {\n" +
-                    "    @Test\n" +
-                    "    public void testMain() {\n" +
-                    "        assertEquals(\"Hello, CodeDrill!\", \"Hello, CodeDrill!\");\n" +
-                    "    }\n" +
-                    "}");
-            System.out.println("✓ Entered task JUnit test");
-            taskTag.click();
-            System.out.println("Entered task tag");
-            createTaskButton.click();
+                taskNameField.clear();
+                taskNameField.sendKeys("Test Task");
+                System.out.println("✓ Entered task name");
+                taskShortDescriptionField.clear();
+                taskShortDescriptionField.sendKeys("This is a test task for CodeDrill.");
+                System.out.println("✓ Entered task short description");
+                taskLongDescriptionField.clear();
+                taskLongDescriptionField.sendKeys("This task is designed to test the task creation and management features of CodeDrill.");
+                System.out.println("✓ Entered task long description");
+                taskJavaSolutionField.clear();
+                taskJavaSolutionField.sendKeys("""
+                        public class Solution {
+                            public static void main(String[] args) {
+                                System.out.println("Hello, CodeDrill!");
+                            }
+                        }""");
+                System.out.println("✓ Entered task Java solution");
+                taskExpectedOutputField.clear();
+                taskExpectedOutputField.sendKeys("Hello, CodeDrill!");
+                System.out.println("✓ Entered task expected output");
+                taskJUnitTestField.clear();
+                taskJUnitTestField.sendKeys("import org.junit.jupiter.api.Test;\n" +
+                        "import static org.junit.jupiter.api.Assertions.assertEquals;\n" +
+                        "\n" +
+                        "public class SolutionTest {\n" +
+                        "    @Test\n" +
+                        "    public void testMain() {\n" +
+                        "        assertEquals(\"Hello, CodeDrill!\", \"Hello, CodeDrill!\");\n" +
+                        "    }\n" +
+                        "}");
+                System.out.println("✓ Entered task JUnit test");
+                taskTag.click();
+                System.out.println("Entered task tag");
+                createTaskButton.click();
+            }
 
             // Step 10: Validate creation on dashboard
             wait.until(ExpectedConditions.urlContains("moderator/tasks"));
@@ -327,7 +331,7 @@ public class CodeDrillLoginTest {
             WebElement createdTask = wait.until(
                     ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Test Task')]"))
             );
-            Assertions.assertNotNull(createdTask, "Created task should be visible on the dashboard");
+            Assertions.assertNotNull(createdTask, "Created task didnt work - element should not be null");
 
             System.out.println("✓ Task created successfully and found on dashboard");
 
@@ -335,10 +339,14 @@ public class CodeDrillLoginTest {
             firstDeleteButton.click();
             Alert alert = wait.until(ExpectedConditions.alertIsPresent());
             alert.accept();
-            createdTask = wait.until(
-                    ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Test Task')]"))
-            );
-            Assertions.assertNull(createdTask, "Created task deleted");
+            try {
+                wait.until(ExpectedConditions.invisibilityOfElementLocated(
+                        By.xpath("//div[contains(text(), 'Test Task')]")
+                ));
+                System.out.println("Task successfully deleted - element is no longer visible");
+            } catch (TimeoutException e) {
+                Assertions.fail("Task was not deleted - element is still visible after timeout");
+            }
 
             // Step 11: Final verification
             String finalUrl = driver.getCurrentUrl();

@@ -2,6 +2,8 @@ package com.main.codedrill.service;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -81,6 +83,8 @@ public class CodeExecutionService {
     private Semaphore resourceSemaphore;
     private volatile boolean processingQueue = false;
 
+    private final Logger logger = LoggerFactory.getLogger(CodeExecutionService.class);
+
     private final MaliciousCodeDetector codeDetector = new MaliciousCodeDetector();
 
     @Autowired
@@ -95,9 +99,9 @@ public class CodeExecutionService {
     private void initialize() {
         initializeResourceSemaphore();
         startQueueProcessor();
-        System.out.println("Security scanning " + (securityEnabled ? "ENABLED" : "DISABLED"));
-        System.out.println("Strict mode " + (strictMode ? "ENABLED" : "DISABLED"));
-        System.out.println("JUnit relaxed mode " + (junitRelaxedMode ? "ENABLED" : "DISABLED"));
+        logger.info("Security scanning {}", securityEnabled ? "ENABLED" : "DISABLED");
+        logger.info("Strict mode {}", strictMode ? "ENABLED" : "DISABLED");
+        logger.info("JUnit relaxed mode {}", junitRelaxedMode ? "ENABLED" : "DISABLED");
     }
 
     /**
@@ -120,8 +124,8 @@ public class CodeExecutionService {
 
         this.resourceSemaphore = new Semaphore(maxConcurrentExecutions);
 
-        System.out.println("Initialized CodeExecutionService with max " + maxConcurrentExecutions + " concurrent executions");
-        System.out.println("System cores: " + systemCores + ", Available memory: " + (availableMemory / 1024 / 1024) + "MB");
+        logger.info("Initialized CodeExecutionService with max {} concurrent executions", maxConcurrentExecutions);
+        logger.info("System cores: {}, Available memory: {}MB", systemCores, availableMemory / 1024 / 1024);
     }
 
     private long parseMemoryLimit(String memoryLimit) {
@@ -141,7 +145,7 @@ public class CodeExecutionService {
             try {
                 return Long.parseLong(limit);
             } catch (NumberFormatException e) {
-                System.err.println("Invalid memory limit format: " + memoryLimit + ", using default 128MB");
+                logger.warn("Invalid memory limit format: {}, using default 128MB", memoryLimit);
                 return 128 * 1024 * 1024;
             }
         }
@@ -223,10 +227,7 @@ public class CodeExecutionService {
                 if (studentSecurityResult.malicious()) {
                     String securityMessage = formatSecurityMessage(studentSecurityResult, "Student Code");
 
-                    System.err.println("SECURITY VIOLATION - User: " + getCurrentUserInfo() +
-                            " - Risk Level: " + studentSecurityResult.riskLevel() +
-                            " - Reasons: " + studentSecurityResult.reasons() +
-                            " - Type: Student Code in JUnit Test");
+                    logger.warn("SECURITY VIOLATION - User: {} - Risk Level: {} - Reasons: {} - Type: Student Code in JUnit Test", getCurrentUserInfo(), studentSecurityResult.riskLevel(), studentSecurityResult.reasons());
 
                     if (strictMode || studentSecurityResult.riskLevel() == MaliciousCodeDetector.RiskLevel.CRITICAL) {
                         return formatTestErrorResult(securityMessage);
@@ -242,15 +243,11 @@ public class CodeExecutionService {
                     if (testSecurityResult.malicious() && testSecurityResult.riskLevel() == MaliciousCodeDetector.RiskLevel.CRITICAL) {
                         String securityMessage = formatSecurityMessage(testSecurityResult, "Test Code");
 
-                        System.err.println("CRITICAL SECURITY VIOLATION - User: " + getCurrentUserInfo() +
-                                " - Risk Level: " + testSecurityResult.riskLevel() +
-                                " - Reasons: " + testSecurityResult.reasons() +
-                                " - Type: Test Code");
+                        logger.warn("CRITICAL SECURITY VIOLATION - User: {} - Risk Level: {} - Reasons: {} - Type: Test Code", getCurrentUserInfo(), testSecurityResult.riskLevel(), testSecurityResult.reasons());
 
                         return formatTestErrorResult(securityMessage);
                     } else if (testSecurityResult.malicious()) {
-                        System.out.println("WARNING: JUnit test code has suspicious patterns but execution allowed in relaxed mode - " +
-                                testSecurityResult.reasons());
+                        logger.warn("WARNING: JUnit test code has suspicious patterns but execution allowed in relaxed mode - {}", testSecurityResult.reasons());
                     }
                 } else {
                     // Apply strict mode to test code as well
@@ -260,10 +257,7 @@ public class CodeExecutionService {
                     if (testSecurityResult.malicious()) {
                         String securityMessage = formatSecurityMessage(testSecurityResult, "Test Code");
 
-                        System.err.println("SECURITY VIOLATION - User: " + getCurrentUserInfo() +
-                                " - Risk Level: " + testSecurityResult.riskLevel() +
-                                " - Reasons: " + testSecurityResult.reasons() +
-                                " - Type: Test Code (Strict Mode)");
+                        logger.warn("SECURITY VIOLATION - User: {} - Risk Level: {} - Reasons: {} - Type: Test Code (Strict Mode)", getCurrentUserInfo(), testSecurityResult.riskLevel(), testSecurityResult.reasons());
 
                         if (strictMode || testSecurityResult.riskLevel() == MaliciousCodeDetector.RiskLevel.CRITICAL) {
                             return formatTestErrorResult(securityMessage);
@@ -277,16 +271,13 @@ public class CodeExecutionService {
                 if (securityResult.malicious()) {
                     String securityMessage = formatSecurityMessage(securityResult, "Code");
 
-                    System.err.println("SECURITY VIOLATION - User: " + getCurrentUserInfo() +
-                            " - Risk Level: " + securityResult.riskLevel() +
-                            " - Reasons: " + securityResult.reasons() +
-                            " - Type: Regular Code Execution");
+                    logger.warn("SECURITY VIOLATION - User: {} - Risk Level: {} - Reasons: {} - Type: Regular Code Execution", getCurrentUserInfo(), securityResult.riskLevel(), securityResult.reasons());
 
                     if (strictMode || securityResult.riskLevel() == MaliciousCodeDetector.RiskLevel.CRITICAL) {
                         return securityMessage;
                     }
 
-                    System.out.println("WARNING: Potentially risky code detected but execution allowed in non-strict mode");
+                    logger.warn("WARNING: Potentially risky code detected but execution allowed in non-strict mode");
                 }
             }
         }
@@ -337,16 +328,16 @@ public class CodeExecutionService {
 
     private String formatTestErrorResult(String errorMessage) {
         return String.format("""
-            {
-                "success": false,
-                "message": "%s",
-                "testsSucceeded": 0,
-                "testsFailed": 0,
-                "testsSkipped": 0,
-                "totalTests": 0,
-                "allTestsPassed": false
-            }
-            """, errorMessage.replace("\"", "\\\"").replace("\n", "\\n"));
+                {
+                    "success": false,
+                    "message": "%s",
+                    "testsSucceeded": 0,
+                    "testsFailed": 0,
+                    "testsSkipped": 0,
+                    "totalTests": 0,
+                    "allTestsPassed": false
+                }
+                """, errorMessage.replace("\"", "\\\"").replace("\n", "\\n"));
     }
 
     private String getCurrentUserInfo() {
@@ -600,16 +591,16 @@ public class CodeExecutionService {
 
     private String simulateTestExecution(Map<String, String> testData) {
         return """
-            {
-                "success": true,
-                "message": "Simulated test execution (Docker disabled)",
-                "testsSucceeded": 1,
-                "testsFailed": 0,
-                "testsSkipped": 0,
-                "totalTests": 1,
-                "allTestsPassed": true
-            }
-            """;
+                {
+                    "success": true,
+                    "message": "Simulated test execution (Docker disabled)",
+                    "testsSucceeded": 1,
+                    "testsFailed": 0,
+                    "testsSkipped": 0,
+                    "totalTests": 1,
+                    "allTestsPassed": true
+                }
+                """;
     }
 
     /**
@@ -741,7 +732,7 @@ public class CodeExecutionService {
         /**
          * Enhanced malicious code analysis with relaxed mode for JUnit tests
          *
-         * @param code The code to analyze
+         * @param code               The code to analyze
          * @param isJUnitRelaxedMode Whether to apply relaxed checking for JUnit test code
          */
         public MaliciousCodeResult analyzeCode(String code, boolean isJUnitRelaxedMode) {

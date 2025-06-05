@@ -389,9 +389,9 @@ public class AnalyticsService {
 
         if (isFirstLoginIn24Hours(user)) {
             systemAnalytics.incrementActiveUsers();
-            System.out.println("Active user incremented for: " + user.getUsername());
+            logger.info("Active user incremented for: " + user.getUsername());
         }else {
-            System.out.println("Active user not incremented for: " + user.getUsername());
+            logger.info("Active user not incremented for: " + user.getUsername());
         }
         systemAnalytics.incrementTotalSessions();
 

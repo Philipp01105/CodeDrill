@@ -7,6 +7,7 @@ import com.main.codedrill.service.TaskService;
 import com.main.codedrill.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +20,9 @@ import java.util.Map;
 @Controller
 @RequestMapping("/analytics")
 public class AnalyticsController {
+
+
+    Logger logger = org.slf4j.LoggerFactory.getLogger(AnalyticsController.class);
 
     private final AnalyticsService analyticsService;
     private final UserService userService;
@@ -95,7 +99,7 @@ public class AnalyticsController {
 
         User user = userService.findByUsername(auth.getName());
         Task task = taskService.getTaskById(taskId);
-        System.out.println("Tracking task view for user: " + (user != null ? user.getUsername() : "null") + ", task: " + (task != null ? task.getTitle() : "null"));
+        logger.info("Tracking task view for user: " + (user != null ? user.getUsername() : "null") + ", task: " + (task != null ? task.getTitle() : "null"));
 
         if (user != null && task != null) {
             HttpSession session = request.getSession(true);

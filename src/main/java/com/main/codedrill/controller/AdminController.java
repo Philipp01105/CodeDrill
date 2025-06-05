@@ -3,6 +3,8 @@ package com.main.codedrill.controller;
 import com.main.codedrill.model.User;
 import com.main.codedrill.repository.TaskRepository;
 import com.main.codedrill.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
@@ -18,6 +20,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+
+    Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     private final UserService userService;
     private final ApplicationContext applicationContext;
@@ -242,7 +246,7 @@ public class AdminController {
             return "redirect:/admin";
         }
 
-        System.out.println("EMERGENCY SHUTDOWN initiated by admin: " + admin.getUsername() + " at " + java.time.LocalDateTime.now());
+        logger.warn("EMERGENCY SHUTDOWN initiated by admin: " + admin.getUsername() + " at " + java.time.LocalDateTime.now());
 
         new Thread(() -> {
             try {
