@@ -246,7 +246,7 @@ public class AdminController {
             return "redirect:/admin";
         }
 
-        logger.warn("EMERGENCY SHUTDOWN initiated by admin: " + admin.getUsername() + " at " + java.time.LocalDateTime.now());
+        logger.warn("EMERGENCY SHUTDOWN initiated by admin: {} at {}", admin.getUsername(), java.time.LocalDateTime.now());
 
         new Thread(() -> {
             try {

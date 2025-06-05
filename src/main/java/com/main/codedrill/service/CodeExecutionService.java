@@ -283,7 +283,7 @@ public class CodeExecutionService {
         }
 
         if (!dockerEnabled) {
-            return isJUnitTest ? simulateTestExecution(testData) : simulateExecution(code);
+            return isJUnitTest ? simulateTestExecution() : simulateExecution(code);
         }
 
         if (resourceSemaphore.tryAcquire()) {
@@ -391,7 +391,7 @@ public class CodeExecutionService {
         String containerId = "coderunner-" + UUID.randomUUID().toString().substring(0, 8);
 
         try {
-            Process process = getExecutionProcess(code, containerId, false);
+            Process process = getExecutionProcess(code, containerId);
 
             boolean completed = process.waitFor(timeoutSeconds, TimeUnit.SECONDS);
             if (!completed) {
@@ -428,14 +428,14 @@ public class CodeExecutionService {
         }
     }
 
-    private Process getExecutionProcess(String code, String containerId, boolean isTest) throws IOException {
+    private Process getExecutionProcess(String code, String containerId) throws IOException {
         ProcessBuilder pb = new ProcessBuilder(
                 "docker", "run", "--name", containerId,
                 "--rm", "-i",
                 networkDisabled ? "--network=none" : "",
-                "--memory=" + (isTest ? testMemoryLimit : memoryLimit),
-                "--cpus=" + (isTest ? testCpuLimit : cpuLimit),
-                "--ulimit", "nproc=" + (isTest ? testProcessLimit : processLimit) + ":" + (isTest ? testProcessLimit * 2 : processLimit * 2),
+                "--memory=" + (memoryLimit),
+                "--cpus=" + (cpuLimit),
+                "--ulimit", "nproc=" + (processLimit) + ":" + (processLimit * 2),
                 dockerImage
         );
 
@@ -589,7 +589,7 @@ public class CodeExecutionService {
         return "Code executed successfully, but no output was detected.";
     }
 
-    private String simulateTestExecution(Map<String, String> testData) {
+    private String simulateTestExecution() {
         return """
                 {
                     "success": true,
@@ -830,7 +830,6 @@ public class CodeExecutionService {
          * JUnit-aware system execution checking
          */
         private RiskLevel checkJUnitAwareSystemExecution(String code, RiskLevel currentMax, StringBuilder reasons) {
-            String lowerCode = code.toLowerCase();
 
             // Check for dangerous system execution patterns that are NOT JUnit-related
             if (code.matches("(?i).*runtime\\.getruntime\\(\\)\\.exec.*") ||
@@ -843,14 +842,6 @@ public class CodeExecutionService {
                 // These are truly dangerous - flag them
                 reasons.append("Dangerous system command execution detected; ");
                 return updateRiskLevel(RiskLevel.CRITICAL, currentMax);
-            }
-
-            // System.setOut, System.setErr are allowed in JUnit tests
-            if (lowerCode.contains("system.setout") ||
-                    lowerCode.contains("system.seterr") ||
-                    lowerCode.contains("system.setin")) {
-                // These are legitimate JUnit operations - don't flag
-                return currentMax;
             }
 
             return currentMax;
@@ -866,7 +857,7 @@ public class CodeExecutionService {
             // Check dangerous file operations - allow test-related I/O
             if (DANGEROUS_FILE_PATTERN.matcher(code).find()) {
                 // Allow JUnit testing I/O operations
-                if (!containsAnyJUnitPattern(lowerCode, "stringwriter", "printwriter", "stringreader",
+                if (notContainsAnyJUnitPattern(lowerCode, "stringwriter", "printwriter", "stringreader",
                         "bytearrayoutputstream", "bytearrayinputstream", "test")) {
                     maxLevel = updateRiskLevel(RiskLevel.MEDIUM, maxLevel);
                     reasons.append("Non-test file operations detected; ");
@@ -881,7 +872,7 @@ public class CodeExecutionService {
 
             // Allow reflection only for JUnit-related operations
             if (REFLECTION_PATTERN.matcher(code).find()) {
-                if (!containsAnyJUnitPattern(lowerCode, "test", "junit", "assertequals", "invoke", "mock")) {
+                if (notContainsAnyJUnitPattern(lowerCode, "test", "junit", "assertequals", "invoke", "mock")) {
                     maxLevel = updateRiskLevel(RiskLevel.MEDIUM, maxLevel);
                     reasons.append("Non-JUnit reflection detected; ");
                 }
@@ -901,13 +892,13 @@ public class CodeExecutionService {
         /**
          * Check if code contains any JUnit-allowed patterns
          */
-        private boolean containsAnyJUnitPattern(String lowerCode, String... patterns) {
+        private boolean notContainsAnyJUnitPattern(String lowerCode, String... patterns) {
             for (String pattern : patterns) {
                 if (lowerCode.contains(pattern.toLowerCase())) {
-                    return true;
+                    return false;
                 }
             }
-            return false;
+            return true;
         }
 
         /**
@@ -954,11 +945,6 @@ public class CodeExecutionService {
             }
 
             return maxNesting;
-        }
-
-        // Backward compatibility method
-        public MaliciousCodeResult analyzeCode(String code) {
-            return analyzeCode(code, false); // Default to strict mode
         }
 
         private RiskLevel checkAndUpdate(Pattern pattern, String code, String reason,

@@ -78,11 +78,11 @@ public class EmailService {
 
             message.setText(emailBody);
             mailSender.send(message);
-            return true; // Email sent successfully
+            return true;
 
         } catch (MailException e) {
-            logger.error("Failed to send email: " + e.getMessage(), e);
-            return false; // Failed to send
+            logger.error("Failed to send email: {}", e.getMessage(), e);
+            return false;
         }
     }
 }
