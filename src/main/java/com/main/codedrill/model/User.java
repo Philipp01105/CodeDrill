@@ -162,5 +162,9 @@ public class User {
     public boolean isUser() {
         return "USER".equals(role);
     }
+
+    public Comparable<Object> getCreatedAt() {
+        return registrationDate;
+    }
 }
 

@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Controller
@@ -121,15 +122,29 @@ public class AdminController {
 
     @GetMapping("/users")
     public String listUsers(
-            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String search, @RequestParam(required = false) String sort,
             Model model) {
         
-        List<User> users;
+        List<User> users = userService.findAllUsers();
         if (search != null && !search.trim().isEmpty()) {
             users = userService.searchUsersByUsername(search);
             model.addAttribute("search", search);
-        } else {
-            users = userService.findAllUsers();
+        }
+
+        if(sort != null && !sort.trim().isEmpty()) {
+            switch (sort) {
+                case "id" -> users.sort(Comparator.comparing(User::getId));
+                case "username" -> users.sort((u1, u2) -> u1.getUsername().compareToIgnoreCase(u2.getUsername()));
+                case "fullName" -> users.sort((u1, u2) -> {
+                    String fullName1 = u1.getFullName() != null ? u1.getFullName() : "";
+                    String fullName2 = u2.getFullName() != null ? u2.getFullName() : "";
+                    return fullName1.compareToIgnoreCase(fullName2);
+                });
+                case "createdAt" -> users.sort(Comparator.comparing(User::getCreatedAt));
+                case "role" -> users.sort((u1, u2) -> u1.getRole().compareToIgnoreCase(u2.getRole()));
+            }
+            model.addAttribute("sort", sort);
+
         }
         
         model.addAttribute("users", users);
