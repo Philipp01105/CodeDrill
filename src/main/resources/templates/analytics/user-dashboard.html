@@ -45,190 +45,222 @@
     <script src="/js/darkMode.js"></script>
 </head>
 <body class="bg-gray-50 dark:bg-darkpurple-950 min-h-screen font-sans transition-colors duration-300">
-    <div class="flex min-h-screen">
-        <!-- Sidebar (reuse from other pages) -->
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<div class="flex min-h-screen">
+    <!-- Sidebar (reuse from other pages) -->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <!-- Main Content -->
-        <div class="flex-1 overflow-y-auto">
-            <!-- Mobile Header (reuse from other pages) -->
-            <div th:replace="~{fragments/mobile-header :: mobile-header}"></div>
+    <!-- Main Content -->
+    <div class="flex-1 overflow-y-auto">
+        <!-- Mobile Header (reuse from other pages) -->
+        <div th:replace="~{fragments/mobile-header :: mobile-header}"></div>
 
-            <!-- Page Content -->
-            <div class="p-6 animate-fade-in">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-darkpurple-200 mb-6 border-b dark:border-darkpurple-700 pb-3 animate-slide-up transition-colors duration-300">Your Performance Analytics</h2>
+        <!-- Page Content -->
+        <div class="p-6 animate-fade-in">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-darkpurple-200 mb-6 border-b dark:border-darkpurple-700 pb-3 animate-slide-up transition-colors duration-300">
+                Your Performance Analytics</h2>
 
-                <!-- Performance Overview Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <!-- Total Time Spent -->
-                    <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 border-l-4 border-primary-500 hover:shadow-lg transition-all duration-300">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Total Time Spent</h3>
-                        <div class="text-3xl font-bold text-primary-600 dark:text-primary-400" th:text="${#numbers.formatDecimal(metrics.totalTimeSpent / 3600, 1, 1)} + ' hours'">0 hours</div>
-                        <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Total time spent on the platform</p>
+            <!-- Performance Overview Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <!-- Total Time Spent -->
+                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 border-l-4 border-primary-500 hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Total Time Spent</h3>
+                    <div class="text-3xl font-bold text-primary-600 dark:text-primary-400"
+                         th:text="${#numbers.formatDecimal(metrics.totalTimeSpent / 3600, 1, 1)} + ' hours'">0 hours
                     </div>
-
-                    <!-- Tasks Completed -->
-                    <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 border-l-4 border-green-500 hover:shadow-lg transition-all duration-300">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Tasks Completed</h3>
-                        <div class="text-3xl font-bold text-green-600 dark:text-green-400" th:text="${metrics.totalTasksCompleted}">0</div>
-                        <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Successfully completed tasks</p>
-                    </div>
-
-                    <!-- Success Rate -->
-                    <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 border-l-4 border-purple-500 hover:shadow-lg transition-all duration-300">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Success Rate</h3>
-                        <div class="text-3xl font-bold text-purple-600 dark:text-purple-400" th:text="${#numbers.formatPercent(metrics.successRate, 1, 0)}">0%</div>
-                        <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Task completion success rate</p>
-                    </div>
-
-                    <!-- Session Count -->
-                    <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 border-l-4 border-indigo-500 hover:shadow-lg transition-all duration-300">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Total Sessions</h3>
-                        <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400" th:text="${metrics.sessionCount}">0</div>
-                        <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Number of learning sessions</p>
-                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Total time spent on the platform</p>
                 </div>
 
-                <!-- Task Activity Chart -->
-                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 mb-8">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">Task Activity</h3>
-                    <div class="h-64">
-                        <canvas id="taskActivityChart"></canvas>
+                <!-- Tasks Completed -->
+                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 border-l-4 border-green-500 hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Tasks Completed</h3>
+                    <div class="text-3xl font-bold text-green-600 dark:text-green-400"
+                         th:text="${metrics.totalTasksCompleted}">0
                     </div>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Successfully completed tasks</p>
                 </div>
 
-                <!-- Most Attempted Tasks -->
-                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 mb-8">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">Most Attempted Tasks</h3>
-
-                    <div th:if="${metrics.topAttemptedTasks.isEmpty()}" class="text-center py-8 text-gray-500 dark:text-gray-400">
-                        You haven't attempted any tasks yet.
+                <!-- Success Rate -->
+                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 border-l-4 border-purple-500 hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Success Rate</h3>
+                    <div class="text-3xl font-bold text-purple-600 dark:text-purple-400"
+                         th:text="${#numbers.formatPercent(metrics.successRate, 1, 0)}">0%
                     </div>
-
-                    <div th:unless="${metrics.topAttemptedTasks.isEmpty()}" class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-darkpurple-700">
-                            <thead class="bg-gray-50 dark:bg-darkpurple-800">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Task</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Attempts</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white dark:bg-darkpurple-900 divide-y divide-gray-200 dark:divide-darkpurple-700">
-                                <tr th:each="taskData : ${metrics.topAttemptedTasks}" class="hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-colors duration-150">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100" th:text="${taskData.task.title}">Task Title</div>
-                                        <div class="text-sm text-gray-500 dark:text-gray-400" th:text="${taskData.task.getPrimaryTag()}">Tag</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900 dark:text-gray-100" th:text="${taskData.attemptCount}">0</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a th:href="@{/tasks/{id}(id=${taskData.task.id})}" class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300">View Task</a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Task completion success rate</p>
                 </div>
 
-                <!-- Performance Tips -->
-                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">Performance Tips</h3>
+                <!-- Session Count -->
+                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 border-l-4 border-indigo-500 hover:shadow-lg transition-all duration-300">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Total Sessions</h3>
+                    <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400"
+                         th:text="${metrics.sessionCount}">0
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Number of learning sessions</p>
+                </div>
+            </div>
 
-                    <div class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 mb-4 rounded-r-lg">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-blue-700 dark:text-blue-300">
-                                    Regular practice is key to mastering Java programming concepts. Try to complete at least one task per day.
-                                </p>
-                            </div>
+            <!-- Task Activity Chart -->
+            <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">Task Activity</h3>
+                <div class="h-64">
+                    <canvas id="taskActivityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Most Attempted Tasks -->
+            <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">Most Attempted Tasks</h3>
+
+                <div th:if="${metrics.topAttemptedTasks.isEmpty()}"
+                     class="text-center py-8 text-gray-500 dark:text-gray-400">
+                    You haven't attempted any tasks yet.
+                </div>
+
+                <div th:unless="${metrics.topAttemptedTasks.isEmpty()}" class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-darkpurple-700">
+                        <thead class="bg-gray-50 dark:bg-darkpurple-800">
+                        <tr>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Task
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Attempts
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Action
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-darkpurple-900 divide-y divide-gray-200 dark:divide-darkpurple-700">
+                        <tr th:each="taskData : ${metrics.topAttemptedTasks}"
+                            class="hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-colors duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900 dark:text-gray-100"
+                                     th:text="${taskData.task.title}">Task Title
+                                </div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400"
+                                     th:text="${taskData.task.getPrimaryTag()}">Tag
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100"
+                                     th:text="${taskData.attemptCount}">0
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a th:href="@{/tasks/{id}(id=${taskData.task.id})}"
+                                   class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300">View
+                                    Task</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Performance Tips -->
+            <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">Performance Tips</h3>
+
+                <div class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 mb-4 rounded-r-lg">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                                <path fill-rule="evenodd"
+                                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                      clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-700 dark:text-blue-300">
+                                Regular practice is key to mastering Java programming concepts. Try to complete at least
+                                one task per day.
+                            </p>
                         </div>
                     </div>
-
-                    <ul class="list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-3">
-                        <li>Focus on understanding the problem before writing code</li>
-                        <li>Review your completed tasks to reinforce learning</li>
-                        <li>Try to improve your success rate by testing your code thoroughly</li>
-                        <li>Challenge yourself with different types of tasks</li>
-                    </ul>
                 </div>
+
+                <ul class="list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-3">
+                    <li>Focus on understanding the problem before writing code</li>
+                    <li>Review your completed tasks to reinforce learning</li>
+                    <li>Try to improve your success rate by testing your code thoroughly</li>
+                    <li>Challenge yourself with different types of tasks</li>
+                </ul>
             </div>
         </div>
     </div>
+</div>
 
-    <script th:inline="javascript">
-        // Get data from Thymeleaf model
-        var activityData = /*[[${metrics.activityData}]]*/ {
-            labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
-            viewedData: [0, 0, 0, 0, 0, 0, 0],
-            attemptedData: [0, 0, 0, 0, 0, 0, 0],
-            completedData: [0, 0, 0, 0, 0, 0, 0]
-        };
+<script th:inline="javascript">
+    // Get data from Thymeleaf model
+    var activityData = /*[[${metrics.activityData}]]*/ {
+        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+        viewedData: [0, 0, 0, 0, 0, 0, 0],
+        attemptedData: [0, 0, 0, 0, 0, 0, 0],
+        completedData: [0, 0, 0, 0, 0, 0, 0]
+    };
 
-        // Task Activity Chart
-        const taskActivityCtx = document.getElementById('taskActivityChart').getContext('2d');
+    // Task Activity Chart
+    const taskActivityCtx = document.getElementById('taskActivityChart').getContext('2d');
 
-        const taskActivityData = {
-            labels: activityData.labels,
-            datasets: [
-                {
-                    label: 'Tasks Viewed',
-                    data: activityData.viewedData,
-                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                    borderColor: 'rgb(59, 130, 246)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Tasks Attempted',
-                    data: activityData.attemptedData,
-                    backgroundColor: 'rgba(139, 92, 246, 0.5)',
-                    borderColor: 'rgb(139, 92, 246)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Tasks Completed',
-                    data: activityData.completedData,
-                    backgroundColor: 'rgba(16, 185, 129, 0.5)',
-                    borderColor: 'rgb(16, 185, 129)',
-                    borderWidth: 1
-                }
-            ]
-        };
+    const taskActivityData = {
+        labels: activityData.labels,
+        datasets: [
+            {
+                label: 'Tasks Viewed',
+                data: activityData.viewedData,
+                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                borderColor: 'rgb(59, 130, 246)',
+                borderWidth: 1
+            },
+            {
+                label: 'Tasks Attempted',
+                data: activityData.attemptedData,
+                backgroundColor: 'rgba(139, 92, 246, 0.5)',
+                borderColor: 'rgb(139, 92, 246)',
+                borderWidth: 1
+            },
+            {
+                label: 'Tasks Completed',
+                data: activityData.completedData,
+                backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                borderColor: 'rgb(16, 185, 129)',
+                borderWidth: 1
+            }
+        ]
+    };
 
-        const taskActivityChart = new Chart(taskActivityCtx, {
-            type: 'line',
-            data: taskActivityData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0
-                        }
+    const taskActivityChart = new Chart(taskActivityCtx, {
+        type: 'line',
+        data: taskActivityData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
                     }
                 }
             }
-        });
+        }
+    });
 
-        // Update chart colors when theme changes
-        document.addEventListener('themeChanged', function(e) {
-            const isDark = e.detail.isDark;
+    // Update chart colors when theme changes
+    document.addEventListener('themeChanged', function (e) {
+        const isDark = e.detail.isDark;
 
-            taskActivityChart.options.scales.x.ticks.color = isDark ? '#d1d5db' : '#6b7280';
-            taskActivityChart.options.scales.y.ticks.color = isDark ? '#d1d5db' : '#6b7280';
-            taskActivityChart.options.scales.x.grid.color = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-            taskActivityChart.options.scales.y.grid.color = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+        taskActivityChart.options.scales.x.ticks.color = isDark ? '#d1d5db' : '#6b7280';
+        taskActivityChart.options.scales.y.ticks.color = isDark ? '#d1d5db' : '#6b7280';
+        taskActivityChart.options.scales.x.grid.color = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+        taskActivityChart.options.scales.y.grid.color = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
 
-            taskActivityChart.update();
-        });
-    </script>
+        taskActivityChart.update();
+    });
+</script>
 </body>
 </html>

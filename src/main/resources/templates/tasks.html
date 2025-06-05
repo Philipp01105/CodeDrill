@@ -70,26 +70,26 @@
                     },
                     keyframes: {
                         fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
+                            '0%': {opacity: '0'},
+                            '100%': {opacity: '1'},
                         },
                         slideUp: {
-                            '0%': { transform: 'translateY(20px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                            '0%': {transform: 'translateY(20px)', opacity: '0'},
+                            '100%': {transform: 'translateY(0)', opacity: '1'},
                         },
                         slideInRight: {
-                            '0%': { transform: 'translateX(20px)', opacity: '0' },
-                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                            '0%': {transform: 'translateX(20px)', opacity: '0'},
+                            '100%': {transform: 'translateX(0)', opacity: '1'},
                         },
                         scaleIn: {
-                            '0%': { transform: 'scale(0.9)', opacity: '0' },
-                            '100%': { transform: 'scale(1)', opacity: '1' },
+                            '0%': {transform: 'scale(0.9)', opacity: '0'},
+                            '100%': {transform: 'scale(1)', opacity: '1'},
                         },
                         bounceIn: {
-                            '0%': { transform: 'scale(0.3)', opacity: '0' },
-                            '40%': { transform: 'scale(1.1)', opacity: '1' },
-                            '80%': { transform: 'scale(0.9)' },
-                            '100%': { transform: 'scale(1)' },
+                            '0%': {transform: 'scale(0.3)', opacity: '0'},
+                            '40%': {transform: 'scale(1.1)', opacity: '1'},
+                            '80%': {transform: 'scale(0.9)'},
+                            '100%': {transform: 'scale(1)'},
                         },
                     },
                     boxShadow: {
@@ -123,6 +123,7 @@
             overflow: hidden;
             transform: translate3d(0, 0, 0);
         }
+
         .material-btn::after {
             content: "";
             display: block;
@@ -139,6 +140,7 @@
             opacity: 0;
             transition: transform .5s, opacity 1s;
         }
+
         .material-btn:active::after {
             transform: scale(0, 0);
             opacity: .3;
@@ -147,8 +149,9 @@
 
         /* Card hover effect */
         .task-card {
-            transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+            transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
         }
+
         .task-card:hover {
             transform: translateY(-5px);
         }
@@ -157,12 +160,15 @@
         .modal-container {
             transition: opacity 0.3s ease;
         }
+
         .modal-content {
             transition: transform 0.3s ease, opacity 0.3s ease;
         }
+
         .modal-enter {
             opacity: 0;
         }
+
         .modal-enter .modal-content {
             transform: scale(0.9);
             opacity: 0;
@@ -191,346 +197,400 @@
     </style>
     <script src="/js/darkMode.js"></script>
 </head>
-<body class="bg-gray-50 dark:bg-darkpurple-950 min-h-screen font-sans transition-colors duration-300" th:classappend="${isAuthenticated ? 'user-authenticated' : ''}">
-    <div class="container mx-auto px-4 py-8 animate-fade-in">
-        <header class="mb-8 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-1 p-6 flex flex-col md:flex-row justify-between items-center transition-colors duration-300">
-            <div class="animate-slide-up">
-                <h1 class="text-3xl font-bold text-primary-700 dark:text-darkpurple-300 mb-2 tracking-tight transition-colors duration-300">Practice Tasks</h1>
-                <p class="text-gray-600 dark:text-gray-200 transition-colors duration-300">Browse and practice Java coding challenges</p>
-            </div>
-            <div class="flex flex-col md:flex-row items-center gap-4 mt-4 md:mt-0 animate-slide-in-right">
-                <!-- Dark mode toggle -->
-                <button id="theme-toggle" class="theme-toggle bg-gray-200 dark:bg-darkpurple-800 p-2 rounded-full transition-colors duration-300" aria-label="Toggle dark mode" aria-checked="false">
-                    <svg class="moon-icon w-5 h-5 text-gray-700 dark:text-darkpurple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                    </svg>
-                    <svg class="sun-icon w-5 h-5 text-yellow-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                    </svg>
-                </button>
+<body class="bg-gray-50 dark:bg-darkpurple-950 min-h-screen font-sans transition-colors duration-300"
+      th:classappend="${isAuthenticated ? 'user-authenticated' : ''}">
+<div class="container mx-auto px-4 py-8 animate-fade-in">
+    <header class="mb-8 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-1 p-6 flex flex-col md:flex-row justify-between items-center transition-colors duration-300">
+        <div class="animate-slide-up">
+            <h1 class="text-3xl font-bold text-primary-700 dark:text-darkpurple-300 mb-2 tracking-tight transition-colors duration-300">
+                Practice Tasks</h1>
+            <p class="text-gray-600 dark:text-gray-200 transition-colors duration-300">Browse and practice Java coding
+                challenges</p>
+        </div>
+        <div class="flex flex-col md:flex-row items-center gap-4 mt-4 md:mt-0 animate-slide-in-right">
+            <!-- Dark mode toggle -->
+            <button id="theme-toggle"
+                    class="theme-toggle bg-gray-200 dark:bg-darkpurple-800 p-2 rounded-full transition-colors duration-300"
+                    aria-label="Toggle dark mode" aria-checked="false">
+                <svg class="moon-icon w-5 h-5 text-gray-700 dark:text-darkpurple-200" fill="none" stroke="currentColor"
+                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                </svg>
+                <svg class="sun-icon w-5 h-5 text-yellow-300 hidden" fill="none" stroke="currentColor"
+                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+            </button>
 
-                <div th:if="${isAuthenticated && (role == 'ADMIN' || role == 'MODERATOR')}" class="flex items-center">
-                    <a th:href="${role == 'ADMIN' ? '/admin' : '/moderator'}" class="text-primary-600 dark:text-darkgreen-300 hover:text-primary-800 dark:hover:text-darkgreen-200 transition-colors duration-300 mr-4 font-medium">
-                        Dashboard
-                    </a>
-                </div>
-                <a href="/" class="text-primary-600 dark:text-darkblue-300 hover:text-primary-800 dark:hover:text-darkblue-200 transition-colors duration-300 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
-                    </svg>
-                    Back to Home
+            <div th:if="${isAuthenticated && (role == 'ADMIN' || role == 'MODERATOR')}" class="flex items-center">
+                <a th:href="${role == 'ADMIN' ? '/admin' : '/moderator'}"
+                   class="text-primary-600 dark:text-darkgreen-300 hover:text-primary-800 dark:hover:text-darkgreen-200 transition-colors duration-300 mr-4 font-medium">
+                    Dashboard
                 </a>
             </div>
-        </header>
+            <a href="/"
+               class="text-primary-600 dark:text-darkblue-300 hover:text-primary-800 dark:hover:text-darkblue-200 transition-colors duration-300 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                          d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                          clip-rule="evenodd"/>
+                </svg>
+                Back to Home
+            </a>
+        </div>
+    </header>
 
-        <div class="mb-6 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-1 p-6 animate-slide-up transition-colors duration-300" style="animation-delay: 0.1s;">
-            <div class="flex flex-col sm:flex-row items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-darkpurple-300 mb-3 sm:mb-0 transition-colors duration-300">Filter by Category</h2>
-                <div class="relative">
-                    <select id="tagFilter" onchange="filterTasks()" class="appearance-none bg-primary-50 dark:bg-darkpurple-800 border-0 border-b-2 border-primary-300 dark:border-darkblue-600 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-darkblue-500 focus:border-primary-500 dark:focus:border-darkblue-500 text-gray-800 dark:text-gray-200 transition-all duration-300">
-                        <option value="all">All Types</option>
-                        <option th:each="tag : ${tags}" th:value="${tag}" th:text="${tag}" th:selected="${tag == selectedTag}"></option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-primary-600 dark:text-darkblue-400 transition-colors duration-300">
-                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                        </svg>
-                    </div>
+    <div class="mb-6 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-1 p-6 animate-slide-up transition-colors duration-300"
+         style="animation-delay: 0.1s;">
+        <div class="flex flex-col sm:flex-row items-center justify-between">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-darkpurple-300 mb-3 sm:mb-0 transition-colors duration-300">
+                Filter by Category</h2>
+            <div class="relative">
+                <select id="tagFilter" onchange="filterTasks()"
+                        class="appearance-none bg-primary-50 dark:bg-darkpurple-800 border-0 border-b-2 border-primary-300 dark:border-darkblue-600 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-darkblue-500 focus:border-primary-500 dark:focus:border-darkblue-500 text-gray-800 dark:text-gray-200 transition-all duration-300">
+                    <option value="all">All Types</option>
+                    <option th:each="tag : ${tags}" th:value="${tag}" th:text="${tag}"
+                            th:selected="${tag == selectedTag}"></option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-primary-600 dark:text-darkblue-400 transition-colors duration-300">
+                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                    </svg>
                 </div>
             </div>
         </div>
-
-        <main class="animate-fade-in" style="animation-delay: 0.2s;">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Task Cards -->
-                <div th:each="task, iterStat : ${tasks}" class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-1 hover:shadow-elevation-3 overflow-hidden task-card relative transition-colors duration-300 flex flex-col h-[280px]"
-                     th:data-task-id="${task.id}"
-                     th:style="'animation-delay: ' + ${0.1 + iterStat.index * 0.05} + 's;'"
-                     th:classappend="${iterStat.index < 8} ? 'animate-scale-in' : ''">
-                    <!-- Completed icon for authenticated users -->
-                    <div th:if="${isAuthenticated && completedTaskIds != null && completedTaskIds.contains(task.id)}" 
-                         class="absolute top-3 right-3 bg-green-500 dark:bg-darkgreen-500 text-white rounded-full p-1.5 shadow-md z-10 animate-bounce-in transition-colors duration-300">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                    </div>
-                    <div class="p-6 flex flex-col flex-grow">
-                        <div class="flex flex-wrap gap-1.5 mb-4">
-                            <span th:each="tag : ${task.tags}" 
-                                  th:class="${tag == 'Java Methods & Logic'} ? 'inline-block px-3 py-1 text-xs font-medium bg-blue-100 dark:bg-darkblue-900/50 text-blue-800 dark:text-darkblue-300 rounded-full shadow-sm transition-colors duration-300' : (${tag == 'Object-Oriented Design'} ? 'inline-block px-3 py-1 text-xs font-medium bg-green-100 dark:bg-darkgreen-900/50 text-green-800 dark:text-darkgreen-300 rounded-full shadow-sm transition-colors duration-300' : (${tag == 'Data Structures'} ? 'inline-block px-3 py-1 text-xs font-medium bg-purple-100 dark:bg-darkpurple-900/50 text-purple-800 dark:text-darkpurple-300 rounded-full shadow-sm transition-colors duration-300' : (${tag == 'Recursion'} ? 'inline-block px-3 py-1 text-xs font-medium bg-yellow-100 dark:bg-darkyellow-900/50 text-yellow-800 dark:text-darkyellow-300 rounded-full shadow-sm transition-colors duration-300' : 'inline-block px-3 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-full shadow-sm transition-colors duration-300')))"
-                                  th:text="${tag}"></span>
-                        </div>
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 cursor-pointer view-task hover:text-primary-700 dark:hover:text-darkblue-400 transition-colors duration-300" th:text="${task.title}">Task Title</h3>
-                        <p class="text-gray-600 dark:text-gray-200 text-sm cursor-pointer view-task line-clamp-2 transition-colors duration-300 flex-grow" th:text="${task.description}">Task description goes here.</p>
-
-                        <div class="mt-auto pt-4 flex justify-end">
-                            <button class="material-btn bg-primary-600 dark:bg-darkblue-600 hover:bg-primary-700 dark:hover:bg-darkblue-700 text-white px-4 py-2 rounded-full text-sm font-medium train-btn shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1" th:data-task-id="${task.id}">
-                                Train
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- Task Modal -->
-        <div id="taskModal" class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center p-4 z-50 modal-container modal-enter">
-            <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-3 max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-content transition-colors duration-300">
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-4">
-                        <h3 id="modalTitle" class="text-2xl font-bold text-primary-700 dark:text-darkpurple-300 transition-colors duration-300"></h3>
-                        <button id="closeModal" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-300">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <div id="modalTag" class="mb-4"></div>
-                    <div id="modalContent" class="prose max-w-none text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed transition-colors duration-300"></div>
-
-                    <div class="mt-8 flex justify-between">
-                        <!-- Solution Section -->
-                        <div class="border-t border-gray-200 dark:border-darkpurple-700 pt-6 transition-colors duration-300">
-                            <button id="showSolutionBtn" class="material-btn flex items-center text-primary-600 dark:text-darkblue-400 hover:text-primary-800 dark:hover:text-darkblue-300 font-medium transition-colors duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                                See Solution
-                            </button>
-                            <div id="solutionContainer" class="hidden mt-4 animate-fade-in">
-                                <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 transition-colors duration-300">Solution:</h4>
-                                <pre><code id="solutionCode" class="language-java rounded-lg shadow-sm"></code></pre>
-                            </div>
-                        </div>
-
-                        <!-- Train button in modal -->
-                        <div class="pt-6">
-                            <button id="modalTrainBtn" class="material-btn bg-primary-600 dark:bg-darkblue-600 hover:bg-primary-700 dark:hover:bg-darkblue-700 text-white px-6 py-2 rounded-full font-medium shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
-                                Train
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 dark:bg-darkpurple-800 px-6 py-4 rounded-b-xl transition-colors duration-300">
-                    <button id="closeModalBtn" class="material-btn bg-primary-600 dark:bg-darkblue-600 hover:bg-primary-700 dark:hover:bg-darkblue-700 text-white font-medium py-2 px-6 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300">
-                        Close
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Code Runner Modal -->
-        <div id="codeRunnerModal" class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center p-4 z-50 modal-container modal-enter">
-            <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-3 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col modal-content transition-colors duration-300">
-                <div class="p-6 border-b dark:border-darkpurple-700 transition-colors duration-300">
-                    <div class="flex justify-between items-center">
-                        <h3 id="codeRunnerTitle" class="text-2xl font-bold text-primary-700 dark:text-darkpurple-300 transition-colors duration-300"></h3>
-                        <button id="closeCodeRunner" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-300">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="flex-grow overflow-auto p-6">
-                    <div class="mb-4">
-                        <p id="codeRunnerDescription" class="text-gray-700 dark:text-gray-200 mb-4 leading-relaxed transition-colors duration-300"></p>
-                        <div class="mb-4">
-                            <div id="executionStatusContainer" class="text-sm text-gray-600 dark:text-gray-300 flex items-center justify-end transition-colors duration-300">
-                                <span id="executionStatus">Execution slots available</span>
-                            </div>
-                        </div>
-                        <div id="codeEditorContainer" class="border rounded-xl border-gray-300 dark:border-darkblue-700 bg-gray-50 dark:bg-darkpurple-800 p-4 shadow-elevation-1 transition-colors duration-300">
-                            <div class="mb-2 flex justify-between items-center">
-                                <label class="text-gray-700 dark:text-gray-200 font-medium transition-colors duration-300">Your Code:</label>
-                                <button id="insertTemplateBtn" class="text-primary-600 dark:text-darkblue-400 hover:text-primary-800 dark:hover:text-darkblue-300 text-sm transition-colors duration-300">Insert Template</button>
-                            </div>
-                            <div id="codeMirrorContainer"></div>
-                        </div>
-                    </div>
-
-                    <div id="outputContainer" class="hidden mt-6 animate-fade-in">
-                        <div class="mb-2">
-                            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 transition-colors duration-300">Output:</h4>
-                            <pre id="codeOutput" class="bg-gray-800 dark:bg-black text-green-400 rounded-xl p-4 whitespace-pre-wrap font-mono text-sm overflow-x-auto shadow-elevation-1 transition-colors duration-300"></pre>
-                        </div>
-
-                        <div id="resultContainer" class="mt-4 p-4 rounded-lg animate-fade-in">
-                            <!-- Will be populated with success/error message -->
-                        </div>
-
-                        <div id="expectedOutputContainer" class="mt-4 hidden animate-fade-in">
-                            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 transition-colors duration-300">Expected Output:</h4>
-                            <pre id="expectedOutput" class="bg-gray-100 dark:bg-darkpurple-800 text-gray-800 dark:text-gray-200 rounded-xl p-4 whitespace-pre-wrap font-mono text-sm overflow-x-auto shadow-elevation-1 transition-colors duration-300"></pre>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-gray-50 dark:bg-darkpurple-800 px-6 py-4 border-t dark:border-darkpurple-700 flex justify-between transition-colors duration-300">
-                    <button id="closeCodeRunnerBtn" class="material-btn bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white font-medium py-2 px-6 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300">
-                        Close
-                    </button>
-                    <button id="runCodeBtn" class="material-btn bg-green-600 dark:bg-darkgreen-600 hover:bg-green-700 dark:hover:bg-darkgreen-700 text-white font-medium py-2 px-6 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
-                        Run Code
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <footer class="mt-12 text-center text-gray-500 dark:text-gray-300 text-sm animate-fade-in transition-colors duration-300" style="animation-delay: 0.3s;">
-            <p>If you want to contribute tasks feel free to dm me on Discord: nomnom2</p>
-            <p>&copy; 2025 CodeDrill. All rights reserved.</p>
-        </footer>
     </div>
 
-    <script>
-        // Filter tasks based on selected tag
-        function filterTasks() {
-            const tag = document.getElementById('tagFilter').value;
-            window.location.href = '/tasks' + (tag !== 'all' ? '?tag=' + tag : '');
-        }
+    <main class="animate-fade-in" style="animation-delay: 0.2s;">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Task Cards -->
+            <div th:each="task, iterStat : ${tasks}"
+                 class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-1 hover:shadow-elevation-3 overflow-hidden task-card relative transition-colors duration-300 flex flex-col h-[280px]"
+                 th:data-task-id="${task.id}"
+                 th:style="'animation-delay: ' + ${0.1 + iterStat.index * 0.05} + 's;'"
+                 th:classappend="${iterStat.index < 8} ? 'animate-scale-in' : ''">
+                <!-- Completed icon for authenticated users -->
+                <div th:if="${isAuthenticated && completedTaskIds != null && completedTaskIds.contains(task.id)}"
+                     class="absolute top-3 right-3 bg-green-500 dark:bg-darkgreen-500 text-white rounded-full p-1.5 shadow-md z-10 animate-bounce-in transition-colors duration-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <div class="p-6 flex flex-col flex-grow">
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                            <span th:each="tag : ${task.tags}"
+                                  th:class="${tag == 'Java Methods & Logic'} ? 'inline-block px-3 py-1 text-xs font-medium bg-blue-100 dark:bg-darkblue-900/50 text-blue-800 dark:text-darkblue-300 rounded-full shadow-sm transition-colors duration-300' : (${tag == 'Object-Oriented Design'} ? 'inline-block px-3 py-1 text-xs font-medium bg-green-100 dark:bg-darkgreen-900/50 text-green-800 dark:text-darkgreen-300 rounded-full shadow-sm transition-colors duration-300' : (${tag == 'Data Structures'} ? 'inline-block px-3 py-1 text-xs font-medium bg-purple-100 dark:bg-darkpurple-900/50 text-purple-800 dark:text-darkpurple-300 rounded-full shadow-sm transition-colors duration-300' : (${tag == 'Recursion'} ? 'inline-block px-3 py-1 text-xs font-medium bg-yellow-100 dark:bg-darkyellow-900/50 text-yellow-800 dark:text-darkyellow-300 rounded-full shadow-sm transition-colors duration-300' : 'inline-block px-3 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-full shadow-sm transition-colors duration-300')))"
+                                  th:text="${tag}"></span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 cursor-pointer view-task hover:text-primary-700 dark:hover:text-darkblue-400 transition-colors duration-300"
+                        th:text="${task.title}">Task Title</h3>
+                    <p class="text-gray-600 dark:text-gray-200 text-sm cursor-pointer view-task line-clamp-2 transition-colors duration-300 flex-grow"
+                       th:text="${task.description}">Task description goes here.</p>
 
-        // Task Modal Functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const taskCards = document.querySelectorAll('.task-card');
-            const viewTaskElements = document.querySelectorAll('.view-task');
-            const trainButtons = document.querySelectorAll('.train-btn');
-            const modal = document.getElementById('taskModal');
-            const closeModal = document.getElementById('closeModal');
-            const closeModalBtn = document.getElementById('closeModalBtn');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalTag = document.getElementById('modalTag');
-            const modalContent = document.getElementById('modalContent');
-            const showSolutionBtn = document.getElementById('showSolutionBtn');
-            const solutionContainer = document.getElementById('solutionContainer');
-            const solutionCode = document.getElementById('solutionCode');
-            const modalTrainBtn = document.getElementById('modalTrainBtn');
+                    <div class="mt-auto pt-4 flex justify-end">
+                        <button class="material-btn bg-primary-600 dark:bg-darkblue-600 hover:bg-primary-700 dark:hover:bg-darkblue-700 text-white px-4 py-2 rounded-full text-sm font-medium train-btn shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+                                th:data-task-id="${task.id}">
+                            Train
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
-            // Code Runner Modal elements
-            const codeRunnerModal = document.getElementById('codeRunnerModal');
-            const closeCodeRunner = document.getElementById('closeCodeRunner');
-            const closeCodeRunnerBtn = document.getElementById('closeCodeRunnerBtn');
-            const codeRunnerTitle = document.getElementById('codeRunnerTitle');
-            const codeRunnerDescription = document.getElementById('codeRunnerDescription');
-            const codeMirrorContainer = document.getElementById('codeMirrorContainer');
-            const runCodeBtn = document.getElementById('runCodeBtn');
-            const outputContainer = document.getElementById('outputContainer');
-            const codeOutput = document.getElementById('codeOutput');
-            const resultContainer = document.getElementById('resultContainer');
-            const expectedOutputContainer = document.getElementById('expectedOutputContainer');
-            const expectedOutput = document.getElementById('expectedOutput');
-            const insertTemplateBtn = document.getElementById('insertTemplateBtn');
+    <!-- Task Modal -->
+    <div id="taskModal"
+         class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center p-4 z-50 modal-container modal-enter">
+        <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-3 max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-content transition-colors duration-300">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 id="modalTitle"
+                        class="text-2xl font-bold text-primary-700 dark:text-darkpurple-300 transition-colors duration-300"></h3>
+                    <button id="closeModal"
+                            class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="modalTag" class="mb-4"></div>
+                <div id="modalContent"
+                     class="prose max-w-none text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed transition-colors duration-300"></div>
 
-            let currentTask = null;
-            let codeMirror = null;
+                <div class="mt-8 flex justify-between">
+                    <!-- Solution Section -->
+                    <div class="border-t border-gray-200 dark:border-darkpurple-700 pt-6 transition-colors duration-300">
+                        <button id="showSolutionBtn"
+                                class="material-btn flex items-center text-primary-600 dark:text-darkblue-400 hover:text-primary-800 dark:hover:text-darkblue-300 font-medium transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                                 stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            See Solution
+                        </button>
+                        <div id="solutionContainer" class="hidden mt-4 animate-fade-in">
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 transition-colors duration-300">
+                                Solution:</h4>
+                            <pre><code id="solutionCode" class="language-java rounded-lg shadow-sm"></code></pre>
+                        </div>
+                    </div>
 
-            // Initialize CodeMirror editor
-            function initCodeMirror() {
-                codeMirror = CodeMirror(codeMirrorContainer, {
-                    mode: "text/x-java",
-                    id: "codeEditor",
-                    theme: "eclipse",
-                    lineNumbers: true,
-                    matchBrackets: true,
-                    autoCloseBrackets: true,
-                    indentUnit: 4,
-                    tabSize: 4,
-                    indentWithTabs: false,
-                    extraKeys: {
-                        "Tab": function(cm) {
-                            if (cm.somethingSelected()) {
-                                cm.indentSelection("add");
-                            } else {
-                                cm.replaceSelection("    ", "end");
-                            }
+                    <!-- Train button in modal -->
+                    <div class="pt-6">
+                        <button id="modalTrainBtn"
+                                class="material-btn bg-primary-600 dark:bg-darkblue-600 hover:bg-primary-700 dark:hover:bg-darkblue-700 text-white px-6 py-2 rounded-full font-medium shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
+                            Train
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 dark:bg-darkpurple-800 px-6 py-4 rounded-b-xl transition-colors duration-300">
+                <button id="closeModalBtn"
+                        class="material-btn bg-primary-600 dark:bg-darkblue-600 hover:bg-primary-700 dark:hover:bg-darkblue-700 text-white font-medium py-2 px-6 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Runner Modal -->
+    <div id="codeRunnerModal"
+         class="hidden fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center p-4 z-50 modal-container modal-enter">
+        <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-3 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col modal-content transition-colors duration-300">
+            <div class="p-6 border-b dark:border-darkpurple-700 transition-colors duration-300">
+                <div class="flex justify-between items-center">
+                    <h3 id="codeRunnerTitle"
+                        class="text-2xl font-bold text-primary-700 dark:text-darkpurple-300 transition-colors duration-300"></h3>
+                    <button id="closeCodeRunner"
+                            class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-grow overflow-auto p-6">
+                <div class="mb-4">
+                    <p id="codeRunnerDescription"
+                       class="text-gray-700 dark:text-gray-200 mb-4 leading-relaxed transition-colors duration-300"></p>
+                    <div class="mb-4">
+                        <div id="executionStatusContainer"
+                             class="text-sm text-gray-600 dark:text-gray-300 flex items-center justify-end transition-colors duration-300">
+                            <span id="executionStatus">Execution slots available</span>
+                        </div>
+                    </div>
+                    <div id="codeEditorContainer"
+                         class="border rounded-xl border-gray-300 dark:border-darkblue-700 bg-gray-50 dark:bg-darkpurple-800 p-4 shadow-elevation-1 transition-colors duration-300">
+                        <div class="mb-2 flex justify-between items-center">
+                            <label class="text-gray-700 dark:text-gray-200 font-medium transition-colors duration-300">Your
+                                Code:</label>
+                            <button id="insertTemplateBtn"
+                                    class="text-primary-600 dark:text-darkblue-400 hover:text-primary-800 dark:hover:text-darkblue-300 text-sm transition-colors duration-300">
+                                Insert Template
+                            </button>
+                        </div>
+                        <div id="codeMirrorContainer"></div>
+                    </div>
+                </div>
+
+                <div id="outputContainer" class="hidden mt-6 animate-fade-in">
+                    <div class="mb-2">
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 transition-colors duration-300">
+                            Output:</h4>
+                        <pre id="codeOutput"
+                             class="bg-gray-800 dark:bg-black text-green-400 rounded-xl p-4 whitespace-pre-wrap font-mono text-sm overflow-x-auto shadow-elevation-1 transition-colors duration-300"></pre>
+                    </div>
+
+                    <div id="resultContainer" class="mt-4 p-4 rounded-lg animate-fade-in">
+                        <!-- Will be populated with success/error message -->
+                    </div>
+
+                    <div id="expectedOutputContainer" class="mt-4 hidden animate-fade-in">
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 transition-colors duration-300">
+                            Expected Output:</h4>
+                        <pre id="expectedOutput"
+                             class="bg-gray-100 dark:bg-darkpurple-800 text-gray-800 dark:text-gray-200 rounded-xl p-4 whitespace-pre-wrap font-mono text-sm overflow-x-auto shadow-elevation-1 transition-colors duration-300"></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 dark:bg-darkpurple-800 px-6 py-4 border-t dark:border-darkpurple-700 flex justify-between transition-colors duration-300">
+                <button id="closeCodeRunnerBtn"
+                        class="material-btn bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700 text-white font-medium py-2 px-6 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300">
+                    Close
+                </button>
+                <button id="runCodeBtn"
+                        class="material-btn bg-green-600 dark:bg-darkgreen-600 hover:bg-green-700 dark:hover:bg-darkgreen-700 text-white font-medium py-2 px-6 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
+                    Run Code
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-12 text-center text-gray-500 dark:text-gray-300 text-sm animate-fade-in transition-colors duration-300"
+            style="animation-delay: 0.3s;">
+        <p>If you want to contribute tasks feel free to dm me on Discord: nomnom2</p>
+        <p>&copy; 2025 CodeDrill. All rights reserved.</p>
+    </footer>
+</div>
+
+<script>
+    // Filter tasks based on selected tag
+    function filterTasks() {
+        const tag = document.getElementById('tagFilter').value;
+        window.location.href = '/tasks' + (tag !== 'all' ? '?tag=' + tag : '');
+    }
+
+    // Task Modal Functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const taskCards = document.querySelectorAll('.task-card');
+        const viewTaskElements = document.querySelectorAll('.view-task');
+        const trainButtons = document.querySelectorAll('.train-btn');
+        const modal = document.getElementById('taskModal');
+        const closeModal = document.getElementById('closeModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalTag = document.getElementById('modalTag');
+        const modalContent = document.getElementById('modalContent');
+        const showSolutionBtn = document.getElementById('showSolutionBtn');
+        const solutionContainer = document.getElementById('solutionContainer');
+        const solutionCode = document.getElementById('solutionCode');
+        const modalTrainBtn = document.getElementById('modalTrainBtn');
+
+        // Code Runner Modal elements
+        const codeRunnerModal = document.getElementById('codeRunnerModal');
+        const closeCodeRunner = document.getElementById('closeCodeRunner');
+        const closeCodeRunnerBtn = document.getElementById('closeCodeRunnerBtn');
+        const codeRunnerTitle = document.getElementById('codeRunnerTitle');
+        const codeRunnerDescription = document.getElementById('codeRunnerDescription');
+        const codeMirrorContainer = document.getElementById('codeMirrorContainer');
+        const runCodeBtn = document.getElementById('runCodeBtn');
+        const outputContainer = document.getElementById('outputContainer');
+        const codeOutput = document.getElementById('codeOutput');
+        const resultContainer = document.getElementById('resultContainer');
+        const expectedOutputContainer = document.getElementById('expectedOutputContainer');
+        const expectedOutput = document.getElementById('expectedOutput');
+        const insertTemplateBtn = document.getElementById('insertTemplateBtn');
+
+        let currentTask = null;
+        let codeMirror = null;
+
+        // Initialize CodeMirror editor
+        function initCodeMirror() {
+            codeMirror = CodeMirror(codeMirrorContainer, {
+                mode: "text/x-java",
+                id: "codeEditor",
+                theme: "eclipse",
+                lineNumbers: true,
+                matchBrackets: true,
+                autoCloseBrackets: true,
+                indentUnit: 4,
+                tabSize: 4,
+                indentWithTabs: false,
+                extraKeys: {
+                    "Tab": function (cm) {
+                        if (cm.somethingSelected()) {
+                            cm.indentSelection("add");
+                        } else {
+                            cm.replaceSelection("    ", "end");
                         }
                     }
+                }
+            });
+
+            // Set initial height
+            codeMirror.setSize(null, 200);
+        }
+
+        // Initialize CodeMirror when DOM is loaded
+        initCodeMirror();
+
+        // Fetch and display execution status
+        function updateExecutionStatus() {
+            const statusContainer = document.getElementById('executionStatusContainer');
+            const statusText = document.getElementById('executionStatus');
+
+            fetch('/api/code-runner/status')
+                .then(response => {
+                    // Check if response is ok and is json
+                    if (!response.ok) {
+                        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                    }
+
+                    // Check content type to ensure it's JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('Received non-JSON response from server');
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+                    const notAvailable = data.current;
+
+                    if (notAvailable === false) {
+                        statusText.textContent = `Execution slots available`;
+                        statusContainer.className = 'text-sm text-green-600 flex items-center justify-end';
+                    } else if (notAvailable === true && document.getElementById("codeOutput").textContent === "Executing code...") {
+                        statusText.textContent = `In queue`;
+                        statusContainer.className = 'text-sm text-red-600 flex items-center justify-end';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching execution status:', error);
+                    statusText.textContent = 'Status unavailable';
                 });
+        }
 
-                // Set initial height
-                codeMirror.setSize(null, 200);
-            }
+        // Update status when code runner is opened and initial status update
+        updateExecutionStatus();
 
-            // Initialize CodeMirror when DOM is loaded
-            initCodeMirror();
+        // Update status periodically
+        setInterval(updateExecutionStatus, 5000);
 
-            // Fetch and display execution status
-            function updateExecutionStatus() {
-                const statusContainer = document.getElementById('executionStatusContainer');
-                const statusText = document.getElementById('executionStatus');
+        // Initialize syntax highlighting
+        hljs.configure({languages: ['java']});
 
-                fetch('/api/code-runner/status')
-                    .then(response => {
-                        // Check if response is ok and is json
-                        if (!response.ok) {
-                            throw new Error(`Server returned ${response.status}: ${response.statusText}`);
-                        }
-
-                        // Check content type to ensure it's JSON
-                        const contentType = response.headers.get('content-type');
-                        if (!contentType || !contentType.includes('application/json')) {
-                            throw new Error('Received non-JSON response from server');
-                        }
-
-                        return response.json();
-                    })
-                    .then(data => {
-                        const notAvailable = data.current;
-
-                        if (notAvailable === false) {
-                            statusText.textContent = `Execution slots available`;
-                            statusContainer.className = 'text-sm text-green-600 flex items-center justify-end';
-                        } else if (notAvailable === true && document.getElementById("codeOutput").textContent === "Executing code...") {
-                            statusText.textContent = `In queue`;
-                            statusContainer.className = 'text-sm text-red-600 flex items-center justify-end';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching execution status:', error);
-                        statusText.textContent = 'Status unavailable';
-                    });
-            }
-
-            // Update status when code runner is opened and initial status update
-            updateExecutionStatus();
-
-            // Update status periodically
-            setInterval(updateExecutionStatus, 5000);
-
-            // Initialize syntax highlighting
-            hljs.configure({ languages: ['java'] });
-
-            // Solution toggle
-            showSolutionBtn.addEventListener('click', function() {
-                if (solutionContainer.classList.contains('hidden')) {
-                    solutionContainer.classList.remove('hidden');
-                    showSolutionBtn.innerHTML = `
+        // Solution toggle
+        showSolutionBtn.addEventListener('click', function () {
+            if (solutionContainer.classList.contains('hidden')) {
+                solutionContainer.classList.remove('hidden');
+                showSolutionBtn.innerHTML = `
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                         </svg>
                         Hide Solution`;
-                } else {
-                    solutionContainer.classList.add('hidden');
-                    showSolutionBtn.innerHTML = `
+            } else {
+                solutionContainer.classList.add('hidden');
+                showSolutionBtn.innerHTML = `
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
                         See Solution`;
-                }
-            });
+            }
+        });
 
-            // Function to fetch and display task details
-            function fetchTaskDetails(taskId) {
-                // Use fetch with credentials to ensure authentication is sent if needed
-                fetch(`/api/tasks/${taskId}`, {
-                    credentials: 'same-origin',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                })
+        // Function to fetch and display task details
+        function fetchTaskDetails(taskId) {
+            // Use fetch with credentials to ensure authentication is sent if needed
+            fetch(`/api/tasks/${taskId}`, {
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Failed to fetch task details');
@@ -557,7 +617,7 @@
                     if (task.tags && task.tags.length > 0) {
                         for (const tag of task.tags) {
                             let tagClass = '';
-                            switch(tag) {
+                            switch (tag) {
                                 case 'Methods and Control Structures':
                                     tagClass = 'bg-blue-100 text-blue-800';
                                     break;
@@ -613,39 +673,39 @@
                     console.error('Error fetching task:', error);
                     alert('Failed to load task details. Please try again.');
                 });
-            }
+        }
 
-            // Open modal when task card is clicked
-            taskCards.forEach(card => {
-                card.addEventListener('click', function(e) {
-                    // Don't open modal if train button was clicked
-                    if (e.target.closest('.train-btn')) {
-                        return;
-                    }
-                    const taskId = this.getAttribute('data-task-id');
-                    fetchTaskDetails(taskId);
-                });
-            });
-
-            // Handle train button clicks (both on cards and in modal)
-            function handleTrainButtonClick(taskId) {
-                // Check if user is authenticated
-                const isAuthenticated = document.body.classList.contains('user-authenticated');
-
-                if (!isAuthenticated) {
-                    // Redirect to login page
-                    window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname + '?openTask=' + taskId);
+        // Open modal when task card is clicked
+        taskCards.forEach(card => {
+            card.addEventListener('click', function (e) {
+                // Don't open modal if train button was clicked
+                if (e.target.closest('.train-btn')) {
                     return;
                 }
+                const taskId = this.getAttribute('data-task-id');
+                fetchTaskDetails(taskId);
+            });
+        });
 
-                if (!currentTask || currentTask.id !== taskId) {
-                    // Fetch task details first if not already loaded
-                    fetch(`/api/tasks/${taskId}`, {
-                        credentials: 'same-origin',
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    })
+        // Handle train button clicks (both on cards and in modal)
+        function handleTrainButtonClick(taskId) {
+            // Check if user is authenticated
+            const isAuthenticated = document.body.classList.contains('user-authenticated');
+
+            if (!isAuthenticated) {
+                // Redirect to login page
+                window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname + '?openTask=' + taskId);
+                return;
+            }
+
+            if (!currentTask || currentTask.id !== taskId) {
+                // Fetch task details first if not already loaded
+                fetch(`/api/tasks/${taskId}`, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
                     .then(response => {
                         if (!response.ok) {
                             throw new Error(`Server returned ${response.status}: ${response.statusText}`);
@@ -680,94 +740,94 @@
                     .catch(error => {
                         console.error('Error fetching task for code runner:', error);
                     });
-                } else {
-                    // Show code runner modal with animation
-                    showModal(codeRunnerModal);
+            } else {
+                // Show code runner modal with animation
+                showModal(codeRunnerModal);
 
-                    // Update execution status
-                    updateExecutionStatus();
-                }
-
-                // Close the task modal if it's open
-                if (!modal.classList.contains('hidden')) {
-                    hideModal(modal);
-                }
+                // Update execution status
+                updateExecutionStatus();
             }
 
-            // Handle train button clicks on cards
-            trainButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.stopPropagation(); // Prevent opening the task modal
-                    const taskId = this.getAttribute('data-task-id');
-                    handleTrainButtonClick(taskId);
-                });
-            });
+            // Close the task modal if it's open
+            if (!modal.classList.contains('hidden')) {
+                hideModal(modal);
+            }
+        }
 
-            // Handle train button click in modal
-            modalTrainBtn.addEventListener('click', function() {
+        // Handle train button clicks on cards
+        trainButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.stopPropagation(); // Prevent opening the task modal
                 const taskId = this.getAttribute('data-task-id');
                 handleTrainButtonClick(taskId);
             });
+        });
 
-            // Insert template code
-            insertTemplateBtn.addEventListener('click', function() {
-                const templateCode = `public class Solution {
+        // Handle train button click in modal
+        modalTrainBtn.addEventListener('click', function () {
+            const taskId = this.getAttribute('data-task-id');
+            handleTrainButtonClick(taskId);
+        });
+
+        // Insert template code
+        insertTemplateBtn.addEventListener('click', function () {
+            const templateCode = `public class Solution {
     public static void main(String[] args) {
         // Your code here
 
     }
 }`;
-                codeMirror.setValue(templateCode);
-                codeMirror.focus();
+            codeMirror.setValue(templateCode);
+            codeMirror.focus();
 
-                // Position cursor at line 3, character 8 (after the comment)
-                codeMirror.setCursor({line: 3, ch: 8});
+            // Position cursor at line 3, character 8 (after the comment)
+            codeMirror.setCursor({line: 3, ch: 8});
+        });
+
+        // Function to track code attempts
+        function trackAttempt(taskId, successful, errorMessage, code) {
+            fetch(`/analytics/track/attempt/${taskId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    successful: successful,
+                    errorMessage: errorMessage,
+                    code: code
+                })
+            }).catch(error => {
+                console.error('Error tracking attempt:', error);
             });
+        }
 
-            // Function to track code attempts
-            function trackAttempt(taskId, successful, errorMessage, code) {
-                fetch(`/analytics/track/attempt/${taskId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        successful: successful,
-                        errorMessage: errorMessage,
-                        code: code
-                    })
-                }).catch(error => {
-                    console.error('Error tracking attempt:', error);
-                });
+        // Run code button
+        runCodeBtn.addEventListener('click', function () {
+            if (!currentTask) return;
+
+            const code = codeMirror.getValue().trim();
+            if (!code) {
+                alert('Please enter some code to run.');
+                return;
             }
 
-            // Run code button
-            runCodeBtn.addEventListener('click', function() {
-                if (!currentTask) return;
+            // Show loading state
+            runCodeBtn.disabled = true;
+            runCodeBtn.textContent = 'Running...';
+            outputContainer.classList.remove('hidden');
+            codeOutput.textContent = 'Executing code...';
+            resultContainer.innerHTML = '';
+            expectedOutputContainer.classList.add('hidden');
 
-                const code = codeMirror.getValue().trim();
-                if (!code) {
-                    alert('Please enter some code to run.');
-                    return;
-                }
-
-                // Show loading state
-                runCodeBtn.disabled = true;
-                runCodeBtn.textContent = 'Running...';
-                outputContainer.classList.remove('hidden');
-                codeOutput.textContent = 'Executing code...';
-                resultContainer.innerHTML = '';
-                expectedOutputContainer.classList.add('hidden');
-
-                // Send code to backend for execution
-                fetch(`/api/code-runner/run/${currentTask.id}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ code: code })
-                })
+            // Send code to backend for execution
+            fetch(`/api/code-runner/run/${currentTask.id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({code: code})
+            })
                 .then(response => {
                     if (response.status === 401) {
                         // User not authenticated, redirect to login
@@ -845,99 +905,99 @@
                                 <span>Not quite right. Your output doesn't match the expected result.</span>
                             </div>`;
 
-                            // Show expected output
-                            if (data.expectedOutput) {
-                                expectedOutput.textContent = data.expectedOutput;
-                                expectedOutputContainer.classList.remove('hidden');
-                            }
+                        // Show expected output
+                        if (data.expectedOutput) {
+                            expectedOutput.textContent = data.expectedOutput;
+                            expectedOutputContainer.classList.remove('hidden');
                         }
-                    })
-                    .catch(error => {
-                        console.error('Error running code:', error);
-                        codeOutput.textContent = 'Error executing code. Please check your syntax and try again.';
-                        resultContainer.innerHTML = `
+                    }
+                })
+                .catch(error => {
+                    console.error('Error running code:', error);
+                    codeOutput.textContent = 'Error executing code. Please check your syntax and try again.';
+                    resultContainer.innerHTML = `
                             <div class="bg-red-100 text-red-800 p-4 rounded-lg">
                                 Error: Failed to execute code. Please check your syntax and try again.
                             </div>`;
-                    })
-                    .finally(() => {
-                        // Reset button state
-                        runCodeBtn.disabled = false;
-                        runCodeBtn.textContent = 'Run Code';
-                    });
-            });
+                })
+                .finally(() => {
+                    // Reset button state
+                    runCodeBtn.disabled = false;
+                    runCodeBtn.textContent = 'Run Code';
+                });
+        });
 
-            // Modal animation functions
-            function showModal(modalElement) {
-                // First remove the hidden class
-                modalElement.classList.remove('hidden');
+        // Modal animation functions
+        function showModal(modalElement) {
+            // First remove the hidden class
+            modalElement.classList.remove('hidden');
 
-                // Force a reflow to ensure the transition works
-                void modalElement.offsetWidth;
+            // Force a reflow to ensure the transition works
+            void modalElement.offsetWidth;
 
-                // Remove the enter class to trigger the animation
-                modalElement.classList.remove('modal-enter');
-                modalElement.classList.add('modal-enter-active');
+            // Remove the enter class to trigger the animation
+            modalElement.classList.remove('modal-enter');
+            modalElement.classList.add('modal-enter-active');
 
-                // Prevent body scrolling
-                document.body.style.overflow = 'hidden';
+            // Prevent body scrolling
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideModal(modalElement) {
+            // Add the enter class to start the exit animation
+            modalElement.classList.remove('modal-enter-active');
+            modalElement.classList.add('modal-enter');
+
+            // Wait for animation to complete before hiding
+            setTimeout(() => {
+                modalElement.classList.add('hidden');
+                document.body.style.overflow = ''; // Restore scrolling
+            }, 300); // Match this to your animation duration
+        }
+
+        // Close modal functions
+        function closeModalHandler() {
+            hideModal(modal);
+        }
+
+        function closeCodeRunnerHandler() {
+            hideModal(codeRunnerModal);
+        }
+
+        closeModal.addEventListener('click', closeModalHandler);
+        closeModalBtn.addEventListener('click', closeModalHandler);
+
+        closeCodeRunner.addEventListener('click', closeCodeRunnerHandler);
+        closeCodeRunnerBtn.addEventListener('click', closeCodeRunnerHandler);
+
+        // Close modals when clicking outside
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                closeModalHandler();
             }
+        });
 
-            function hideModal(modalElement) {
-                // Add the enter class to start the exit animation
-                modalElement.classList.remove('modal-enter-active');
-                modalElement.classList.add('modal-enter');
-
-                // Wait for animation to complete before hiding
-                setTimeout(() => {
-                    modalElement.classList.add('hidden');
-                    document.body.style.overflow = ''; // Restore scrolling
-                }, 300); // Match this to your animation duration
+        codeRunnerModal.addEventListener('click', function (e) {
+            if (e.target === codeRunnerModal) {
+                closeCodeRunnerHandler();
             }
+        });
 
-            // Close modal functions
-            function closeModalHandler() {
-                hideModal(modal);
-            }
-
-            function closeCodeRunnerHandler() {
-                hideModal(codeRunnerModal);
-            }
-
-            closeModal.addEventListener('click', closeModalHandler);
-            closeModalBtn.addEventListener('click', closeModalHandler);
-
-            closeCodeRunner.addEventListener('click', closeCodeRunnerHandler);
-            closeCodeRunnerBtn.addEventListener('click', closeCodeRunnerHandler);
-
-            // Close modals when clicking outside
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
+        // Close modals on Escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                if (!modal.classList.contains('hidden')) {
                     closeModalHandler();
                 }
-            });
-
-            codeRunnerModal.addEventListener('click', function(e) {
-                if (e.target === codeRunnerModal) {
+                if (!codeRunnerModal.classList.contains('hidden')) {
                     closeCodeRunnerHandler();
                 }
-            });
-
-            // Close modals on Escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    if (!modal.classList.contains('hidden')) {
-                        closeModalHandler();
-                    }
-                    if (!codeRunnerModal.classList.contains('hidden')) {
-                        closeCodeRunnerHandler();
-                    }
-                }
-            });
+            }
         });
-    </script>
+    });
+</script>
 
-    <!-- Analytics tracking script -->
-    <script src="/js/analytics-tracker.js"></script>
+<!-- Analytics tracking script -->
+<script src="/js/analytics-tracker.js"></script>
 </body>
 </html>

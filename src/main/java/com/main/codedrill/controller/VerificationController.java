@@ -58,12 +58,12 @@ public class VerificationController {
             return "redirect:/resend-verification";
         }
 
-         VerificationToken token = userService.generateNewVerificationToken(user);
+        VerificationToken token = userService.generateNewVerificationToken(user);
         try {
             emailService.sendVerificationEmail(
-                user.getEmail(),
-                "CodeDrill - Verify Your Email Address",
-                token.getToken()
+                    user.getEmail(),
+                    "CodeDrill - Verify Your Email Address",
+                    token.getToken()
             );
             redirectAttributes.addFlashAttribute("success", "A new verification link has been sent to your email address.");
         } catch (Exception e) {

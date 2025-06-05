@@ -28,21 +28,21 @@ public class AuthController {
         }
         return "login";
     }
-    
+
     @GetMapping("/register")
     public String registerForm(Model model) {
         boolean registrationClosed = false;
         model.addAttribute("registrationClosed", registrationClosed);
         return "register";
     }
-    
+
     @PostMapping("/register")
-    public String register(@RequestParam String username, 
-                           @RequestParam String password, 
+    public String register(@RequestParam String username,
+                           @RequestParam String password,
                            @RequestParam String confirmPassword,
                            @RequestParam String email,
                            @RequestParam(required = false) String fullName,
-                           Model model, 
+                           Model model,
                            RedirectAttributes redirectAttributes) {
 
 
@@ -50,7 +50,7 @@ public class AuthController {
             model.addAttribute("error", "Passwords do not match");
             return "register";
         }
-        
+
         if (password.length() < 6) {
             model.addAttribute("error", "Password must be at least 6 characters");
             return "register";
@@ -73,20 +73,20 @@ public class AuthController {
         redirectAttributes.addFlashAttribute("email", email);
         return "redirect:/login";
     }
-    
+
     @GetMapping("/change-password")
     public String changePasswordForm(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || auth.getName().equals("anonymousUser")) {
             return "redirect:/login";
         }
-        
+
         User user = userService.findByUsername(auth.getName());
         model.addAttribute("usingTempPassword", user != null && user.isUsingTempPassword());
-        
+
         return "change-password";
     }
-    
+
     @PostMapping("/change-password")
     public String changePassword(@RequestParam String currentPassword,
                                  @RequestParam String newPassword,
@@ -96,7 +96,7 @@ public class AuthController {
         if (auth == null || auth.getName().equals("anonymousUser")) {
             return "redirect:/login";
         }
-        
+
         User user = userService.findByUsername(auth.getName());
         if (user == null) {
             return "redirect:/login";
@@ -140,20 +140,20 @@ public class AuthController {
     public String dashboard(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findByUsername(auth.getName());
-        
+
         if (user != null) {
             model.addAttribute("user", user);
-            
+
             if (user.isAdmin()) {
                 return "redirect:/admin";
             } else if (user.isModerator()) {
                 return "redirect:/moderator";
             }
         }
-        
+
         return "redirect:/";
     }
-    
+
     @GetMapping("/access-denied")
     public String accessDenied() {
         return "auth/access-denied";

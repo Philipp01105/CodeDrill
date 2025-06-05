@@ -30,22 +30,22 @@ public class ModeratorController {
     public String dashboard(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = userService.findByUsername(auth.getName());
-        
+
         if (currentUser == null) {
             return "redirect:/login";
         }
-        
+
         List<Task> userTasks = taskService.getTasksByUser(currentUser);
         int userTaskCount = userTasks.size();
-        
+
         List<Task> recentTasks = userTasks.stream()
                 .limit(5)
                 .toList();
-        
+
         model.addAttribute("user", currentUser);
         model.addAttribute("userTaskCount", userTaskCount);
         model.addAttribute("recentTasks", recentTasks);
-        
+
         return "moderator/dashboard";
     }
 

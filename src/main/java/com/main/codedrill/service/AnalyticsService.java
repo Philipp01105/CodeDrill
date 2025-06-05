@@ -3,6 +3,8 @@ package com.main.codedrill.service;
 import com.main.codedrill.model.*;
 import com.main.codedrill.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,7 @@ public class AnalyticsService {
     private final SystemAnalyticsRepository systemAnalyticsRepository;
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
+    private final Logger logger = LoggerFactory.getLogger(AnalyticsService.class);
 
     @Autowired
     public AnalyticsService(
@@ -82,7 +85,8 @@ public class AnalyticsService {
             UserAnalytics analytics = analyticsOpt.get();
             analytics.incrementTasksAttempted();
 
-            if (successful) {long previousSuccessfulAttempts = taskAttemptRepository.findByUserAndTaskAndSuccessful(user, task, true)
+            if (successful) {
+                long previousSuccessfulAttempts = taskAttemptRepository.findByUserAndTaskAndSuccessful(user, task, true)
                         .stream()
                         .filter(att -> !att.getId().equals(attempt.getId()))
                         .count();
@@ -390,7 +394,7 @@ public class AnalyticsService {
         if (isFirstLoginIn24Hours(user)) {
             systemAnalytics.incrementActiveUsers();
             logger.info("Active user incremented for: " + user.getUsername());
-        }else {
+        } else {
             logger.info("Active user not incremented for: " + user.getUsername());
         }
         systemAnalytics.incrementTotalSessions();
@@ -421,6 +425,7 @@ public class AnalyticsService {
 
     /**
      * Prüft, ob der Benutzer in den letzten 24 Stunden bereits aktiv war
+     *
      * @param user Der zu prüfende Benutzer
      * @return true, wenn es der erste Login innerhalb 24 Stunden ist
      */

@@ -45,193 +45,239 @@
     <script src="/js/darkMode.js"></script>
 </head>
 <body class="bg-gray-50 dark:bg-darkpurple-950 min-h-screen font-sans transition-colors duration-300">
-    <div class="flex min-h-screen">
-        <!-- Sidebar (reuse from other pages) -->
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<div class="flex min-h-screen">
+    <!-- Sidebar (reuse from other pages) -->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <!-- Main Content -->
-        <div class="flex-1 overflow-y-auto">
-            <!-- Mobile Header (reuse from other pages) -->
-            <div th:replace="~{fragments/mobile-header :: mobile-header}"></div>
+    <!-- Main Content -->
+    <div class="flex-1 overflow-y-auto">
+        <!-- Mobile Header (reuse from other pages) -->
+        <div th:replace="~{fragments/mobile-header :: mobile-header}"></div>
 
-            <!-- Page Content -->
-            <div class="p-6 animate-fade-in">
-                <div class="flex justify-between items-center mb-6 border-b dark:border-darkpurple-700 pb-3">
-                    <h2 class="text-2xl font-bold text-gray-800 dark:text-darkpurple-200 animate-slide-up transition-colors duration-300">
-                        Task Analytics: <span th:text="${task.title}">Task Title</span>
-                    </h2>
-                    <a th:href="@{/tasks/{id}(id=${task.id})}" class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 flex items-center">
-                        <span>View Task</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                    </a>
+        <!-- Page Content -->
+        <div class="p-6 animate-fade-in">
+            <div class="flex justify-between items-center mb-6 border-b dark:border-darkpurple-700 pb-3">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-darkpurple-200 animate-slide-up transition-colors duration-300">
+                    Task Analytics: <span th:text="${task.title}">Task Title</span>
+                </h2>
+                <a th:href="@{/tasks/{id}(id=${task.id})}"
+                   class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 flex items-center">
+                    <span>View Task</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Task Info -->
+            <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Task Details</h3>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            <p class="mb-1"><span class="font-medium">ID:</span> <span th:text="${task.id}">123</span>
+                            </p>
+                            <p class="mb-1"><span class="font-medium">Created By:</span> <span
+                                    th:text="${task.createdBy != null ? task.createdBy.username : 'System'}">admin</span>
+                            </p>
+                            <p class="mb-1"><span class="font-medium">Created At:</span> <span
+                                    th:text="${#temporals.format(task.createdAt, 'MMM d, yyyy')}">Jan 1, 2025</span></p>
+                            <p class="mb-1"><span class="font-medium">Tags:</span> <span
+                                    th:text="${task.tags.isEmpty() ? 'None' : task.tags}">Java, Arrays</span></p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Performance
+                            Summary</h3>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            <p class="mb-1"><span class="font-medium">Total Attempts:</span> <span
+                                    th:text="${analytics.totalAttempts}">0</span></p>
+                            <p class="mb-1"><span class="font-medium">Successful Attempts:</span> <span
+                                    th:text="${analytics.successfulAttempts}">0</span></p>
+                            <p class="mb-1"><span class="font-medium">Success Rate:</span> <span
+                                    th:text="${#numbers.formatPercent(analytics.successRate, 1, 0)}">0%</span></p>
+                            <p class="mb-1"><span class="font-medium">Avg. Time Spent:</span> <span
+                                    th:text="${analytics.averageTimeSpent != null ? #numbers.formatDecimal(analytics.averageTimeSpent / 60, 1, 1) + ' min' : 'N/A'}">0 min</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Difficulty
+                            Rating</h3>
+                        <div class="flex items-center">
+                            <div class="w-full bg-gray-200 dark:bg-darkpurple-800 rounded-full h-4 mr-2">
+                                <div th:style="'width: ' + ${100 - analytics.successRate * 100} + '%'"
+                                     class="bg-primary-600 dark:bg-primary-500 h-4 rounded-full"></div>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                  th:text="${analytics.successRate < 0.3 ? 'Hard' : (analytics.successRate < 0.7 ? 'Medium' : 'Easy')}">Medium</span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Based on success rate</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attempt Distribution Chart -->
+            <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">Attempt Distribution</h3>
+                <div class="h-64">
+                    <canvas id="attemptChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Users -->
+            <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">Top Users</h3>
+
+                <div th:if="${analytics.topUsers.isEmpty()}" class="text-center py-8 text-gray-500 dark:text-gray-400">
+                    No users have attempted this task yet.
                 </div>
 
-                <!-- Task Info -->
-                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 mb-8">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Task Details</h3>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">
-                                <p class="mb-1"><span class="font-medium">ID:</span> <span th:text="${task.id}">123</span></p>
-                                <p class="mb-1"><span class="font-medium">Created By:</span> <span th:text="${task.createdBy != null ? task.createdBy.username : 'System'}">admin</span></p>
-                                <p class="mb-1"><span class="font-medium">Created At:</span> <span th:text="${#temporals.format(task.createdAt, 'MMM d, yyyy')}">Jan 1, 2025</span></p>
-                                <p class="mb-1"><span class="font-medium">Tags:</span> <span th:text="${task.tags.isEmpty() ? 'None' : task.tags}">Java, Arrays</span></p>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Performance Summary</h3>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">
-                                <p class="mb-1"><span class="font-medium">Total Attempts:</span> <span th:text="${analytics.totalAttempts}">0</span></p>
-                                <p class="mb-1"><span class="font-medium">Successful Attempts:</span> <span th:text="${analytics.successfulAttempts}">0</span></p>
-                                <p class="mb-1"><span class="font-medium">Success Rate:</span> <span th:text="${#numbers.formatPercent(analytics.successRate, 1, 0)}">0%</span></p>
-                                <p class="mb-1"><span class="font-medium">Avg. Time Spent:</span> <span th:text="${analytics.averageTimeSpent != null ? #numbers.formatDecimal(analytics.averageTimeSpent / 60, 1, 1) + ' min' : 'N/A'}">0 min</span></p>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Difficulty Rating</h3>
-                            <div class="flex items-center">
-                                <div class="w-full bg-gray-200 dark:bg-darkpurple-800 rounded-full h-4 mr-2">
-                                    <div th:style="'width: ' + ${100 - analytics.successRate * 100} + '%'" class="bg-primary-600 dark:bg-primary-500 h-4 rounded-full"></div>
+                <div th:unless="${analytics.topUsers.isEmpty()}" class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-darkpurple-700">
+                        <thead class="bg-gray-50 dark:bg-darkpurple-800">
+                        <tr>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                User
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Attempts
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Action
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-darkpurple-900 divide-y divide-gray-200 dark:divide-darkpurple-700">
+                        <tr th:each="userData : ${analytics.topUsers}"
+                            class="hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-colors duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900 dark:text-gray-100"
+                                     th:text="${userData.user.username}">username
                                 </div>
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300" th:text="${analytics.successRate < 0.3 ? 'Hard' : (analytics.successRate < 0.7 ? 'Medium' : 'Easy')}">Medium</span>
-                            </div>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Based on success rate</p>
+                                <div class="text-sm text-gray-500 dark:text-gray-400"
+                                     th:text="${userData.user.fullName != null ? userData.user.fullName : ''}">Full Name
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100"
+                                     th:text="${userData.attemptCount}">0
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a th:if="${user.isAdmin()}" th:href="@{/admin/users/{id}(id=${userData.user.id})}"
+                                   class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300">View
+                                    User</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Common Errors -->
+            <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">Improvement
+                    Suggestions</h3>
+
+                <div class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 mb-4 rounded-r-lg">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                                <path fill-rule="evenodd"
+                                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                      clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-700 dark:text-blue-300">
+                                Based on the analytics, here are some suggestions to improve this task.
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Attempt Distribution Chart -->
-                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 mb-8">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">Attempt Distribution</h3>
-                    <div class="h-64">
-                        <canvas id="attemptChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Top Users -->
-                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 mb-8">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">Top Users</h3>
-                    
-                    <div th:if="${analytics.topUsers.isEmpty()}" class="text-center py-8 text-gray-500 dark:text-gray-400">
-                        No users have attempted this task yet.
-                    </div>
-                    
-                    <div th:unless="${analytics.topUsers.isEmpty()}" class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-darkpurple-700">
-                            <thead class="bg-gray-50 dark:bg-darkpurple-800">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">User</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Attempts</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white dark:bg-darkpurple-900 divide-y divide-gray-200 dark:divide-darkpurple-700">
-                                <tr th:each="userData : ${analytics.topUsers}" class="hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-colors duration-150">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100" th:text="${userData.user.username}">username</div>
-                                        <div class="text-sm text-gray-500 dark:text-gray-400" th:text="${userData.user.fullName != null ? userData.user.fullName : ''}">Full Name</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900 dark:text-gray-100" th:text="${userData.attemptCount}">0</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a th:if="${user.isAdmin()}" th:href="@{/admin/users/{id}(id=${userData.user.id})}" class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300">View User</a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Common Errors -->
-                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4">Improvement Suggestions</h3>
-                    
-                    <div class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 mb-4 rounded-r-lg">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-blue-700 dark:text-blue-300">
-                                    Based on the analytics, here are some suggestions to improve this task.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <ul class="list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-3">
-                        <li th:if="${analytics.successRate < 0.3}">Consider adding more hints or simplifying the task as it appears to be challenging for most users.</li>
-                        <li th:if="${analytics.successRate > 0.8}">This task seems to be relatively easy. Consider adding more complexity or advanced concepts.</li>
-                        <li th:if="${analytics.averageTimeSpent != null && analytics.averageTimeSpent > 600}">Users are spending a significant amount of time on this task. Consider breaking it down into smaller steps.</li>
-                        <li>Review the task description for clarity and ensure all requirements are well-explained.</li>
-                        <li>Consider adding more test cases to help users validate their solutions.</li>
-                    </ul>
-                </div>
+                <ul class="list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-3">
+                    <li th:if="${analytics.successRate < 0.3}">Consider adding more hints or simplifying the task as it
+                        appears to be challenging for most users.
+                    </li>
+                    <li th:if="${analytics.successRate > 0.8}">This task seems to be relatively easy. Consider adding
+                        more complexity or advanced concepts.
+                    </li>
+                    <li th:if="${analytics.averageTimeSpent != null && analytics.averageTimeSpent > 600}">Users are
+                        spending a significant amount of time on this task. Consider breaking it down into smaller
+                        steps.
+                    </li>
+                    <li>Review the task description for clarity and ensure all requirements are well-explained.</li>
+                    <li>Consider adding more test cases to help users validate their solutions.</li>
+                </ul>
             </div>
         </div>
     </div>
+</div>
 
-    <script th:inline="javascript">
-        // Get data from Thymeleaf model
-        var totalAttempts = /*[[${analytics.totalAttempts}]]*/ 0;
-        var successfulAttempts = /*[[${analytics.successfulAttempts}]]*/ 0;
-        var failedAttempts = totalAttempts - successfulAttempts;
-        
-        // Attempt Distribution Chart
-        const attemptCtx = document.getElementById('attemptChart').getContext('2d');
-        
-        const attemptData = {
-            labels: ['Successful', 'Failed'],
-            datasets: [{
-                label: 'Attempts',
-                data: [successfulAttempts, failedAttempts],
-                backgroundColor: [
-                    'rgba(16, 185, 129, 0.8)',
-                    'rgba(239, 68, 68, 0.8)'
-                ],
-                borderColor: [
-                    'rgb(16, 185, 129)',
-                    'rgb(239, 68, 68)'
-                ],
-                borderWidth: 1
-            }]
-        };
-        
-        const attemptChart = new Chart(attemptCtx, {
-            type: 'bar',
-            data: attemptData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0
-                        }
+<script th:inline="javascript">
+    // Get data from Thymeleaf model
+    var totalAttempts = /*[[${analytics.totalAttempts}]]*/ 0;
+    var successfulAttempts = /*[[${analytics.successfulAttempts}]]*/ 0;
+    var failedAttempts = totalAttempts - successfulAttempts;
+
+    // Attempt Distribution Chart
+    const attemptCtx = document.getElementById('attemptChart').getContext('2d');
+
+    const attemptData = {
+        labels: ['Successful', 'Failed'],
+        datasets: [{
+            label: 'Attempts',
+            data: [successfulAttempts, failedAttempts],
+            backgroundColor: [
+                'rgba(16, 185, 129, 0.8)',
+                'rgba(239, 68, 68, 0.8)'
+            ],
+            borderColor: [
+                'rgb(16, 185, 129)',
+                'rgb(239, 68, 68)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    const attemptChart = new Chart(attemptCtx, {
+        type: 'bar',
+        data: attemptData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
                     }
                 }
             }
-        });
-        
-        // Update chart colors when theme changes
-        document.addEventListener('themeChanged', function(e) {
-            const isDark = e.detail.isDark;
-            
-            attemptChart.options.scales.x.ticks.color = isDark ? '#d1d5db' : '#6b7280';
-            attemptChart.options.scales.y.ticks.color = isDark ? '#d1d5db' : '#6b7280';
-            attemptChart.options.scales.x.grid.color = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-            attemptChart.options.scales.y.grid.color = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-            
-            attemptChart.update();
-        });
-    </script>
+        }
+    });
+
+    // Update chart colors when theme changes
+    document.addEventListener('themeChanged', function (e) {
+        const isDark = e.detail.isDark;
+
+        attemptChart.options.scales.x.ticks.color = isDark ? '#d1d5db' : '#6b7280';
+        attemptChart.options.scales.y.ticks.color = isDark ? '#d1d5db' : '#6b7280';
+        attemptChart.options.scales.x.grid.color = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+        attemptChart.options.scales.y.grid.color = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+
+        attemptChart.update();
+    });
+</script>
 </body>
 </html>

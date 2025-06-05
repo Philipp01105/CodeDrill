@@ -12,10 +12,10 @@ import java.util.List;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findAllByOrderByCreatedAtDesc();
-    
+
     @Query("SELECT t FROM Task t JOIN t.tags tag WHERE tag = :tag ORDER BY t.createdAt DESC")
     List<Task> findByTagsContainingOrderByCreatedAtDesc(@Param("tag") String tag);
-    
+
     List<Task> findByCreatedByOrderByCreatedAtDesc(User user);
 
     Iterable<? extends Task> findBycreatedBy(User user);

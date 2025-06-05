@@ -56,14 +56,24 @@
 
         <!-- Page Content -->
         <div class="p-6 animate-fade-in">
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-darkpurple-200 mb-6 border-b dark:border-darkpurple-700 pb-3 animate-slide-up transition-colors duration-300">System Analytics Dashboard</h2>
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-darkpurple-200 mb-6 border-b dark:border-darkpurple-700 pb-3 animate-slide-up transition-colors duration-300">
+                System Analytics Dashboard</h2>
 
             <!-- Time Period Selector -->
             <div class="mb-6">
                 <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-4 flex flex-wrap gap-4">
-                    <button id="today-btn" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-300">Today</button>
-                    <button id="week-btn" class="px-4 py-2 bg-gray-200 dark:bg-darkpurple-800 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-darkpurple-700 transition-colors duration-300">Last 7 Days</button>
-                    <button id="month-btn" class="px-4 py-2 bg-gray-200 dark:bg-darkpurple-800 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-darkpurple-700 transition-colors duration-300">Last 30 Days</button>
+                    <button id="today-btn"
+                            class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-300">
+                        Today
+                    </button>
+                    <button id="week-btn"
+                            class="px-4 py-2 bg-gray-200 dark:bg-darkpurple-800 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-darkpurple-700 transition-colors duration-300">
+                        Last 7 Days
+                    </button>
+                    <button id="month-btn"
+                            class="px-4 py-2 bg-gray-200 dark:bg-darkpurple-800 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-darkpurple-700 transition-colors duration-300">
+                        Last 30 Days
+                    </button>
                 </div>
             </div>
 
@@ -72,21 +82,28 @@
                 <!-- Active Users -->
                 <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 border-l-4 border-primary-500 hover:shadow-lg transition-all duration-300">
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Active Users</h3>
-                    <div id="active-users" class="text-3xl font-bold text-primary-600 dark:text-primary-400" th:text="${metrics['todayActiveUsers'] ?: 0}">0</div>
+                    <div id="active-users" class="text-3xl font-bold text-primary-600 dark:text-primary-400"
+                         th:text="${metrics['todayActiveUsers'] ?: 0}">0
+                    </div>
                     <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Users active in the selected period</p>
                 </div>
 
                 <!-- New Users -->
                 <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 border-l-4 border-green-500 hover:shadow-lg transition-all duration-300">
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">New Users</h3>
-                    <div id="new-users" class="text-3xl font-bold text-green-600 dark:text-green-400" th:text="${metrics['todayNewUsers'] ?: 0}">0</div>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">New registrations in the selected period</p>
+                    <div id="new-users" class="text-3xl font-bold text-green-600 dark:text-green-400"
+                         th:text="${metrics['todayNewUsers'] ?: 0}">0
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">New registrations in the selected
+                        period</p>
                 </div>
 
                 <!-- Task Completions -->
                 <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-md p-6 border-l-4 border-purple-500 hover:shadow-lg transition-all duration-300">
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-2">Task Completions</h3>
-                    <div id="task-completions" class="text-3xl font-bold text-purple-600 dark:text-purple-400" th:text="${metrics['todayTaskCompletions'] ?: 0}">0</div>
+                    <div id="task-completions" class="text-3xl font-bold text-purple-600 dark:text-purple-400"
+                         th:text="${metrics['todayTaskCompletions'] ?: 0}">0
+                    </div>
                     <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Tasks completed in the selected period</p>
                 </div>
 
@@ -137,38 +154,82 @@
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-darkpurple-700">
                         <thead class="bg-gray-50 dark:bg-darkpurple-800">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Metric</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Today</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Last 7 Days</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Last 30 Days</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Metric
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Today
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Last 7 Days
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Last 30 Days
+                            </th>
                         </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-darkpurple-900 divide-y divide-gray-200 dark:divide-darkpurple-700">
                         <tr class="hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-colors duration-150">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">Task Views</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics['todayTaskViews'] ?: 0}">0</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics['last7DaysTaskViews'] ?: 0}">0</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics['last30DaysTaskViews'] ?: 0}">0</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-colors duration-150">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">Task Attempts</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics['todayTaskAttempts'] ?: 0}">0</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics['last7DaysTaskAttempts'] ?: 0}">0</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics['last30DaysTaskAttempts'] ?: 0}">0</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-colors duration-150">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">Task Completions</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics['todayTaskCompletions'] ?: 0}">0</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics['last7DaysTaskCompletions'] ?: 0}">0</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right" th:text="${metrics['last30DaysTaskCompletions'] ?: 0}">0</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-colors duration-150">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">Avg. Session Time</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">-</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                Task Views
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right"
-                                th:text="${metrics['last7DaysAvgSessionTime'] != null ? #numbers.formatDecimal(metrics['last7DaysAvgSessionTime'] / 60.0, 1, 1) + ' min' : '-'}">0 min</td>
+                                th:text="${metrics['todayTaskViews'] ?: 0}">0
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right"
-                                th:text="${metrics['last30DaysAvgSessionTime'] != null ? #numbers.formatDecimal(metrics['last30DaysAvgSessionTime'] / 60.0, 1, 1) + ' min' : '-'}">0 min</td>
+                                th:text="${metrics['last7DaysTaskViews'] ?: 0}">0
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right"
+                                th:text="${metrics['last30DaysTaskViews'] ?: 0}">0
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-colors duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                Task Attempts
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right"
+                                th:text="${metrics['todayTaskAttempts'] ?: 0}">0
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right"
+                                th:text="${metrics['last7DaysTaskAttempts'] ?: 0}">0
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right"
+                                th:text="${metrics['last30DaysTaskAttempts'] ?: 0}">0
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-colors duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                Task Completions
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right"
+                                th:text="${metrics['todayTaskCompletions'] ?: 0}">0
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right"
+                                th:text="${metrics['last7DaysTaskCompletions'] ?: 0}">0
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right"
+                                th:text="${metrics['last30DaysTaskCompletions'] ?: 0}">0
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-colors duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                Avg. Session Time
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">
+                                -
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right"
+                                th:text="${metrics['last7DaysAvgSessionTime'] != null ? #numbers.formatDecimal(metrics['last7DaysAvgSessionTime'] / 60.0, 1, 1) + ' min' : '-'}">
+                                0 min
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right"
+                                th:text="${metrics['last30DaysAvgSessionTime'] != null ? #numbers.formatDecimal(metrics['last30DaysAvgSessionTime'] / 60.0, 1, 1) + ' min' : '-'}">
+                                0 min
+                            </td>
                         </tr>
                         </tbody>
                     </table>

@@ -13,12 +13,12 @@ import java.util.List;
 public class TaskCompletionService {
 
     private final UserTaskCompletionRepository completionRepository;
-    
+
     @Autowired
     public TaskCompletionService(UserTaskCompletionRepository completionRepository) {
         this.completionRepository = completionRepository;
     }
-    
+
     /**
      * Mark a task as completed by a user
      */
@@ -34,7 +34,7 @@ public class TaskCompletionService {
         UserTaskCompletion completion = new UserTaskCompletion(user, task);
         return completionRepository.save(completion);
     }
-    
+
     /**
      * Get all completed task IDs for a user
      */
@@ -44,7 +44,7 @@ public class TaskCompletionService {
         }
         return completionRepository.findTaskIdsByUser(user);
     }
-    
+
     /**
      * Check if a task is completed by a user
      */
@@ -54,7 +54,7 @@ public class TaskCompletionService {
         }
         return completionRepository.existsByUserAndTask(user, task);
     }
-    
+
     /**
      * Get all completed tasks for a user
      */

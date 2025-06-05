@@ -27,7 +27,7 @@ public class User {
 
     @Column
     private String fullName;
-    
+
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -36,10 +36,10 @@ public class User {
 
     @Column(name = "using_temp_password")
     private Boolean usingTempPassword = false;
-    
+
     @Column(name = "last_password_reset_date")
     private LocalDateTime lastPasswordResetDate;
-    
+
     @Column
     private LocalDateTime registrationDate;
 
@@ -101,15 +101,15 @@ public class User {
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
-    
+
     public boolean isUsingTempPassword() {
         return usingTempPassword != null && usingTempPassword;
     }
-    
+
     public void setUsingTempPassword(Boolean usingTempPassword) {
         this.usingTempPassword = usingTempPassword;
     }
-    
+
     public String getEmail() {
         return email;
     }
@@ -121,15 +121,15 @@ public class User {
     public boolean isEnabled() {
         return enabled;
     }
-    
+
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-    
+
     public LocalDateTime getRegistrationDate() {
         return registrationDate;
     }
-    
+
     public void setRegistrationDate(LocalDateTime registrationDate) {
         this.registrationDate = registrationDate;
     }
@@ -154,16 +154,16 @@ public class User {
     public boolean isAdmin() {
         return "ADMIN".equals(role);
     }
-    
+
     public boolean isModerator() {
         return "MODERATOR".equals(role);
     }
-    
+
     public boolean isUser() {
         return "USER".equals(role);
     }
 
-    public Comparable<Object> getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return registrationDate;
     }
 }

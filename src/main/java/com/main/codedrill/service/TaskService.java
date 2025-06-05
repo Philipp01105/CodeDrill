@@ -30,7 +30,6 @@ public class TaskService {
     }
 
 
-
     public List<Task> getAllTasks() {
         return taskRepository.findAllByOrderByCreatedAtDesc();
     }
@@ -45,26 +44,26 @@ public class TaskService {
     public Task getTaskById(Long id) {
         return taskRepository.findById(id).orElse(null);
     }
-    
+
     public List<Task> getTasksByUser(User user) {
         return taskRepository.findByCreatedByOrderByCreatedAtDesc(user);
     }
-    
+
     public Task createTask(Task task, User user) {
         task.setId(null);
         task.setCreatedBy(user);
         return taskRepository.save(task);
     }
-    
+
     public Task updateTask(Task task, User user) {
         Optional<Task> existingTask = taskRepository.findById(task.getId());
-        
+
         if (existingTask.isPresent()) {
             Task taskToUpdate = existingTask.get();
-            
+
             if (user.isAdmin() ||
-                (taskToUpdate.getCreatedBy() != null && taskToUpdate.getCreatedBy().equals(user))) {
-                
+                    (taskToUpdate.getCreatedBy() != null && taskToUpdate.getCreatedBy().equals(user))) {
+
                 taskToUpdate.setTitle(task.getTitle());
                 taskToUpdate.setDescription(task.getDescription());
                 taskToUpdate.setTags(task.getTags());
@@ -72,23 +71,23 @@ public class TaskService {
                 taskToUpdate.setSolution(task.getSolution());
                 taskToUpdate.setExpectedOutput(task.getExpectedOutput());
                 taskToUpdate.setJunitTests(task.getJunitTests());
-                
+
                 return taskRepository.save(taskToUpdate);
             }
         }
-        
+
         return null;
     }
 
     @Transactional
     public boolean deleteTask(Long id, User user) {
         Optional<Task> task = taskRepository.findById(id);
-        
+
         if (task.isPresent()) {
             Task taskToDelete = task.get();
-            
+
             if (user.isAdmin() ||
-                (taskToDelete.getCreatedBy() != null && taskToDelete.getCreatedBy().equals(user))) {
+                    (taskToDelete.getCreatedBy() != null && taskToDelete.getCreatedBy().equals(user))) {
 
                 taskToDelete.getTags().clear();
                 taskRepository.save(taskToDelete);
@@ -98,10 +97,10 @@ public class TaskService {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     @Transactional
     public List<String> getAllTags() {
         return getAllTasks().stream()

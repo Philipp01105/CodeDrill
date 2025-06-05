@@ -35,16 +35,16 @@ public class CustomErrorController implements ErrorController {
         model.addAttribute("errorCode", httpStatus.value());
         model.addAttribute("errorMessage", httpStatus.getReasonPhrase());
 
-         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = false;
 
         if (auth != null && auth.isAuthenticated()) {
-            if(userService.findByUsername(auth.getName()).isAdmin()) {
+            if (userService.findByUsername(auth.getName()).isAdmin()) {
                 isAdmin = true;
             }
         }
 
-         if (isAdmin) {
+        if (isAdmin) {
             model.addAttribute("isAdmin", true);
             model.addAttribute("exception", exception != null ? exception.getMessage() : "Unbekannter Fehler");
             model.addAttribute("path", path);

@@ -97,6 +97,7 @@ public class UserService {
 
     /**
      * Register a new user
+     *
      * @return the created user, or null if registration failed
      */
     @Transactional
@@ -126,9 +127,9 @@ public class UserService {
 
         try {
             emailService.sendVerificationEmail(
-                savedUser.getEmail(),
-                "CodeDrill - Verify Your Email Address",
-                token.getToken()
+                    savedUser.getEmail(),
+                    "CodeDrill - Verify Your Email Address",
+                    token.getToken()
             );
         } catch (Exception e) {
             logger.error("Error sending verification email to user: {} - error: {}", savedUser.getEmail(), e.getMessage());
@@ -139,6 +140,7 @@ public class UserService {
 
     /**
      * Verifies a user based on a token
+     *
      * @param token The verification token
      * @return true if verification was successful, false otherwise
      */
@@ -161,6 +163,7 @@ public class UserService {
 
     /**
      * Creates a new verification token for a user
+     *
      * @param user The user for whom to create a new token
      * @return The new VerificationToken
      */
@@ -198,6 +201,7 @@ public class UserService {
 
     /**
      * Generate a temporary password for a user
+     *
      * @return the temporary password
      */
     public String resetPasswordWithTemp(Long userId, User admin) {
@@ -243,7 +247,8 @@ public class UserService {
     }
 
     public void setCurrentExecutions(boolean currentExecutions) {
-        this.currentExecutions = currentExecutions;;
+        this.currentExecutions = currentExecutions;
+        ;
     }
 
     /**
@@ -264,8 +269,9 @@ public class UserService {
 
     /**
      * Deletes a user and all associated data
+     *
      * @param userId ID of the user to delete
-     * @param admin The admin performing the deletion
+     * @param admin  The admin performing the deletion
      * @return true if successful, false otherwise
      */
     @Transactional

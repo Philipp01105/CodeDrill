@@ -39,16 +39,16 @@ public class AdminController {
     public String adminDashboard(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findByUsername(auth.getName());
-        
+
         int userCount = userService.countAllUsers();
         int moderatorCount = userService.countAllModerators();
-        
+
         model.addAttribute("user", user);
         model.addAttribute("userCount", userCount);
         model.addAttribute("moderatorCount", moderatorCount);
         model.addAttribute("moderators", userService.findAllModerators());
         model.addAttribute("taskCount", taskRepository.count());
-        
+
         return "admin/dashboard";
     }
 
@@ -70,12 +70,12 @@ public class AdminController {
         User admin = userService.findByUsername(auth.getName());
 
         User savedModerator = userService.createModerator(moderator, admin);
-        
+
         if (savedModerator == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Username already exists or you do not have permission");
             return "redirect:/admin/moderators/new";
         }
-        
+
         redirectAttributes.addFlashAttribute("successMessage", "Moderator created successfully");
         return "redirect:/admin/moderators";
     }
@@ -90,9 +90,9 @@ public class AdminController {
     public String resetPassword(@RequestParam Long userId, RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User admin = userService.findByUsername(auth.getName());
-        
+
         String tempPassword = userService.resetPasswordWithTemp(userId, admin);
-        
+
         if (tempPassword == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to reset password");
         } else {
@@ -100,7 +100,7 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("tempPassword", tempPassword);
             redirectAttributes.addFlashAttribute("userId", userId);
         }
-        
+
         return "redirect:/admin/moderators";
     }
 
@@ -110,13 +110,13 @@ public class AdminController {
         User admin = userService.findByUsername(auth.getName());
 
         boolean deleted = userService.deleteUser(id, admin);
-        
+
         if (!deleted) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete moderator");
         } else {
             redirectAttributes.addFlashAttribute("successMessage", "Moderator deleted successfully");
         }
-        
+
         return "redirect:/admin/moderators";
     }
 
@@ -124,14 +124,14 @@ public class AdminController {
     public String listUsers(
             @RequestParam(required = false) String search, @RequestParam(required = false) String sort,
             Model model) {
-        
+
         List<User> users = userService.findAllUsers();
         if (search != null && !search.trim().isEmpty()) {
             users = userService.searchUsersByUsername(search);
             model.addAttribute("search", search);
         }
 
-        if(sort != null && !sort.trim().isEmpty()) {
+        if (sort != null && !sort.trim().isEmpty()) {
             switch (sort) {
                 case "id" -> users.sort(Comparator.comparing(User::getId));
                 case "username" -> users.sort((u1, u2) -> u1.getUsername().compareToIgnoreCase(u2.getUsername()));
@@ -146,41 +146,41 @@ public class AdminController {
             model.addAttribute("sort", sort);
 
         }
-        
+
         model.addAttribute("users", users);
         return "admin/users";
     }
-    
+
     @PostMapping("/users/{userId}/reset-password")
     public String resetUserPassword(
             @PathVariable Long userId,
             RedirectAttributes redirectAttributes) {
-        
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User admin = userService.findByUsername(auth.getName());
-        
+
         if (admin != null && admin.isAdmin()) {
             String tempPassword = userService.resetPasswordWithTemp(userId, admin);
-            
+
             if (tempPassword != null) {
                 redirectAttributes.addFlashAttribute("tempPassword", tempPassword);
                 redirectAttributes.addFlashAttribute("userId", userId);
                 return "redirect:/admin/users";
             }
         }
-        
+
         redirectAttributes.addFlashAttribute("error", "Failed to reset password");
         return "redirect:/admin/users";
     }
-    
+
     @PostMapping("/users/{userId}/delete")
     public String deleteUser(
             @PathVariable Long userId,
             RedirectAttributes redirectAttributes) {
-        
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User admin = userService.findByUsername(auth.getName());
-        
+
         if (admin != null && admin.isAdmin()) {
             if (userService.deleteUser(userId, admin)) {
                 redirectAttributes.addFlashAttribute("successMessage", "User deleted successfully");
@@ -188,7 +188,7 @@ public class AdminController {
                 redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete user");
             }
         }
-        
+
         return "redirect:/admin/users";
     }
 
@@ -250,7 +250,7 @@ public class AdminController {
     public String emergencyShutdown(@RequestParam String password, RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User admin = userService.findByUsername(auth.getName());
-        
+
         if (admin == null || !admin.isAdmin()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Unauthorized access attempt detected");
             return "redirect:/admin";

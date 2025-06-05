@@ -165,7 +165,7 @@ public class AnalyticsController {
             HttpSession session = request.getSession(true);
             String sessionId = session.getId();
 
-             boolean successful = false;
+            boolean successful = false;
             if (payload.containsKey("successful")) {
                 Object successObj = payload.get("successful");
                 if (successObj instanceof Boolean) {

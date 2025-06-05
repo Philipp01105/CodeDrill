@@ -13,15 +13,15 @@ import java.util.Optional;
 
 @Repository
 public interface UserTaskCompletionRepository extends JpaRepository<UserTaskCompletion, Long> {
-    
+
     List<UserTaskCompletion> findByUser(User user);
-    
+
     List<UserTaskCompletion> findByTask(Task task);
-    
+
     Optional<UserTaskCompletion> findByUserAndTask(User user, Task task);
-    
+
     boolean existsByUserAndTask(User user, Task task);
-    
+
     @Query("SELECT utc.task.id FROM UserTaskCompletion utc WHERE utc.user = :user")
     List<Long> findTaskIdsByUser(@Param("user") User user);
 

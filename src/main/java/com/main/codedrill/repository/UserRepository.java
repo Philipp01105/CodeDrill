@@ -11,11 +11,17 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
+
     Optional<User> findByEmail(String email);
+
     boolean existsByUsername(String username);
+
     boolean existsByEmail(String email);
+
     List<User> findByRole(String role);
+
     Long countByRole(String role);
+
     List<User> findByUsernameContainingIgnoreCase(String query);
 
     @Query("SELECT u FROM User u ORDER BY u.id")

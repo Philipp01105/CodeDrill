@@ -21,11 +21,9 @@ public class SessionListener implements HttpSessionListener {
     private static final Logger logger = LoggerFactory.getLogger(SessionListener.class);
 
     private final AsyncAnalyticsService asyncAnalyticsService;
-    private final UserService userService;
 
     public SessionListener(AsyncAnalyticsService asyncAnalyticsService, UserService userService) {
         this.asyncAnalyticsService = asyncAnalyticsService;
-        this.userService = userService;
     }
 
     private volatile boolean isShuttingDown = false;
@@ -48,14 +46,18 @@ public class SessionListener implements HttpSessionListener {
             }
 
             if (asyncAnalyticsService != null) {
-                CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS).execute(()->{asyncAnalyticsService.trackUserLogoutAsync(sessionId);});
+                CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS).execute(() -> {
+                    asyncAnalyticsService.trackUserLogoutAsync(sessionId);
+                });
             } else {
                 ApplicationContext context = WebApplicationContextUtils
                         .getWebApplicationContext(se.getSession().getServletContext());
 
                 if (context != null) {
                     AsyncAnalyticsService service = context.getBean(AsyncAnalyticsService.class);
-                    CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS).execute(()->{service.trackUserLogoutAsync(sessionId);});
+                    CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS).execute(() -> {
+                        service.trackUserLogoutAsync(sessionId);
+                    });
                 } else {
                     logger.error("Application context is null, cannot track logout.");
                 }

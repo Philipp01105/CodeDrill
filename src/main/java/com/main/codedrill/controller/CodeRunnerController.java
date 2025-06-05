@@ -29,15 +29,12 @@ public class CodeRunnerController {
     private final JUnitTestService junitTestService;
     private final Logger logger = LoggerFactory.getLogger(CodeRunnerController.class);
 
-    @Value("${docker.max_concurrent:8}")
-    private int maxConcurrentExecutions;
-
     @Autowired
-    public CodeRunnerController(TaskService taskService, 
-                              CodeExecutionService codeExecutionService, 
-                              UserService userService,
-                              TaskCompletionService taskCompletionService,
-                              JUnitTestService junitTestService) {
+    public CodeRunnerController(TaskService taskService,
+                                CodeExecutionService codeExecutionService,
+                                UserService userService,
+                                TaskCompletionService taskCompletionService,
+                                JUnitTestService junitTestService) {
         this.taskService = taskService;
         this.codeExecutionService = codeExecutionService;
         this.userService = userService;
@@ -50,7 +47,7 @@ public class CodeRunnerController {
             @PathVariable Long taskId,
             @RequestBody Map<String, String> payload) {
 
-         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || auth.getName().equals("anonymousUser")) {
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
@@ -61,7 +58,7 @@ public class CodeRunnerController {
 
         String code = payload.get("code");
 
-         Task task = taskService.getTaskById(taskId);
+        Task task = taskService.getTaskById(taskId);
         if (task == null) {
             return ResponseEntity.notFound().build();
         }
@@ -71,7 +68,7 @@ public class CodeRunnerController {
         try {
             String executionOutput = codeExecutionService.executeJavaCode(code);
 
-             if (executionOutput.startsWith("️🛡️ SECURITY ALERT: Code execution blocked")) {
+            if (executionOutput.startsWith("️🛡️ SECURITY ALERT: Code execution blocked")) {
                 response.put("success", false);
                 response.put("output", executionOutput);
                 response.put("message", "");
@@ -81,7 +78,7 @@ public class CodeRunnerController {
             boolean outputCorrect;
             boolean testsPass;
 
-             if (task.getExpectedOutput() != null && !task.getExpectedOutput().trim().isEmpty()) {
+            if (task.getExpectedOutput() != null && !task.getExpectedOutput().trim().isEmpty()) {
                 String normalizedExpected = task.getExpectedOutput().trim().replaceAll("\\s+", " ");
                 String normalizedActual = executionOutput.trim().replaceAll("\\s+", " ");
                 outputCorrect = normalizedExpected.equals(normalizedActual);
