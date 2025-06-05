@@ -28,7 +28,7 @@ public class AsyncAnalyticsService {
 
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void trackUserLogoutAsync(String sessionId) throws InterruptedException {
+    public void trackUserLogoutAsync(String sessionId) {
         try {
             if (sessionId == null || sessionId.isEmpty()) {
                 logger.error("Warning: Attempted to track logout with null or empty sessionId");
