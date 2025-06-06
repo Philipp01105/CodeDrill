@@ -752,7 +752,7 @@ public class CodeExecutionService {
         try {
             return userService != null ? "Philipp01105" : "unknown";  // Using your login
         } catch (Exception e) {
-            logger.debug("Failed to get user info", e, e);
+            logger.debug("Failed to get user info - error: {} \n Stacktrace: {}", e.getMessage(), e.getStackTrace());
             return "unknown";
         }
     }
