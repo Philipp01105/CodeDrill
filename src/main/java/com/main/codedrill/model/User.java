@@ -164,7 +164,7 @@ public class User {
     }
 
     public LocalDateTime getCreatedAt() {
-        return registrationDate;
+        return registrationDate != null ? registrationDate : LocalDateTime.parse("2000-01-01T00:00:00");
     }
 }
 

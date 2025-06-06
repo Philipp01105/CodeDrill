@@ -86,8 +86,7 @@ public class TaskService {
         if (task.isPresent()) {
             Task taskToDelete = task.get();
 
-            if (user.isAdmin() ||
-                    (taskToDelete.getCreatedBy() != null && taskToDelete.getCreatedBy().equals(user))) {
+            if (user.isAdmin() || (taskToDelete.getCreatedBy() != null && taskToDelete.getCreatedBy().equals(user))) {
 
                 taskToDelete.getTags().clear();
                 taskRepository.save(taskToDelete);

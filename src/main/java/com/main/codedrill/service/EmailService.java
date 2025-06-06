@@ -3,6 +3,7 @@ package com.main.codedrill.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -15,7 +16,7 @@ public class EmailService {
     private final UserService userservice;
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
-    public EmailService(JavaMailSender mailSender, UserService userservice) {
+    public EmailService(JavaMailSender mailSender, @Lazy UserService userservice) {
         this.mailSender = mailSender;
         this.userservice = userservice;
     }

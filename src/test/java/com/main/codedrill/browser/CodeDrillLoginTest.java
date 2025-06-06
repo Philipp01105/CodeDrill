@@ -19,10 +19,10 @@ public class CodeDrillLoginTest {
     private static final String BASE_URL = "https://codedrill.org";
 
     @Value("${codedrill.username}")
-    private static final String USERNAME = "your_username";
+    private static final String USERNAME = "test";
 
     @Value("${codedrill.password}")
-    private static final String PASSWORD = "your_password";
+    private static final String PASSWORD = "testtest";
 
     public static void main(String[] args) {
         CodeDrillLoginTest test = new CodeDrillLoginTest();

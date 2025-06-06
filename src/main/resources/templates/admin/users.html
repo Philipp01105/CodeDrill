@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -279,7 +279,7 @@
                             class="material-btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
                         Search
                     </button>
-                    <a th:if="${search or sort}" href="/admin/users"
+                    <a th:if="${search != null or sort != null}" href="/admin/users"
                        class="material-btn px-6 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300">
                         Clear
                     </a>
