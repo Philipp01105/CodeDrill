@@ -166,5 +166,13 @@ public class User {
     public LocalDateTime getCreatedAt() {
         return registrationDate != null ? registrationDate : LocalDateTime.parse("2000-01-01T00:00:00");
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return id != null && id.equals(user.id);
+    }
 }
 

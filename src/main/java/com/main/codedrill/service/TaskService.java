@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -71,6 +72,7 @@ public class TaskService {
                 taskToUpdate.setSolution(task.getSolution());
                 taskToUpdate.setExpectedOutput(task.getExpectedOutput());
                 taskToUpdate.setJunitTests(task.getJunitTests());
+                taskToUpdate.setUpdatedAt(LocalDateTime.now());
 
                 return taskRepository.save(taskToUpdate);
             }
