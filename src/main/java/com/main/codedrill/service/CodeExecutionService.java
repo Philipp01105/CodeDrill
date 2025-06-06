@@ -60,7 +60,7 @@ public class CodeExecutionService {
     @Value("${docker.test_cpu_limit:0.6}")
     private String testCpuLimit;
 
-    @Value("${docker.process_limit:6}")
+    @Value("${docker.process_limit:12}")
     private int processLimit;
 
     @Value("${docker.test_process_limit:12}")
@@ -83,14 +83,11 @@ public class CodeExecutionService {
     private boolean junitRelaxedMode;
 
     // Enhanced Resource Management
-    @Value("${execution.max_global_executions:2}")
+    @Value("${execution.max_global_executions:4}")
     private int maxGlobalExecutions;
 
     @Value("${execution.queue_timeout_seconds:30}")
     private int queueTimeoutSeconds;
-
-    @Value("${execution.cleanup_interval_seconds:30}")
-    private int cleanupIntervalSeconds;
 
     @Value("${execution.container_max_runtime_minutes:5}")
     private int containerMaxRuntimeMinutes;
