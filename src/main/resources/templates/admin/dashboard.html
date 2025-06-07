@@ -44,6 +44,19 @@
                         Task Management
                     </a>
                 </li>
+                <!-- NEW: Gamification Management Section -->
+                <li class="mb-2">
+                    <a href="/admin/achievements"
+                       class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                        <i class="fas fa-trophy mr-2"></i>Achievements
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="/admin/learning-paths"
+                       class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                        <i class="fas fa-graduation-cap mr-2"></i>Learning Paths
+                    </a>
+                </li>
                 <li class="mb-2">
                     <a href="/analytics/admin"
                        class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
@@ -136,6 +149,19 @@
                             Task Management
                         </a>
                     </li>
+                    <!-- NEW: Mobile Gamification Links -->
+                    <li class="mb-2">
+                        <a href="/admin/achievements"
+                           class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            <i class="fas fa-trophy mr-2"></i>Achievements
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="/admin/learning-paths"
+                           class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            <i class="fas fa-graduation-cap mr-2"></i>Learning Paths
+                        </a>
+                    </li>
                     <li class="mb-2">
                         <a href="/analytics/admin"
                            class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
@@ -212,17 +238,17 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <!-- User Statistics -->
-                <div class="bg-white rounded-xl shadow-elevation-2 p-6 border-l-4 border-primary-500 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up"
+                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 border-l-4 border-primary-500 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up"
                      style="animation-delay: 0.1s;">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">User Statistics</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4 transition-colors duration-300">User Statistics</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <div class="text-3xl font-bold text-primary-600 mb-2" th:text="${userCount}">0</div>
-                            <p class="text-gray-600">Total Users</p>
+                            <p class="text-gray-600 dark:text-gray-300 transition-colors duration-300">Total Users</p>
                         </div>
                         <div>
                             <div class="text-3xl font-bold text-green-600 mb-2" th:text="${moderatorCount}">0</div>
-                            <p class="text-gray-600">Moderators</p>
+                            <p class="text-gray-600 dark:text-gray-300 transition-colors duration-300">Moderators</p>
                         </div>
                     </div>
                     <div class="mt-4">
@@ -238,9 +264,9 @@
                 </div>
 
                 <!-- Quick Actions -->
-                <div class="bg-white rounded-xl shadow-elevation-2 p-6 border-l-4 border-purple-500 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up"
+                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 border-l-4 border-purple-500 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up"
                      style="animation-delay: 0.2s;">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4 transition-colors duration-300">Quick Actions</h3>
                     <div>
                         <a href="/admin/users/new"
                            class="material-btn block w-full bg-primary-600 hover:bg-primary-700 text-white text-center py-3 px-4 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1 mb-3">
@@ -258,16 +284,16 @@
                 </div>
 
                 <!-- Account Information -->
-                <div class="bg-white rounded-xl shadow-elevation-2 p-6 border-l-4 border-indigo-500 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up"
+                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 border-l-4 border-indigo-500 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up"
                      style="animation-delay: 0.3s;">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Account Information</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4 transition-colors duration-300">Account Information</h3>
                     <div class="mb-4">
-                        <div class="text-sm text-gray-500">Username</div>
-                        <div class="font-medium" th:text="${user.username}">admin</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">Username</div>
+                        <div class="font-medium text-gray-800 dark:text-gray-200 transition-colors duration-300" th:text="${user.username}">admin</div>
                     </div>
                     <div class="mb-4">
-                        <div class="text-sm text-gray-500">Full Name</div>
-                        <div class="font-medium" th:text="${user.fullName != null ? user.fullName : 'Not set'}">Admin
+                        <div class="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">Full Name</div>
+                        <div class="font-medium text-gray-800 dark:text-gray-200 transition-colors duration-300" th:text="${user.fullName != null ? user.fullName : 'Not set'}">Admin
                             User
                         </div>
                     </div>
@@ -277,6 +303,57 @@
                             Change Password
                         </a>
                     </div>
+                </div>
+            </div>
+
+            <!-- NEW: Gamification Management Section -->
+            <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 mb-8 hover:shadow-elevation-3 transition-all duration-300 animate-slide-up"
+                 style="animation-delay: 0.35s;">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-darkpurple-200 mb-4 border-b dark:border-darkpurple-700 pb-2 transition-colors duration-300">
+                    Gamification Management</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 p-4 rounded-lg shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300">
+                        <div class="flex items-center mb-3">
+                            <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-trophy text-white"></i>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-yellow-700 dark:text-yellow-400 transition-colors duration-300">Achievements</div>
+                                <p class="text-sm text-yellow-600 dark:text-yellow-300 transition-colors duration-300">Manage user achievements and rewards</p>
+                            </div>
+                        </div>
+                        <a href="/admin/achievements"
+                           class="material-btn block w-full bg-yellow-600 hover:bg-yellow-700 text-white text-center py-2 px-4 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
+                            <i class="fas fa-trophy mr-2"></i>Manage Achievements
+                        </a>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-4 rounded-lg shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300">
+                        <div class="flex items-center mb-3">
+                            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-graduation-cap text-white"></i>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-blue-700 dark:text-blue-400 transition-colors duration-300">Learning Paths</div>
+                                <p class="text-sm text-blue-600 dark:text-blue-300 transition-colors duration-300">Configure task categories and progression</p>
+                            </div>
+                        </div>
+                        <a href="/admin/learning-paths"
+                           class="material-btn block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded-full shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
+                            <i class="fas fa-graduation-cap mr-2"></i>Manage Learning Paths
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 dark:bg-darkpurple-800 p-4 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-2 transition-colors duration-300">Gamification Features</h4>
+                    <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1 transition-colors duration-300">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Achievement system with progress tracking</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>XP rewards and leveling system</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Learning path progression</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Weekly leaderboards and streaks</li>
+                    </ul>
                 </div>
             </div>
 

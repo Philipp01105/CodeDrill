@@ -39,6 +39,19 @@ public class Task {
     @Column(columnDefinition = "TEXT")
     private String junitTests;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "difficulty")
+    private TaskDifficulty difficulty;
+
+    private Integer xpReward = 50; // Default XP reward
+
+    @Column(name = "estimated_time")
+    private String estimatedTime; // e.g., "30 min", "1 hour"
+
+    @Column(name = "learning_category")
+    private String learningCategory; // FUNDAMENTALS, OOP, DATA_STRUCTURES, ALGORITHMS
+
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_id")
     @JsonIgnoreProperties({"createdTasks", "password", "hibernateLazyInitializer", "handler"})
@@ -172,5 +185,21 @@ public class Task {
 
     public void setJunitTests(String junitTests) {
         this.junitTests = junitTests;
+    }
+
+    public TaskDifficulty getDifficulty() { return difficulty; }
+    public void setDifficulty(TaskDifficulty difficulty) { this.difficulty = difficulty; }
+
+    public Integer getXpReward() { return xpReward; }
+    public void setXpReward(Integer xpReward) { this.xpReward = xpReward; }
+
+    public String getEstimatedTime() { return estimatedTime; }
+    public void setEstimatedTime(String estimatedTime) { this.estimatedTime = estimatedTime; }
+
+    public String getLearningCategory() { return learningCategory; }
+    public void setLearningCategory(String learningCategory) { this.learningCategory = learningCategory; }
+
+    public enum TaskDifficulty {
+        EASY, MEDIUM, HARD
     }
 }

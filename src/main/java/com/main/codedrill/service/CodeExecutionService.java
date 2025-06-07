@@ -178,7 +178,7 @@ public class CodeExecutionService {
 
     private long parseMemoryLimit(String memoryLimit) {
         if (memoryLimit == null || memoryLimit.trim().isEmpty()) {
-            return 48 * 1024 * 1024;  // Default 48MB
+            return 48 * 1024 * 1024;
         }
 
         String limit = memoryLimit.toLowerCase().trim();
@@ -476,16 +476,16 @@ public class CodeExecutionService {
                 networkDisabled ? "--network=none" : "",
                 "--memory=" + memoryLimit,
                 "--cpus=" + cpuLimit,
-                "--ulimit", "nproc=" + processLimit + ":" + processLimit,  // No multiplication
-                "--ulimit", "nofile=128:256",  // File descriptor limits
-                "--ulimit", "fsize=10000000",  // Max 10MB files
-                "--pids-limit=" + (processLimit + 5),  // Additional PID limit
+                "--ulimit", "nproc=" + processLimit + ":" + processLimit,
+                "--ulimit", "nofile=128:256",
+                "--ulimit", "fsize=10000000",
+                "--pids-limit=" + (processLimit + 5),
                 "-e", "JAVA_OPTS=-Xmx" + jvmHeapSize +
                 " -XX:MaxDirectMemorySize=8m" +
                 " -XX:MetaspaceSize=16m" +
                 " -XX:MaxMetaspaceSize=32m" +
-                " -XX:+UseSerialGC" +  // Less memory overhead
-                " -XX:TieredStopAtLevel=1",  // Faster startup
+                " -XX:+UseSerialGC" +
+                " -XX:TieredStopAtLevel=1",
                 dockerImage
         );
 
@@ -510,7 +510,7 @@ public class CodeExecutionService {
                 "--cpus=" + testCpuLimit,
                 "--ulimit", "nproc=" + testProcessLimit + ":" + testProcessLimit,
                 "--ulimit", "nofile=256:512",
-                "--ulimit", "fsize=20000000",  // 20MB for test files
+                "--ulimit", "fsize=20000000",
                 "--pids-limit=" + (testProcessLimit + 10),
                 "-e", "JAVA_OPTS=-Xmx" + jvmHeapSize +
                 " -XX:MaxDirectMemorySize=16m" +

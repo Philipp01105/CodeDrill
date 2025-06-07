@@ -19,4 +19,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByCreatedByOrderByCreatedAtDesc(User user);
 
     Iterable<? extends Task> findBycreatedBy(User user);
+
+    List<Task> findByLearningCategory(String learningCategory);
+
+    @Query("SELECT DISTINCT t.learningCategory FROM Task t WHERE t.learningCategory IS NOT NULL")
+    List<String> findDistinctLearningCategories();
 }

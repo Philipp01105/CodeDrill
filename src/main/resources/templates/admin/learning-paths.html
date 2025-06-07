@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Learning Paths - CodeDrill Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+            },
+            darkpurple: {
+              300: '#d4c2ff',
+              800: '#5d20c6',
+              900: '#4a1ba0',
+              950: '#2d1068',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <script src="/js/darkMode.js"></script>
+</head>
+<body class="bg-gray-50 dark:bg-darkpurple-950 min-h-screen font-sans transition-colors duration-300">
+
+<!-- Header -->
+<header class="bg-white dark:bg-darkpurple-900 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center py-4">
+      <div class="flex items-center">
+        <h1 class="text-2xl font-bold text-primary-700 dark:text-darkpurple-300">
+          <i class="fas fa-graduation-cap mr-2"></i>Manage Learning Paths
+        </h1>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button id="theme-toggle" class="p-2 rounded-lg bg-gray-200 dark:bg-darkpurple-800">
+          <i class="fas fa-moon dark:hidden"></i>
+          <i class="fas fa-sun hidden dark:block"></i>
+        </button>
+        <a href="/admin" class="text-primary-600 dark:text-darkpurple-300 hover:text-primary-800">
+          <i class="fas fa-arrow-left mr-1"></i>Back to Admin
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Flash Messages -->
+  <div th:if="${success}" class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+    <span th:text="${success}"></span>
+  </div>
+  <div th:if="${error}" class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+    <span th:text="${error}"></span>
+  </div>
+
+  <!-- Bulk Actions -->
+  <div class="mb-6 bg-white dark:bg-darkpurple-900 rounded-lg shadow p-6">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Bulk Actions</h3>
+    <form id="bulkForm" th:action="@{/admin/learning-paths/bulk-update}" method="post">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Action</label>
+          <select name="action" id="bulkAction" class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-700 rounded-lg dark:bg-darkpurple-800 dark:text-gray-100">
+            <option value="update-category">Update Category</option>
+            <option value="update-xp">Update XP Reward</option>
+            <option value="update-difficulty">Update Difficulty</option>
+          </select>
+        </div>
+        <div id="categoryDiv">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
+          <select name="category" class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-700 rounded-lg dark:bg-darkpurple-800 dark:text-gray-100">
+            <option value="FUNDAMENTALS">Fundamentals</option>
+            <option value="OOP">Object-Oriented Programming</option>
+            <option value="DATA_STRUCTURES">Data Structures</option>
+            <option value="ALGORITHMS">Algorithms</option>
+            <option value="ADVANCED">Advanced Topics</option>
+          </select>
+        </div>
+        <div id="xpDiv" class="hidden">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">XP Reward</label>
+          <input type="number" name="xpReward" min="1" class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-700 rounded-lg dark:bg-darkpurple-800 dark:text-gray-100">
+        </div>
+        <div id="difficultyDiv" class="hidden">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Difficulty</label>
+          <select name="difficulty" class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-700 rounded-lg dark:bg-darkpurple-800 dark:text-gray-100">
+            <option value="EASY">Easy</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HARD">Hard</option>
+          </select>
+        </div>
+        <div>
+          <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium">
+            Apply to Selected
+          </button>
+        </div>
+      </div>
+      <div class="mt-4">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          <span id="selectedCount">0</span> tasks selected
+        </p>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tasks by Category -->
+  <div class="space-y-8">
+    <div th:each="categoryEntry : ${tasksByCategory}" class="bg-white dark:bg-darkpurple-900 rounded-lg shadow">
+      <div class="px-6 py-4 border-b border-gray-200 dark:border-darkpurple-700">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100" th:text="${categoryEntry.key}"></h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400" th:text="${categoryEntry.value.size()} + ' tasks'"></p>
+      </div>
+
+      <div class="p-6">
+        <div class="grid grid-cols-1 gap-4">
+          <div th:each="task : ${categoryEntry.value}"
+               class="flex items-center justify-between p-4 border border-gray-200 dark:border-darkpurple-700 rounded-lg hover:bg-gray-50 dark:hover:bg-darkpurple-800">
+            <div class="flex items-center space-x-4">
+              <input type="checkbox" th:value="${task.id}" name="taskIds" form="bulkForm"
+                     class="task-checkbox w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                     onchange="updateSelectedCount()">
+              <div class="flex-1">
+                <h4 class="font-medium text-gray-900 dark:text-gray-100" th:text="${task.title}"></h4>
+                <div class="flex flex-wrap gap-2 mt-2">
+                                    <span th:each="tag : ${task.tags}"
+                                          class="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full"
+                                          th:text="${tag}"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+              <!-- Current Settings Display -->
+              <div class="text-sm text-gray-600 dark:text-gray-400">
+                <div class="flex gap-2">
+                                    <span th:if="${task.difficulty != null}"
+                                          class="px-2 py-1 text-xs rounded-full"
+                                          th:classappend="${task.difficulty == 'EASY'} ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                                                       (${task.difficulty == 'MEDIUM'} ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                                                       'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200')"
+                                          th:text="${task.difficulty}"></span>
+                  <span th:if="${task.xpReward != null}"
+                        class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-full">
+                                        +<span th:text="${task.xpReward}"></span> XP
+                                    </span>
+                  <span th:if="${task.estimatedTime != null}"
+                        class="px-2 py-1 text-xs bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200 rounded-full">
+                                        <i class="fas fa-clock mr-1"></i><span th:text="${task.estimatedTime}"></span>
+                                    </span>
+                </div>
+              </div>
+
+              <!-- Quick Edit Form -->
+              <div class="flex items-center space-x-2">
+                <form th:action="@{/admin/learning-paths/update-task-category}" method="post" class="inline">
+                  <input type="hidden" name="taskId" th:value="${task.id}">
+                  <select name="category" onchange="this.form.submit()"
+                          class="text-sm px-2 py-1 border border-gray-300 dark:border-darkpurple-700 rounded dark:bg-darkpurple-800 dark:text-gray-100">
+                    <option value="FUNDAMENTALS" th:selected="${task.learningCategory == 'FUNDAMENTALS'}">Fundamentals</option>
+                    <option value="OOP" th:selected="${task.learningCategory == 'OOP'}">OOP</option>
+                    <option value="DATA_STRUCTURES" th:selected="${task.learningCategory == 'DATA_STRUCTURES'}">Data Structures</option>
+                    <option value="ALGORITHMS" th:selected="${task.learningCategory == 'ALGORITHMS'}">Algorithms</option>
+                    <option value="ADVANCED" th:selected="${task.learningCategory == 'ADVANCED'}">Advanced</option>
+                  </select>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function updateSelectedCount() {
+    const checkboxes = document.querySelectorAll('.task-checkbox:checked');
+    const count = checkboxes.length;
+    document.getElementById('selectedCount').textContent = count;
+  }
+
+  document.getElementById('bulkAction').addEventListener('change', function() {
+    const action = this.value;
+    const categoryDiv = document.getElementById('categoryDiv');
+    const xpDiv = document.getElementById('xpDiv');
+    const difficultyDiv = document.getElementById('difficultyDiv');
+
+    // Hide all option divs
+    categoryDiv.classList.add('hidden');
+    xpDiv.classList.add('hidden');
+    difficultyDiv.classList.add('hidden');
+
+    // Show relevant div based on action
+    switch(action) {
+      case 'update-category':
+        categoryDiv.classList.remove('hidden');
+        break;
+      case 'update-xp':
+        xpDiv.classList.remove('hidden');
+        break;
+      case 'update-difficulty':
+        difficultyDiv.classList.remove('hidden');
+        break;
+    }
+  });
+
+  // Prevent form submission if no tasks selected
+  document.getElementById('bulkForm').addEventListener('submit', function(e) {
+    const checkboxes = document.querySelectorAll('.task-checkbox:checked');
+    if (checkboxes.length === 0) {
+      e.preventDefault();
+      alert('Please select at least one task to update.');
+    }
+  });
+</script>
+
+</body>
+</html>

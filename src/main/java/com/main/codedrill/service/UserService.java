@@ -1,6 +1,8 @@
 package com.main.codedrill.service;
 
+import com.main.codedrill.model.Task;
 import com.main.codedrill.model.User;
+import com.main.codedrill.model.UserTaskCompletion;
 import com.main.codedrill.model.VerificationToken;
 import com.main.codedrill.repository.UserRepository;
 import com.main.codedrill.repository.VerificationTokenRepository;
@@ -19,6 +21,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -360,6 +364,28 @@ public class UserService {
             }
         }
         return null;
+    }
+
+    public Set<Long> getCompletedTaskIds(Long userId) {
+        List<UserTaskCompletion> completions = userTaskCompletionRepository.findByUserId(userId);
+        return completions.stream()
+                .map(completion -> completion.getTask().getId())
+                .collect(Collectors.toSet());
+    }
+
+    public boolean markTaskAsCompleted(User user, Task task) {
+        // Check if already completed
+        Optional<UserTaskCompletion> existing = userTaskCompletionRepository
+                .findByUserAndTask(user, task);
+
+        if (existing.isPresent()) {
+            return false;
+        }
+
+        // Mark as completed
+        UserTaskCompletion completion = new UserTaskCompletion(user, task);
+        userTaskCompletionRepository.save(completion);
+        return true;
     }
 }
 

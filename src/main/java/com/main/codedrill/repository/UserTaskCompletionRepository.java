@@ -26,4 +26,8 @@ public interface UserTaskCompletionRepository extends JpaRepository<UserTaskComp
     List<Long> findTaskIdsByUser(@Param("user") User user);
 
     void deleteByTask(Task task);
-} 
+
+    List<UserTaskCompletion> findByUserId(Long userId);
+
+    long countByUser(User user);
+}

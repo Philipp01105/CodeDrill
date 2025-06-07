@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Achievement - CodeDrill Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+            },
+            darkpurple: {
+              300: '#d4c2ff',
+              800: '#5d20c6',
+              900: '#4a1ba0',
+              950: '#2d1068',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <script src="/js/darkMode.js"></script>
+</head>
+<body class="bg-gray-50 dark:bg-darkpurple-950 min-h-screen font-sans transition-colors duration-300">
+
+<!-- Header -->
+<header class="bg-white dark:bg-darkpurple-900 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center py-4">
+      <div class="flex items-center">
+        <h1 class="text-2xl font-bold text-primary-700 dark:text-darkpurple-300">
+          <i class="fas fa-plus-circle mr-2"></i>Create Achievement
+        </h1>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button id="theme-toggle" class="p-2 rounded-lg bg-gray-200 dark:bg-darkpurple-800">
+          <i class="fas fa-moon dark:hidden"></i>
+          <i class="fas fa-sun hidden dark:block"></i>
+        </button>
+        <a href="/admin/achievements" class="text-primary-600 dark:text-darkpurple-300 hover:text-primary-800">
+          <i class="fas fa-arrow-left mr-1"></i>Back to Achievements
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Flash Messages -->
+  <div th:if="${error}" class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+    <span th:text="${error}"></span>
+  </div>
+
+  <!-- Achievement Form -->
+  <div class="bg-white dark:bg-darkpurple-900 rounded-lg shadow-lg p-6">
+    <form th:action="@{/admin/achievements/create}" th:object="${achievement}" method="post">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Basic Information -->
+        <div class="md:col-span-2">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Basic Information</h3>
+        </div>
+
+        <!-- Name -->
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Achievement Name *
+          </label>
+          <input type="text" id="name" th:field="*{name}" required
+                 class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-darkpurple-800 dark:text-gray-100"
+                 placeholder="e.g., Week Warrior">
+        </div>
+
+        <!-- Icon -->
+        <div>
+          <label for="icon" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Icon (Font Awesome class) *
+          </label>
+          <div class="relative">
+            <input type="text" id="icon" th:field="*{icon}" required
+                   class="w-full px-3 py-2 pl-10 border border-gray-300 dark:border-darkpurple-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-darkpurple-800 dark:text-gray-100"
+                   placeholder="e.g., fa-fire"
+                   oninput="updateIconPreview()">
+            <div class="absolute left-3 top-2.5">
+              <i id="iconPreview" class="fas fa-star text-gray-400"></i>
+            </div>
+          </div>
+          <p class="text-xs text-gray-500 mt-1">Use Font Awesome icons (e.g., fa-fire, fa-trophy, fa-star)</p>
+        </div>
+
+        <!-- Description -->
+        <div class="md:col-span-2">
+          <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Description *
+          </label>
+          <textarea id="description" th:field="*{description}" required rows="3"
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-darkpurple-800 dark:text-gray-100"
+                    placeholder="Describe what the user needs to do to earn this achievement"></textarea>
+        </div>
+
+        <!-- Achievement Configuration -->
+        <div class="md:col-span-2">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 mt-6">Configuration</h3>
+        </div>
+
+        <!-- Achievement Type -->
+        <div>
+          <label for="achievementType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Achievement Type *
+          </label>
+          <select id="achievementType" th:field="*{achievementType}" required
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-darkpurple-800 dark:text-gray-100"
+                  onchange="toggleTargetValue()">
+            <option value="">Select type...</option>
+            <option value="STREAK">Streak (consecutive days)</option>
+            <option value="COMPLETION">Task Completion (number of tasks)</option>
+            <option value="XP">XP Milestone (total XP earned)</option>
+            <option value="SPECIAL">Special (manual unlock)</option>
+          </select>
+        </div>
+
+        <!-- Target Value -->
+        <div id="targetValueDiv">
+          <label for="targetValue" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Target Value
+          </label>
+          <input type="number" id="targetValue" th:field="*{targetValue}" min="1"
+                 class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-darkpurple-800 dark:text-gray-100"
+                 placeholder="e.g., 7 for 7-day streak">
+          <p class="text-xs text-gray-500 mt-1">Leave empty for special achievements</p>
+        </div>
+
+        <!-- XP Reward -->
+        <div>
+          <label for="xpReward" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            XP Reward *
+          </label>
+          <input type="number" id="xpReward" th:field="*{xpReward}" required min="0" value="100"
+                 class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-darkpurple-800 dark:text-gray-100"
+                 placeholder="100">
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="mt-8 border-t pt-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Preview</h3>
+        <div id="achievementPreview" class="bg-gray-50 dark:bg-darkpurple-800 rounded-lg p-4 border-2 border-dashed border-gray-300 dark:border-darkpurple-600">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-primary-500 rounded-lg flex items-center justify-center">
+              <i id="previewIcon" class="fas fa-star text-white"></i>
+            </div>
+            <div>
+              <h4 id="previewName" class="font-semibold text-gray-900 dark:text-gray-100">Achievement Name</h4>
+              <p id="previewDescription" class="text-sm text-gray-600 dark:text-gray-300">Achievement description</p>
+              <div class="flex gap-2 mt-2 text-xs">
+                <span id="previewType" class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full">Type</span>
+                <span id="previewXp" class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full">+100 XP</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="flex justify-end space-x-4 mt-8">
+        <a href="/admin/achievements"
+           class="px-6 py-2 border border-gray-300 dark:border-darkpurple-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-darkpurple-800">
+          Cancel
+        </a>
+        <button type="submit"
+                class="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium">
+          <i class="fas fa-save mr-2"></i>Create Achievement
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function updateIconPreview() {
+    const iconInput = document.getElementById('icon');
+    const iconPreview = document.getElementById('iconPreview');
+    const previewIcon = document.getElementById('previewIcon');
+
+    if (iconInput.value) {
+      iconPreview.className = `fas ${iconInput.value} text-gray-400`;
+      previewIcon.className = `fas ${iconInput.value} text-white`;
+    } else {
+      iconPreview.className = 'fas fa-star text-gray-400';
+      previewIcon.className = 'fas fa-star text-white';
+    }
+    updatePreview();
+  }
+
+  function toggleTargetValue() {
+    const typeSelect = document.getElementById('achievementType');
+    const targetDiv = document.getElementById('targetValueDiv');
+    const targetInput = document.getElementById('targetValue');
+
+    if (typeSelect.value === 'SPECIAL') {
+      targetDiv.style.display = 'none';
+      targetInput.required = false;
+      targetInput.value = '';
+    } else {
+      targetDiv.style.display = 'block';
+      targetInput.required = typeSelect.value !== '';
+    }
+    updatePreview();
+  }
+
+  function updatePreview() {
+    const name = document.getElementById('name').value || 'Achievement Name';
+    const description = document.getElementById('description').value || 'Achievement description';
+    const type = document.getElementById('achievementType').value || 'Type';
+    const xp = document.getElementById('xpReward').value || '100';
+
+    document.getElementById('previewName').textContent = name;
+    document.getElementById('previewDescription').textContent = description;
+    document.getElementById('previewType').textContent = type;
+    document.getElementById('previewXp').textContent = `+${xp} XP`;
+  }
+
+  // Add event listeners for real-time preview
+  document.getElementById('name').addEventListener('input', updatePreview);
+  document.getElementById('description').addEventListener('input', updatePreview);
+  document.getElementById('achievementType').addEventListener('change', updatePreview);
+  document.getElementById('xpReward').addEventListener('input', updatePreview);
+
+  // Initialize preview
+  updatePreview();
+</script>
+
+</body>
+</html>

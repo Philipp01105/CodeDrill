@@ -165,11 +165,6 @@ EOF
     fi
 }
 
-# Main execution logic
-# This script runs Java code in a secure Docker container
-# It can handle both regular Java code and JUnit tests
-# It expects code to be provided via stdin
-
 # Read all input
 input=$(cat)
 

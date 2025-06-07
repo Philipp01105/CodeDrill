@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -108,6 +109,22 @@ public class TaskService {
                 .flatMap(task -> task.getTags().stream())
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public Map<String, List<Task>> getTasksByCategory() {
+        List<Task> allTasks = getAllTasks();
+        return allTasks.stream()
+                .collect(Collectors.groupingBy(task ->
+                        task.getLearningCategory() != null ? task.getLearningCategory() : "UNCATEGORIZED"));
+    }
+
+    @Transactional
+    public Task updateTask(Task task) {
+        return taskRepository.save(task);
+    }
+
+    public List<Task> getTasksByLearningCategory(String category) {
+        return taskRepository.findByLearningCategory(category);
     }
 }
 
