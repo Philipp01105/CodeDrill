@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${achievement.id != null ? 'Edit Achievement' : 'Create Achievement'} + ' - CodeDrill Admin'">
+        Achievement Form - CodeDrill Admin</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="/js/darkMode.js"></script>
+    <script src="/js/analytics-tracker.js"></script>
+</head>
+<body class="bg-gray-50 dark:bg-darkpurple-950 min-h-screen font-sans transition-colors duration-300">
+<div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <div class="bg-primary-800 dark:bg-darkpurple-900 text-white w-64 py-8 px-4 hidden md:block shadow-elevation-2 animate-slide-in-left transition-colors duration-300">
+        <div class="mb-8">
+            <h1 class="text-xl font-bold">CodeDrill</h1>
+            <p class="text-primary-200 dark:text-darkpurple-200 text-sm transition-colors duration-300">Administrator
+                Panel</p>
+        </div>
+
+        <nav>
+            <ul>
+                <li class="mb-2">
+                    <a href="/admin"
+                       class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="/admin/users"
+                       class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                        User Management
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="/admin/moderators"
+                       class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                        Manage Moderators
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="/moderator/tasks"
+                       class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                        Task Management
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="/admin/achievements"
+                       class="block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1">
+                        <i class="fas fa-trophy mr-2"></i>Achievements
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="/admin/learning-paths"
+                       class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                        <i class="fas fa-graduation-cap mr-2"></i>Learning Paths
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="/analytics/admin"
+                       class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                        Analytics Dashboard
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="/tasks"
+                       class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                        View Public Site
+                    </a>
+                </li>
+
+                <!-- Dark mode toggle in sidebar -->
+                <li class="mb-4 flex justify-center">
+                    <button id="theme-toggle"
+                            class="theme-toggle bg-primary-700 dark:bg-darkpurple-800 p-2 rounded-full transition-colors duration-300"
+                            aria-label="Toggle dark mode" aria-checked="false">
+                        <svg class="moon-icon w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                        <svg class="sun-icon w-5 h-5 text-yellow-300 hidden" fill="none" stroke="currentColor"
+                             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </button>
+                </li>
+
+                <li class="mt-8">
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit"
+                                class="material-btn block w-full py-2 px-4 text-left hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                            Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-y-auto">
+        <!-- Mobile Header -->
+        <div class="md:hidden bg-primary-800 dark:bg-darkpurple-900 text-white p-4 flex justify-between items-center shadow-elevation-2 transition-colors duration-300">
+            <h1 class="text-xl font-bold"
+                th:text="${achievement.id != null ? 'Edit Achievement' : 'Create Achievement'}">Achievement Form</h1>
+            <button id="mobileMenuBtn"
+                    class="material-btn text-white p-1 rounded-full hover:bg-primary-700 dark:hover:bg-darkpurple-800 transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Page Content -->
+        <div class="p-6 animate-fade-in">
+            <!-- Header with breadcrumb -->
+            <div class="mb-6">
+                <nav class="flex mb-3" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <li class="inline-flex items-center">
+                            <a href="/admin"
+                               class="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                                <i class="fas fa-home mr-2"></i>Admin
+                            </a>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                          clip-rule="evenodd"></path>
+                                </svg>
+                                <a href="/admin/achievements"
+                                   class="ml-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 md:ml-2">Achievements</a>
+                            </div>
+                        </li>
+                        <li aria-current="page">
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                          clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2"
+                                      th:text="${achievement.id != null ? 'Edit' : 'Create'}">Form</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-darkpurple-200 border-b dark:border-darkpurple-700 pb-3 animate-slide-up transition-colors duration-300">
+                    <i th:class="${achievement.id != null ? 'fas fa-edit' : 'fas fa-plus'} + ' mr-2'"></i>
+                    <span th:text="${achievement.id != null ? 'Edit Achievement' : 'Create New Achievement'}">Achievement Form</span>
+                </h2>
+            </div>
+
+            <!-- Flash Messages -->
+            <div th:if="${success}"
+                 class="mb-6 p-4 rounded-lg bg-green-100 dark:bg-green-900 border-l-4 border-green-500 text-green-800 dark:text-green-200 flex items-start shadow-elevation-1 animate-fade-in transition-colors duration-300">
+                <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span th:text="${success}"></span>
+            </div>
+            <div th:if="${error}"
+                 class="mb-6 p-4 rounded-lg bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-800 dark:text-red-200 flex items-start shadow-elevation-1 animate-fade-in transition-colors duration-300">
+                <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <span th:text="${error}"></span>
+            </div>
+
+            <!-- Achievement Form -->
+            <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 overflow-hidden transition-colors duration-300">
+                <div class="px-6 py-4 bg-gray-50 dark:bg-darkpurple-800 border-b border-gray-200 dark:border-darkpurple-700">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
+                        <i class="fas fa-trophy mr-2 text-yellow-500"></i>Achievement Details
+                    </h3>
+                </div>
+
+                <form th:action="${achievement.id != null ? '/admin/achievements/edit/' + achievement.id : '/admin/achievements/create'}"
+                      method="post" th:object="${achievement}" class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Achievement Name -->
+                        <div class="form-field">
+                            <label for="name"
+                                   class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300">
+                                Achievement Name *
+                            </label>
+                            <div class="relative">
+                                <input type="text" id="name" th:field="*{name}" required
+                                       class="w-full px-4 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 peer"
+                                       placeholder=" ">
+                                <label for="name"
+                                       class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-darkpurple-800 px-2 peer-focus:px-2 peer-focus:text-primary-600 peer-focus:dark:text-primary-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Enter
+                                    achievement name</label>
+                            </div>
+                        </div>
+
+                        <!-- Achievement Icon -->
+                        <div class="form-field">
+                            <label for="icon"
+                                   class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300">
+                                FontAwesome Icon *
+                            </label>
+                            <div class="relative">
+                                <input type="text" id="icon" th:field="*{icon}" required
+                                       class="w-full px-4 py-2 pl-12 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 peer"
+                                       placeholder=" ">
+                                <label for="icon"
+                                       class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-darkpurple-800 px-2 peer-focus:px-2 peer-focus:text-primary-600 peer-focus:dark:text-primary-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-10">fa-trophy</label>
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mr-2">
+                                    <i id="iconPreview" class="fas fa-trophy text-primary-500"></i>
+                                </div>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Enter FontAwesome icon class (e.g.,
+                                fa-trophy, fa-star)</p>
+                        </div>
+
+                        <!-- Achievement Type -->
+                        <div class="form-field">
+                            <label for="achievementType">
+
+                            </label><select id="achievementType" th:field="*{achievementType}" required
+                                                                         class="w-full px-4 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300">
+                                <option value="">Select achievement type</option>
+                                <option value="COMPLETION">Completion</option>
+                                <option value="STREAK">Streak</option>
+                                <option value="XP">XP Based</option>
+                                <option value="SPECIAL">Special</option>
+                            </select>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                <strong>Completion:</strong> Based on number of tasks completed<br>
+                                <strong>Streak:</strong> Based on consecutive days of activity<br>
+                                <strong>XP:</strong> Based on total XP earned<br>
+                                <strong>Special:</strong> Manual or special criteria
+                            </p>
+                        </div>
+
+                        <!-- Target Value -->
+                        <div class="form-field" id="targetValueField">
+                            <label for="targetValue"
+                                   class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300">
+                                Target Value
+                            </label>
+                            <div class="relative">
+                                <input type="number" id="targetValue" th:field="*{targetValue}" min="1"
+                                       class="w-full px-4 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 peer"
+                                       placeholder=" ">
+                                <label for="targetValue"
+                                       class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-darkpurple-800 px-2 peer-focus:px-2 peer-focus:text-primary-600 peer-focus:dark:text-primary-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Enter
+                                    target value</label>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Number of tasks, days, or XP
+                                required (leave empty for special achievements)</p>
+                        </div>
+
+                        <!-- XP Reward -->
+                        <div class="form-field">
+                            <label for="xpReward"
+                                   class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300">
+                                XP Reward *
+                            </label>
+                            <div class="relative">
+                                <input type="number" id="xpReward" th:field="*{xpReward}" required min="1"
+                                       class="w-full px-4 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 peer"
+                                       placeholder=" ">
+                                <label for="xpReward"
+                                       class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-darkpurple-800 px-2 peer-focus:px-2 peer-focus:text-primary-600 peer-focus:dark:text-primary-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">XP Reward</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mt-6">
+                        <label for="description"
+                               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300">
+                            Description *
+                        </label>
+                        <div class="relative">
+                            <textarea id="description" th:field="*{description}" rows="3" required
+                                      class="w-full px-4 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 peer"
+                                      placeholder=" "></textarea>
+                            <label for="description"
+                                   class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-darkpurple-800 px-2 peer-focus:px-2 peer-focus:text-primary-600 peer-focus:dark:text-primary-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-6 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Enter
+                                achievement description</label>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="mt-8 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
+                        <a href="/admin/achievements"
+                           class="material-btn w-full sm:w-auto px-6 py-2 border border-gray-300 dark:border-darkpurple-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-darkpurple-800 rounded-lg hover:bg-gray-50 dark:hover:bg-darkpurple-700 focus:ring-2 focus:ring-primary-500 text-center transition-all duration-300">
+                            Cancel
+                        </a>
+                        <button type="submit"
+                                class="material-btn w-full sm:w-auto px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg shadow-elevation-1 hover:shadow-elevation-2 focus:ring-2 focus:ring-primary-500 transition-all duration-300 transform hover:-translate-y-1">
+                            <i th:class="${achievement.id != null ? 'fas fa-save' : 'fas fa-plus'} + ' mr-2'"></i>
+                            <span th:text="${achievement.id != null ? 'Update Achievement' : 'Create Achievement'}">Save</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Achievement Preview -->
+            <div class="mt-6 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 transition-colors duration-300">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
+                    <i class="fas fa-eye mr-2"></i>Preview
+                </h3>
+                <div class="bg-gray-50 dark:bg-darkpurple-800 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center mr-4">
+                            <i id="previewIcon" class="fas fa-trophy text-yellow-600 dark:text-yellow-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <div id="previewName"
+                                 class="text-lg font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                                 th:text="${achievement.name} ?: 'Achievement Name'">Achievement Name
+                            </div>
+                            <div id="previewDescription"
+                                 class="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300"
+                                 th:text="${achievement.description} ?: 'Achievement description'">Achievement
+                                description
+                            </div>
+                            <div class="flex items-center mt-1 space-x-4">
+                                <span id="previewType"
+                                      class="text-xs px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 rounded-full"
+                                      th:text="${achievement.achievementType} ?: 'Type'">Type</span>
+                                <span id="previewXP" class="text-xs text-yellow-600 dark:text-yellow-400 font-medium">
+                                    <i class="fas fa-star mr-1"></i><span
+                                        th:text="${achievement.xpReward} ?: '0'">0</span> XP
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Templates (only show for create) -->
+            <div th:if="${achievement.id == null}"
+                 class="mt-6 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 transition-colors duration-300">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
+                    <i class="fas fa-magic mr-2"></i>Quick Templates
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <button type="button"
+                            onclick="applyTemplate('First Steps', 'fa-baby', 'COMPLETION', 1, 50, 'Complete your first task')"
+                            class="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors duration-300">
+                        <i class="fas fa-baby text-green-600 dark:text-green-400 text-xl mb-2"></i>
+                        <div class="text-sm font-medium text-green-800 dark:text-green-200">First Steps</div>
+                        <div class="text-xs text-green-600 dark:text-green-400">First task completion</div>
+                    </button>
+
+                    <button type="button"
+                            onclick="applyTemplate('Week Warrior', 'fa-fire', 'STREAK', 7, 200, 'Practice for 7 consecutive days')"
+                            class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-300">
+                        <i class="fas fa-fire text-red-600 dark:text-red-400 text-xl mb-2"></i>
+                        <div class="text-sm font-medium text-red-800 dark:text-red-200">Week Warrior</div>
+                        <div class="text-xs text-red-600 dark:text-red-400">7-day streak</div>
+                    </button>
+
+                    <button type="button"
+                            onclick="applyTemplate('Code Master', 'fa-code', 'COMPLETION', 50, 500, 'Complete 50 coding challenges')"
+                            class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-300">
+                        <i class="fas fa-code text-blue-600 dark:text-blue-400 text-xl mb-2"></i>
+                        <div class="text-sm font-medium text-blue-800 dark:text-blue-200">Code Master</div>
+                        <div class="text-xs text-blue-600 dark:text-blue-400">50 task completions</div>
+                    </button>
+
+                    <button type="button"
+                            onclick="applyTemplate('XP Hunter', 'fa-star', 'XP', 1000, 300, 'Earn 1000 total XP')"
+                            class="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors duration-300">
+                        <i class="fas fa-star text-yellow-600 dark:text-yellow-400 text-xl mb-2"></i>
+                        <div class="text-sm font-medium text-yellow-800 dark:text-yellow-200">XP Hunter</div>
+                        <div class="text-xs text-yellow-600 dark:text-yellow-400">1000 XP total</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Update icon preview when icon field changes
+    function updateIconPreview() {
+        const iconInput = document.getElementById('icon');
+        const iconPreview = document.getElementById('iconPreview');
+        const previewIcon = document.getElementById('previewIcon');
+
+        let iconValue = iconInput.value.trim();
+        if (iconValue && !iconValue.startsWith('fa-')) {
+            iconValue = 'fa-' + iconValue;
+        }
+
+        if (iconValue) {
+            iconPreview.className = 'fas ' + iconValue + ' text-primary-500';
+            previewIcon.className = 'fas ' + iconValue + ' text-yellow-600 dark:text-yellow-400 text-xl';
+        } else {
+            iconPreview.className = 'fas fa-trophy text-primary-500';
+            previewIcon.className = 'fas fa-trophy text-yellow-600 dark:text-yellow-400 text-xl';
+        }
+    }
+
+    // Initialize with existing values
+    document.addEventListener('DOMContentLoaded', function () {
+        updateIconPreview();
+        updatePreview();
+
+        // Show/hide target value based on initial achievement type
+        const achievementType = document.getElementById('achievementType').value;
+        toggleTargetField(achievementType);
+    });
+
+    // Icon preview update
+    document.getElementById('icon').addEventListener('input', updateIconPreview);
+
+    // Preview updates
+    function updatePreview() {
+        const name = document.getElementById('name').value || 'Achievement Name';
+        const description = document.getElementById('description').value || 'Achievement description';
+        const type = document.getElementById('achievementType').value || 'Type';
+        const xp = document.getElementById('xpReward').value || '0';
+
+        document.getElementById('previewName').textContent = name;
+        document.getElementById('previewDescription').textContent = description;
+        document.getElementById('previewType').textContent = type;
+        document.getElementById('previewXP').innerHTML = '<i class="fas fa-star mr-1"></i>' + xp + ' XP';
+    }
+
+    document.getElementById('name').addEventListener('input', updatePreview);
+    document.getElementById('description').addEventListener('input', updatePreview);
+    document.getElementById('achievementType').addEventListener('change', function () {
+        updatePreview();
+        toggleTargetField(this.value);
+    });
+    document.getElementById('xpReward').addEventListener('input', updatePreview);
+
+    // Show/hide target value based on achievement type
+    function toggleTargetField(type) {
+        const targetField = document.getElementById('targetValueField');
+        const targetInput = document.getElementById('targetValue');
+        if (type === 'SPECIAL') {
+            targetField.style.display = 'none';
+            targetInput.required = false;
+        } else {
+            targetField.style.display = 'block';
+            targetInput.required = true;
+        }
+    }
+
+    // Template application function
+    function applyTemplate(name, icon, type, target, xp, description) {
+        document.getElementById('name').value = name;
+        document.getElementById('icon').value = icon;
+        document.getElementById('achievementType').value = type;
+        document.getElementById('targetValue').value = target;
+        document.getElementById('xpReward').value = xp;
+        document.getElementById('description').value = description;
+
+        // Trigger events to update preview
+        updateIconPreview();
+        updatePreview();
+        toggleTargetField(type);
+    }
+
+    // Mobile menu toggle
+    document.getElementById('mobileMenuBtn').addEventListener('click', function () {
+        console.log('Mobile menu toggle clicked');
+    });
+</script>
+</body>
+</html>

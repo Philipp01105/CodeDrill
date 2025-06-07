@@ -43,7 +43,7 @@ public class Task {
     @Column(name = "difficulty")
     private TaskDifficulty difficulty;
 
-    private Integer xpReward = 50; // Default XP reward
+    private Integer xpReward;
 
     @Column(name = "estimated_time")
     private String estimatedTime; // e.g., "30 min", "1 hour"

@@ -50,7 +50,7 @@ public class AdminAchievementController {
         model.addAttribute("achievement", new Achievement());
         model.addAttribute("user", user);
 
-        return "admin/create-achievement";
+        return "admin/achievements-form";
     }
 
     @PostMapping("/create")
@@ -63,6 +63,7 @@ public class AdminAchievementController {
         }
 
         try {
+            achievement.setIsActive(true);
             achievementService.createAchievement(achievement);
             redirectAttributes.addFlashAttribute("success", "Achievement created successfully!");
         } catch (Exception e) {
@@ -87,7 +88,7 @@ public class AdminAchievementController {
         model.addAttribute("achievement", achievement);
         model.addAttribute("user", user);
 
-        return "admin/edit-achievement";
+        return "admin/achievements-form";
     }
 
     @PostMapping("/edit/{id}")
