@@ -5,7 +5,7 @@
 </head>
 <body>
 <!-- Sidebar Fragment -->
-<div th:fragment="sidebar"
+<div th:fragment="sidebar(activeTab)"
      class="bg-primary-800 dark:bg-darkpurple-900 text-white w-64 py-8 px-4 hidden md:block shadow-elevation-2 animate-slide-in-left transition-colors duration-300">
     <div class="mb-8">
         <h1 class="text-xl font-bold">CodeDrill</h1>
@@ -17,56 +17,70 @@
         <ul>
             <li class="mb-2">
                 <a href="/admin"
-                   class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1"
-                   th:class="${#httpServletRequest != null && #httpServletRequest.requestURI == '/admin' ? 'block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1' : 'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'}">
-                    Dashboard
+                   th:class="${activeTab == 'dashboard'} ?
+                   'block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1' :
+                   'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'">
+                Dashboard
                 </a>
             </li>
-            <li class="mb-2" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
+            <li class="mb-2">
                 <a href="/admin/users"
-                   class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1"
-                   th:class="${#httpServletRequest != null && #httpServletRequest.requestURI != null && #httpServletRequest.requestURI.startsWith('/admin/users') ? 'block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1' : 'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'}">
+                   th:class="${activeTab == 'users'} ?
+                   'block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1' :
+                   'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'">
                     User Management
                 </a>
             </li>
-            <li class="mb-2" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
+            <li class="mb-2">
                 <a href="/admin/moderators"
-                   class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1"
-                   th:class="${#httpServletRequest != null && #httpServletRequest.requestURI != null && #httpServletRequest.requestURI.startsWith('/admin/moderators') ? 'block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1' : 'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'}">
+                   th:class="${activeTab == 'moderators'} ?
+                   'block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1' :
+                   'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'">
                     Manage Moderators
                 </a>
             </li>
-            <li class="mb-2" th:if="${#authorization.expression('hasAnyAuthority(''ADMIN'', ''MODERATOR'')')}">
+            <li class="mb-2">
                 <a href="/moderator/tasks"
-                   class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1"
-                   th:class="${#httpServletRequest != null && #httpServletRequest.requestURI != null && #httpServletRequest.requestURI.startsWith('/moderator/tasks') ? 'block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1' : 'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'}">
+                   th:class="${activeTab == 'tasks'} ?
+                   'block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1' :
+                   'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'">
                     Task Management
                 </a>
             </li>
-            <li class="mb-2" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
+            <!-- NEW: Gamification Management Section -->
+            <li class="mb-2">
+                <a href="/admin/achievements"
+                   th:class="${activeTab == 'achievements'} ?
+                   'block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1' :
+                   'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'">
+                    Achievements
+                </a>
+            </li>
+            <li class="mb-2">
+                <a href="/admin/learning-paths"
+                   th:class="${activeTab == 'learning-paths'} ?
+                   'block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1' :
+                   'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'">
+                    Learning Paths
+                </a>
+            </li>
+            <li class="mb-2">
                 <a href="/analytics/admin"
-                   class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1"
-                   th:class="${#httpServletRequest != null && #httpServletRequest.requestURI != null && #httpServletRequest.requestURI == '/analytics/admin' ? 'block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1' : 'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'}">
+                   th:class="${activeTab == 'analytics'} ?
+                   'block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1' :
+                   'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'">
                     Analytics Dashboard
                 </a>
             </li>
             <li class="mb-2">
-                <a href="/analytics/user"
-                   class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1"
-                   th:class="${#httpServletRequest != null && #httpServletRequest.requestURI != null && #httpServletRequest.requestURI == '/analytics/user' ? 'block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1' : 'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'}">
-                    My Analytics
-                </a>
-            </li>
-            <li class="mb-2">
                 <a href="/tasks"
-                   class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
+                   th:class="'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'">
                     View Public Site
                 </a>
             </li>
             <li class="mb-2">
                 <a href="/change-password"
-                   class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1"
-                   th:class="${#httpServletRequest != null && #httpServletRequest.requestURI != null && #httpServletRequest.requestURI == '/change-password' ? 'block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1' : 'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'}">
+                   th:class="'block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1'">
                     Change Password
                 </a>
             </li>
@@ -99,6 +113,7 @@
             </li>
         </ul>
     </nav>
+</div>
 </div>
 </body>
 </html>

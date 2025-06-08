@@ -1,631 +1,592 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" class="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Learning Paths - CodeDrill Admin</title>
-  <link rel="stylesheet" href="/css/styles.css">
-  <script src="/js/darkMode.js"></script>
-  <script src="/js/analytics-tracker.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Learning Paths - CodeDrill Admin</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="/js/darkMode.js"></script>
+    <script src="/js/analytics-tracker.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50 dark:bg-darkpurple-950 min-h-screen font-sans transition-colors duration-300">
 <div class="flex min-h-screen">
-  <!-- Sidebar -->
-  <div class="bg-primary-800 dark:bg-darkpurple-900 text-white w-64 py-8 px-4 hidden md:block shadow-elevation-2 animate-slide-in-left transition-colors duration-300">
-    <div class="mb-8">
-      <h1 class="text-xl font-bold">CodeDrill</h1>
-      <p class="text-primary-200 dark:text-darkpurple-200 text-sm transition-colors duration-300">Administrator Panel</p>
-    </div>
+    <!-- Sidebar -->
+    <th:block th:replace="~{fragments/sidebar :: sidebar('learning-paths')}"></th:block>
 
-    <nav>
-      <ul>
-        <li class="mb-2">
-          <a href="/admin"
-             class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-            Dashboard
-          </a>
-        </li>
-        <li class="mb-2">
-          <a href="/admin/users"
-             class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-            User Management
-          </a>
-        </li>
-        <li class="mb-2">
-          <a href="/admin/moderators"
-             class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-            Manage Moderators
-          </a>
-        </li>
-        <li class="mb-2">
-          <a href="/moderator/tasks"
-             class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-            Task Management
-          </a>
-        </li>
-        <li class="mb-2">
-          <a href="/admin/achievements"
-             class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-            <i class="fas fa-trophy mr-2"></i>Achievements
-          </a>
-        </li>
-        <li class="mb-2">
-          <a href="/admin/learning-paths"
-             class="block py-2 px-4 bg-primary-700 dark:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 shadow-elevation-1">
-            <i class="fas fa-graduation-cap mr-2"></i>Learning Paths
-          </a>
-        </li>
-        <li class="mb-2">
-          <a href="/analytics/admin"
-             class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-            Analytics Dashboard
-          </a>
-        </li>
-        <li class="mb-2">
-          <a href="/tasks"
-             class="block py-2 px-4 hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-            View Public Site
-          </a>
-        </li>
+    <!-- Main Content -->
+    <div class="flex-1 overflow-y-auto">
+        <th:block th:replace="~{fragments/mobile-nav :: mobile-nav}"></th:block>
 
-        <!-- Dark mode toggle in sidebar -->
-        <li class="mb-4 flex justify-center">
-          <button id="theme-toggle"
-                  class="theme-toggle bg-primary-700 dark:bg-darkpurple-800 p-2 rounded-full transition-colors duration-300"
-                  aria-label="Toggle dark mode" aria-checked="false">
-            <svg class="moon-icon w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                 xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-            </svg>
-            <svg class="sun-icon w-5 h-5 text-yellow-300 hidden" fill="none" stroke="currentColor"
-                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-            </svg>
-          </button>
-        </li>
-
-        <li class="mt-8">
-          <form th:action="@{/logout}" method="post">
-            <button type="submit"
-                    class="material-btn block w-full py-2 px-4 text-left hover:bg-primary-700 dark:hover:bg-darkpurple-800 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-              Logout
-            </button>
-          </form>
-        </li>
-      </ul>
-    </nav>
-  </div>
-
-  <!-- Main Content -->
-  <div class="flex-1 overflow-y-auto">
-    <!-- Mobile Header -->
-    <div class="md:hidden bg-primary-800 dark:bg-darkpurple-900 text-white p-4 flex justify-between items-center shadow-elevation-2 transition-colors duration-300">
-      <h1 class="text-xl font-bold">Learning Paths</h1>
-      <button id="mobileMenuBtn"
-              class="material-btn text-white p-1 rounded-full hover:bg-primary-700 dark:hover:bg-darkpurple-800 transition-colors duration-300">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-             stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-      </button>
-    </div>
-
-    <!-- Page Content -->
-    <div class="p-6 animate-fade-in">
-      <!-- Header with breadcrumb -->
-      <div class="mb-6">
-        <nav class="flex mb-3" aria-label="Breadcrumb">
-          <ol class="inline-flex items-center space-x-1 md:space-x-3">
-            <li class="inline-flex items-center">
-              <a href="/admin" class="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
-                <i class="fas fa-home mr-2"></i>Admin
-              </a>
-            </li>
-            <li aria-current="page">
-              <div class="flex items-center">
-                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">Learning Paths</span>
-              </div>
-            </li>
-          </ol>
-        </nav>
-        <h2 class="text-2xl font-bold text-gray-800 dark:text-darkpurple-200 border-b dark:border-darkpurple-700 pb-3 animate-slide-up transition-colors duration-300">
-          <i class="fas fa-graduation-cap mr-2"></i>Manage Learning Paths
-        </h2>
-      </div>
-
-      <!-- Flash Messages -->
-      <div th:if="${success}" class="mb-6 p-4 rounded-lg bg-green-100 dark:bg-green-900 border-l-4 border-green-500 text-green-800 dark:text-green-200 flex items-start shadow-elevation-1 animate-fade-in transition-colors duration-300">
-        <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        <span th:text="${success}"></span>
-      </div>
-      <div th:if="${error}" class="mb-6 p-4 rounded-lg bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-800 dark:text-red-200 flex items-start shadow-elevation-1 animate-fade-in transition-colors duration-300">
-        <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-        </svg>
-        <span th:text="${error}"></span>
-      </div>
-
-      <!-- Overview Statistics -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 border-l-4 border-blue-500 hover:shadow-elevation-3 transition-all duration-300">
-          <div class="flex items-center">
-            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-4">
-              <i class="fas fa-book text-blue-600 dark:text-blue-400 text-xl"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" th:text="${tasksByCategory.get('FUNDAMENTALS') != null ? tasksByCategory.get('FUNDAMENTALS').size() : 0}">0</div>
-              <p class="text-sm text-gray-600 dark:text-gray-300">Fundamentals</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 border-l-4 border-green-500 hover:shadow-elevation-3 transition-all duration-300">
-          <div class="flex items-center">
-            <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mr-4">
-              <i class="fas fa-cubes text-green-600 dark:text-green-400 text-xl"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-green-600 dark:text-green-400" th:text="${tasksByCategory.get('OOP') != null ? tasksByCategory.get('OOP').size() : 0}">0</div>
-              <p class="text-sm text-gray-600 dark:text-gray-300">OOP</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 border-l-4 border-purple-500 hover:shadow-elevation-3 transition-all duration-300">
-          <div class="flex items-center">
-            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-4">
-              <i class="fas fa-sitemap text-purple-600 dark:text-purple-400 text-xl"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-purple-600 dark:text-purple-400" th:text="${tasksByCategory.get('DATA_STRUCTURES') != null ? tasksByCategory.get('DATA_STRUCTURES').size() : 0}">0</div>
-              <p class="text-sm text-gray-600 dark:text-gray-300">Data Structures</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 border-l-4 border-red-500 hover:shadow-elevation-3 transition-all duration-300">
-          <div class="flex items-center">
-            <div class="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mr-4">
-              <i class="fas fa-code text-red-600 dark:text-red-400 text-xl"></i>
-            </div>
-            <div>
-              <div class="text-2xl font-bold text-red-600 dark:text-red-400" th:text="${tasksByCategory.get('ALGORITHMS') != null ? tasksByCategory.get('ALGORITHMS').size() : 0}">0</div>
-              <p class="text-sm text-gray-600 dark:text-gray-300">Algorithms</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bulk Actions -->
-      <div class="mb-6 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 transition-colors duration-300">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            <i class="fas fa-tools mr-2"></i>Bulk Actions
-          </h3>
-          <button id="selectAllBtn" onclick="toggleSelectAll()" class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300">
-            Select All
-          </button>
-        </div>
-
-        <form id="bulkForm" th:action="@{/admin/learning-paths/bulk-update}" method="post">
-          <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Action</label>
-              <select name="action" id="bulkAction" class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 transition-all duration-300">
-                <option value="update-category">Update Category</option>
-                <option value="update-xp">Update XP Reward</option>
-                <option value="update-difficulty">Update Difficulty</option>
-              </select>
+        <!-- Page Content -->
+        <div class="p-6 animate-fade-in">
+            <!-- Header with breadcrumb -->
+            <div class="mb-6">
+                <nav class="flex mb-3" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <li class="inline-flex items-center">
+                            <a href="/admin"
+                               class="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                                <i class="fas fa-home mr-2"></i>Admin
+                            </a>
+                        </li>
+                        <li aria-current="page">
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                          clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">Learning Paths</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-darkpurple-200 border-b dark:border-darkpurple-700 pb-3 animate-slide-up transition-colors duration-300">
+                    <i class="fas fa-graduation-cap mr-2"></i>Manage Learning Paths
+                </h2>
             </div>
 
-            <div id="categoryDiv">
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
-              <select name="category" class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 transition-all duration-300">
-                <option value="FUNDAMENTALS">Fundamentals</option>
-                <option value="OOP">Object-Oriented Programming</option>
-                <option value="DATA_STRUCTURES">Data Structures</option>
-                <option value="ALGORITHMS">Algorithms</option>
-                <option value="ADVANCED">Advanced Topics</option>
-              </select>
+            <!-- Flash Messages -->
+            <div th:if="${success}"
+                 class="mb-6 p-4 rounded-lg bg-green-100 dark:bg-green-900 border-l-4 border-green-500 text-green-800 dark:text-green-200 flex items-start shadow-elevation-1 animate-fade-in transition-colors duration-300">
+                <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span th:text="${success}"></span>
+            </div>
+            <div th:if="${error}"
+                 class="mb-6 p-4 rounded-lg bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-800 dark:text-red-200 flex items-start shadow-elevation-1 animate-fade-in transition-colors duration-300">
+                <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <span th:text="${error}"></span>
             </div>
 
-            <div id="xpDiv" class="hidden">
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">XP Reward</label>
-              <input type="number" name="xpReward" min="1" placeholder="50" class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 transition-all duration-300">
+            <!-- Overview Statistics -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 border-l-4 border-blue-500 hover:shadow-elevation-3 transition-all duration-300">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-book text-blue-600 dark:text-blue-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400"
+                                 th:text="${tasksByCategory.get('FUNDAMENTALS') != null ? tasksByCategory.get('FUNDAMENTALS').size() : 0}">
+                                0
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Fundamentals</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 border-l-4 border-green-500 hover:shadow-elevation-3 transition-all duration-300">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-cubes text-green-600 dark:text-green-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-green-600 dark:text-green-400"
+                                 th:text="${tasksByCategory.get('OOP') != null ? tasksByCategory.get('OOP').size() : 0}">
+                                0
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">OOP</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 border-l-4 border-purple-500 hover:shadow-elevation-3 transition-all duration-300">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-sitemap text-purple-600 dark:text-purple-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-purple-600 dark:text-purple-400"
+                                 th:text="${tasksByCategory.get('DATA_STRUCTURES') != null ? tasksByCategory.get('DATA_STRUCTURES').size() : 0}">
+                                0
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Data Structures</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 border-l-4 border-red-500 hover:shadow-elevation-3 transition-all duration-300">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-code text-red-600 dark:text-red-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-red-600 dark:text-red-400"
+                                 th:text="${tasksByCategory.get('ALGORITHMS') != null ? tasksByCategory.get('ALGORITHMS').size() : 0}">
+                                0
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Algorithms</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div id="difficultyDiv" class="hidden">
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Difficulty</label>
-              <select name="difficulty" class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 transition-all duration-300">
-                <option value="EASY">Easy</option>
-                <option value="MEDIUM">Medium</option>
-                <option value="HARD">Hard</option>
-              </select>
+            <!-- Bulk Actions -->
+            <div class="mb-6 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 transition-colors duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                        <i class="fas fa-tools mr-2"></i>Bulk Actions
+                    </h3>
+                    <button id="selectAllBtn" onclick="toggleSelectAll()"
+                            class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300">
+                        Select All
+                    </button>
+                </div>
+
+                <form id="bulkForm" th:action="@{/admin/learning-paths/bulk-update}" method="post">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Action</label>
+                            <select name="action" id="bulkAction"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 transition-all duration-300">
+                                <option value="update-category">Update Category</option>
+                                <option value="update-xp">Update XP Reward</option>
+                                <option value="update-difficulty">Update Difficulty</option>
+                            </select>
+                        </div>
+
+                        <div id="categoryDiv">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                            <select name="category"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 transition-all duration-300">
+                                <option value="FUNDAMENTALS">Fundamentals</option>
+                                <option value="OOP">Object-Oriented Programming</option>
+                                <option value="DATA_STRUCTURES">Data Structures</option>
+                                <option value="ALGORITHMS">Algorithms</option>
+                                <option value="ADVANCED">Advanced Topics</option>
+                            </select>
+                        </div>
+
+                        <div id="xpDiv" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">XP
+                                Reward</label>
+                            <input type="number" name="xpReward" min="1" placeholder="50"
+                                   class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 transition-all duration-300">
+                        </div>
+
+                        <div id="difficultyDiv" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Difficulty</label>
+                            <select name="difficulty"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 transition-all duration-300">
+                                <option value="EASY">Easy</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="HARD">Hard</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <button type="submit"
+                                    class="w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
+                                <i class="fas fa-sync-alt mr-2"></i>Apply to Selected
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between">
+                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                            <span id="selectedCount">0</span> tasks selected
+                        </p>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">
+                            Total: <span th:text="${tasks.size()}">0</span> tasks across all categories
+                        </div>
+                    </div>
+                </form>
             </div>
 
-            <div>
-              <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
-                <i class="fas fa-sync-alt mr-2"></i>Apply to Selected
-              </button>
+            <!-- Learning Path Visualization -->
+            <div class="mb-8 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 transition-colors duration-300">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    <i class="fas fa-route mr-2"></i>Learning Path Flow
+                </h3>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-2">
+                                <i class="fas fa-book text-blue-600 dark:text-blue-400 text-xl"></i>
+                            </div>
+                            <span class="text-xs text-gray-600 dark:text-gray-300">Fundamentals</span>
+                        </div>
+                        <i class="fas fa-arrow-right text-gray-400"></i>
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mb-2">
+                                <i class="fas fa-cubes text-green-600 dark:text-green-400 text-xl"></i>
+                            </div>
+                            <span class="text-xs text-gray-600 dark:text-gray-300">OOP</span>
+                        </div>
+                        <i class="fas fa-arrow-right text-gray-400"></i>
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mb-2">
+                                <i class="fas fa-sitemap text-purple-600 dark:text-purple-400 text-xl"></i>
+                            </div>
+                            <span class="text-xs text-gray-600 dark:text-gray-300">Data Structures</span>
+                        </div>
+                        <i class="fas fa-arrow-right text-gray-400"></i>
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mb-2">
+                                <i class="fas fa-code text-red-600 dark:text-red-400 text-xl"></i>
+                            </div>
+                            <span class="text-xs text-gray-600 dark:text-gray-300">Algorithms</span>
+                        </div>
+                        <i class="fas fa-arrow-right text-gray-400"></i>
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mb-2">
+                                <i class="fas fa-star text-yellow-600 dark:text-yellow-400 text-xl"></i>
+                            </div>
+                            <span class="text-xs text-gray-600 dark:text-gray-300">Advanced</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
 
-          <div class="mt-4 flex items-center justify-between">
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              <span id="selectedCount">0</span> tasks selected
-            </p>
-            <div class="text-sm text-gray-500 dark:text-gray-400">
-              Total: <span th:text="${tasks.size()}">0</span> tasks across all categories
+            <!-- Filter and Search -->
+            <div class="mb-6 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 transition-colors duration-300">
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="flex-1">
+                        <label for="searchTasks"
+                               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search
+                            Tasks</label>
+                        <input type="text" id="searchTasks" placeholder="Search by title, tags, or description..."
+                               class="w-full px-4 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 transition-all duration-300">
+                    </div>
+                    <div>
+                        <label for="filterCategory"
+                               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter by
+                            Category</label>
+                        <select id="filterCategory"
+                                class="px-4 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 transition-all duration-300">
+                            <option value="">All Categories</option>
+                            <option value="FUNDAMENTALS">Fundamentals</option>
+                            <option value="OOP">OOP</option>
+                            <option value="DATA_STRUCTURES">Data Structures</option>
+                            <option value="ALGORITHMS">Algorithms</option>
+                            <option value="ADVANCED">Advanced</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="filterDifficulty"
+                               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter by
+                            Difficulty</label>
+                        <select id="filterDifficulty"
+                                class="px-4 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 transition-all duration-300">
+                            <option value="">All Difficulties</option>
+                            <option value="EASY">Easy</option>
+                            <option value="MEDIUM">Medium</option>
+                            <option value="HARD">Hard</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-          </div>
-        </form>
-      </div>
 
-      <!-- Learning Path Visualization -->
-      <div class="mb-8 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 transition-colors duration-300">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-          <i class="fas fa-route mr-2"></i>Learning Path Flow
-        </h3>
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <div class="text-center">
-              <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-2">
-                <i class="fas fa-book text-blue-600 dark:text-blue-400 text-xl"></i>
-              </div>
-              <span class="text-xs text-gray-600 dark:text-gray-300">Fundamentals</span>
-            </div>
-            <i class="fas fa-arrow-right text-gray-400"></i>
-            <div class="text-center">
-              <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mb-2">
-                <i class="fas fa-cubes text-green-600 dark:text-green-400 text-xl"></i>
-              </div>
-              <span class="text-xs text-gray-600 dark:text-gray-300">OOP</span>
-            </div>
-            <i class="fas fa-arrow-right text-gray-400"></i>
-            <div class="text-center">
-              <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mb-2">
-                <i class="fas fa-sitemap text-purple-600 dark:text-purple-400 text-xl"></i>
-              </div>
-              <span class="text-xs text-gray-600 dark:text-gray-300">Data Structures</span>
-            </div>
-            <i class="fas fa-arrow-right text-gray-400"></i>
-            <div class="text-center">
-              <div class="w-16 h-16 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mb-2">
-                <i class="fas fa-code text-red-600 dark:text-red-400 text-xl"></i>
-              </div>
-              <span class="text-xs text-gray-600 dark:text-gray-300">Algorithms</span>
-            </div>
-            <i class="fas fa-arrow-right text-gray-400"></i>
-            <div class="text-center">
-              <div class="w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mb-2">
-                <i class="fas fa-star text-yellow-600 dark:text-yellow-400 text-xl"></i>
-              </div>
-              <span class="text-xs text-gray-600 dark:text-gray-300">Advanced</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Filter and Search -->
-      <div class="mb-6 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 p-6 transition-colors duration-300">
-        <div class="flex flex-col sm:flex-row gap-4">
-          <div class="flex-1">
-            <label for="searchTasks" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search Tasks</label>
-            <input type="text" id="searchTasks" placeholder="Search by title, tags, or description..."
-                   class="w-full px-4 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 transition-all duration-300">
-          </div>
-          <div>
-            <label for="filterCategory" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter by Category</label>
-            <select id="filterCategory" class="px-4 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 transition-all duration-300">
-              <option value="">All Categories</option>
-              <option value="FUNDAMENTALS">Fundamentals</option>
-              <option value="OOP">OOP</option>
-              <option value="DATA_STRUCTURES">Data Structures</option>
-              <option value="ALGORITHMS">Algorithms</option>
-              <option value="ADVANCED">Advanced</option>
-            </select>
-          </div>
-          <div>
-            <label for="filterDifficulty" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter by Difficulty</label>
-            <select id="filterDifficulty" class="px-4 py-2 border border-gray-300 dark:border-darkpurple-600 rounded-lg bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 transition-all duration-300">
-              <option value="">All Difficulties</option>
-              <option value="EASY">Easy</option>
-              <option value="MEDIUM">Medium</option>
-              <option value="HARD">Hard</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tasks by Category -->
-      <div class="space-y-8" id="categoriesContainer">
-        <div th:each="categoryEntry : ${tasksByCategory}" class="category-section bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 overflow-hidden transition-colors duration-300"
-             th:data-category="${categoryEntry.key}">
-          <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-darkpurple-800 dark:to-darkpurple-700 border-b border-gray-200 dark:border-darkpurple-600">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center">
-                <div class="w-10 h-10 rounded-lg flex items-center justify-center mr-3"
-                     th:classappend="${categoryEntry.key == 'FUNDAMENTALS'} ? 'bg-blue-100 dark:bg-blue-900' :
+            <!-- Tasks by Category -->
+            <div class="space-y-8" id="categoriesContainer">
+                <div th:each="categoryEntry : ${tasksByCategory}"
+                     class="category-section bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2 overflow-hidden transition-colors duration-300"
+                     th:data-category="${categoryEntry.key}">
+                    <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-darkpurple-800 dark:to-darkpurple-700 border-b border-gray-200 dark:border-darkpurple-600">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-lg flex items-center justify-center mr-3"
+                                     th:classappend="${categoryEntry.key == 'FUNDAMENTALS'} ? 'bg-blue-100 dark:bg-blue-900' :
                                                    (${categoryEntry.key == 'OOP'} ? 'bg-green-100 dark:bg-green-900' :
                                                    (${categoryEntry.key == 'DATA_STRUCTURES'} ? 'bg-purple-100 dark:bg-purple-900' :
                                                    (${categoryEntry.key == 'ALGORITHMS'} ? 'bg-red-100 dark:bg-red-900' :
                                                    'bg-yellow-100 dark:bg-yellow-900')))">
-                  <i th:class="${categoryEntry.key == 'FUNDAMENTALS'} ? 'fas fa-book text-blue-600 dark:text-blue-400' :
+                                    <i th:class="${categoryEntry.key == 'FUNDAMENTALS'} ? 'fas fa-book text-blue-600 dark:text-blue-400' :
                                                 (${categoryEntry.key == 'OOP'} ? 'fas fa-cubes text-green-600 dark:text-green-400' :
                                                 (${categoryEntry.key == 'DATA_STRUCTURES'} ? 'fas fa-sitemap text-purple-600 dark:text-purple-400' :
                                                 (${categoryEntry.key == 'ALGORITHMS'} ? 'fas fa-code text-red-600 dark:text-red-400' :
                                                 'fas fa-star text-yellow-600 dark:text-yellow-400')))"></i>
-                </div>
-                <div>
-                  <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300"
-                      th:text="${categoryEntry.key == 'FUNDAMENTALS'} ? 'Fundamentals' :
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                                        th:text="${categoryEntry.key == 'FUNDAMENTALS'} ? 'Fundamentals' :
                                                  (${categoryEntry.key == 'OOP'} ? 'Object-Oriented Programming' :
                                                  (${categoryEntry.key == 'DATA_STRUCTURES'} ? 'Data Structures' :
                                                  (${categoryEntry.key == 'ALGORITHMS'} ? 'Algorithms' :
                                                  'Advanced Topics')))"></h3>
-                  <p class="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">
-                    <span th:text="${categoryEntry.value.size()}">0</span> tasks
-                    • <span class="category-selected-count">0</span> selected
-                  </p>
-                </div>
-              </div>
-              <div class="flex items-center space-x-2">
-                <button type="button" onclick="toggleCategorySelect(this)"
-                        class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 transition-colors duration-300">
-                  Select All
-                </button>
-                <button type="button" onclick="toggleCategory(this)"
-                        class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
-                  <i class="fas fa-chevron-down category-toggle"></i>
-                </button>
-              </div>
-            </div>
-          </div>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">
+                                        <span th:text="${categoryEntry.value.size()}">0</span> tasks
+                                        • <span class="category-selected-count">0</span> selected
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button type="button" onclick="toggleCategorySelect(this)"
+                                        class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 transition-colors duration-300">
+                                    Select All
+                                </button>
+                                <button type="button" onclick="toggleCategory(this)"
+                                        class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
+                                    <i class="fas fa-chevron-down category-toggle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-          <div class="category-content p-6">
-            <div class="grid grid-cols-1 gap-4">
-              <div th:each="task : ${categoryEntry.value}"
-                   class="task-item flex items-center justify-between p-4 border border-gray-200 dark:border-darkpurple-600 rounded-lg hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-all duration-300"
-                   th:data-title="${task.title}"
-                   th:data-tags="${task.tags != null ? #strings.listJoin(task.tags, ' ') : ''}"
-                   th:data-difficulty="${task.difficulty}">
-                <div class="flex items-center space-x-4">
-                  <input type="checkbox" th:value="${task.id}" name="taskIds" form="bulkForm"
-                         class="task-checkbox w-4 h-4 text-primary-600 border-gray-300 dark:border-darkpurple-600 rounded focus:ring-primary-500 transition-colors duration-300"
-                         onchange="updateSelectedCount()">
-                  <div class="flex-1">
-                    <h4 class="font-medium text-gray-900 dark:text-gray-100 transition-colors duration-300" th:text="${task.title}"></h4>
-                    <div class="flex flex-wrap gap-2 mt-2">
+                    <div class="category-content p-6">
+                        <div class="grid grid-cols-1 gap-4">
+                            <div th:each="task : ${categoryEntry.value}"
+                                 class="task-item flex items-center justify-between p-4 border border-gray-200 dark:border-darkpurple-600 rounded-lg hover:bg-gray-50 dark:hover:bg-darkpurple-800 transition-all duration-300"
+                                 th:data-title="${task.title}"
+                                 th:data-tags="${task.tags != null ? #strings.listJoin(task.tags, ' ') : ''}"
+                                 th:data-difficulty="${task.difficulty}">
+                                <div class="flex items-center space-x-4">
+                                    <input type="checkbox" th:value="${task.id}" name="taskIds" form="bulkForm"
+                                           class="task-checkbox w-4 h-4 text-primary-600 border-gray-300 dark:border-darkpurple-600 rounded focus:ring-primary-500 transition-colors duration-300"
+                                           onchange="updateSelectedCount()">
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                                            th:text="${task.title}"></h4>
+                                        <div class="flex flex-wrap gap-2 mt-2">
                                             <span th:each="tag : ${task.tags}"
                                                   class="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full transition-colors duration-300"
                                                   th:text="${tag}"></span>
-                    </div>
-                  </div>
-                </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                <div class="flex items-center space-x-4">
-                  <!-- Current Settings Display -->
-                  <div class="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
-                    <div class="flex gap-2">
+                                <div class="flex items-center space-x-4">
+                                    <!-- Current Settings Display -->
+                                    <div class="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
+                                        <div class="flex gap-2">
                                             <span th:if="${task.difficulty != null}"
                                                   class="px-2 py-1 text-xs rounded-full transition-colors duration-300"
                                                   th:classappend="${task.difficulty == 'EASY'} ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
                                                                (${task.difficulty == 'MEDIUM'} ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
                                                                'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200')"
                                                   th:text="${task.difficulty}"></span>
-                      <span th:if="${task.xpReward != null}"
-                            class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-full transition-colors duration-300">
+                                            <span th:if="${task.xpReward != null}"
+                                                  class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-full transition-colors duration-300">
                                                 +<span th:text="${task.xpReward}"></span> XP
                                             </span>
-                      <span th:if="${task.estimatedTime != null}"
-                            class="px-2 py-1 text-xs bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200 rounded-full transition-colors duration-300">
-                                                <i class="fas fa-clock mr-1"></i><span th:text="${task.estimatedTime}"></span>
+                                            <span th:if="${task.estimatedTime != null}"
+                                                  class="px-2 py-1 text-xs bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200 rounded-full transition-colors duration-300">
+                                                <i class="fas fa-clock mr-1"></i><span
+                                                    th:text="${task.estimatedTime}"></span>
                                             </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Quick Edit Form -->
+                                    <div class="flex items-center space-x-2">
+                                        <form th:action="@{/admin/learning-paths/update-task-category}" method="post"
+                                              class="inline">
+                                            <input type="hidden" name="taskId" th:value="${task.id}">
+                                            <select name="category" onchange="this.form.submit()"
+                                                    class="text-sm px-2 py-1 border border-gray-300 dark:border-darkpurple-600 rounded bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-1 focus:ring-primary-500 transition-all duration-300">
+                                                <option value="FUNDAMENTALS"
+                                                        th:selected="${task.learningCategory == 'FUNDAMENTALS'}">
+                                                    Fundamentals
+                                                </option>
+                                                <option value="OOP" th:selected="${task.learningCategory == 'OOP'}">
+                                                    OOP
+                                                </option>
+                                                <option value="DATA_STRUCTURES"
+                                                        th:selected="${task.learningCategory == 'DATA_STRUCTURES'}">Data
+                                                    Structures
+                                                </option>
+                                                <option value="ALGORITHMS"
+                                                        th:selected="${task.learningCategory == 'ALGORITHMS'}">
+                                                    Algorithms
+                                                </option>
+                                                <option value="ADVANCED"
+                                                        th:selected="${task.learningCategory == 'ADVANCED'}">Advanced
+                                                </option>
+                                            </select>
+                                        </form>
+                                        <a th:href="@{/moderator/tasks/edit/{id}(id=${task.id})}"
+                                           class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 transition-colors duration-300"
+                                           title="Edit Task">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Empty state for category -->
+                        <div th:if="${categoryEntry.value.empty}" class="text-center py-8">
+                            <i class="fas fa-folder-open text-gray-400 dark:text-gray-600 text-3xl mb-3"></i>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">No tasks in this category yet</p>
+                        </div>
                     </div>
-                  </div>
-
-                  <!-- Quick Edit Form -->
-                  <div class="flex items-center space-x-2">
-                    <form th:action="@{/admin/learning-paths/update-task-category}" method="post" class="inline">
-                      <input type="hidden" name="taskId" th:value="${task.id}">
-                      <select name="category" onchange="this.form.submit()"
-                              class="text-sm px-2 py-1 border border-gray-300 dark:border-darkpurple-600 rounded bg-white dark:bg-darkpurple-800 text-gray-900 dark:text-gray-100 focus:ring-1 focus:ring-primary-500 transition-all duration-300">
-                        <option value="FUNDAMENTALS" th:selected="${task.learningCategory == 'FUNDAMENTALS'}">Fundamentals</option>
-                        <option value="OOP" th:selected="${task.learningCategory == 'OOP'}">OOP</option>
-                        <option value="DATA_STRUCTURES" th:selected="${task.learningCategory == 'DATA_STRUCTURES'}">Data Structures</option>
-                        <option value="ALGORITHMS" th:selected="${task.learningCategory == 'ALGORITHMS'}">Algorithms</option>
-                        <option value="ADVANCED" th:selected="${task.learningCategory == 'ADVANCED'}">Advanced</option>
-                      </select>
-                    </form>
-                    <a th:href="@{/moderator/tasks/edit/{id}(id=${task.id})}"
-                       class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 transition-colors duration-300"
-                       title="Edit Task">
-                      <i class="fas fa-edit"></i>
-                    </a>
-                  </div>
                 </div>
-              </div>
             </div>
 
-            <!-- Empty state for category -->
-            <div th:if="${categoryEntry.value.empty}" class="text-center py-8">
-              <i class="fas fa-folder-open text-gray-400 dark:text-gray-600 text-3xl mb-3"></i>
-              <p class="text-gray-500 dark:text-gray-400 text-sm">No tasks in this category yet</p>
+            <!-- Empty state if no tasks at all -->
+            <div th:if="${tasks.empty}"
+                 class="text-center py-12 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2">
+                <i class="fas fa-graduation-cap text-gray-400 dark:text-gray-600 text-6xl mb-6"></i>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">No Tasks Found</h3>
+                <p class="text-gray-500 dark:text-gray-400 mb-6">Create some tasks first to organize them into learning
+                    paths</p>
+                <a href="/moderator/tasks/new"
+                   class="material-btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
+                    <i class="fas fa-plus mr-2"></i>Create First Task
+                </a>
             </div>
-          </div>
         </div>
-      </div>
-
-      <!-- Empty state if no tasks at all -->
-      <div th:if="${tasks.empty}" class="text-center py-12 bg-white dark:bg-darkpurple-900 rounded-xl shadow-elevation-2">
-        <i class="fas fa-graduation-cap text-gray-400 dark:text-gray-600 text-6xl mb-6"></i>
-        <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">No Tasks Found</h3>
-        <p class="text-gray-500 dark:text-gray-400 mb-6">Create some tasks first to organize them into learning paths</p>
-        <a href="/moderator/tasks/new"
-           class="material-btn bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 transform hover:-translate-y-1">
-          <i class="fas fa-plus mr-2"></i>Create First Task
-        </a>
-      </div>
     </div>
-  </div>
 </div>
 
 <script>
-  let allSelected = false;
+    let allSelected = false;
 
-  function updateSelectedCount() {
-    const checkboxes = document.querySelectorAll('.task-checkbox:checked');
-    const count = checkboxes.length;
-    document.getElementById('selectedCount').textContent = count;
+    function updateSelectedCount() {
+        const checkboxes = document.querySelectorAll('.task-checkbox:checked');
+        const count = checkboxes.length;
+        document.getElementById('selectedCount').textContent = count;
 
-    // Update category-specific counts
-    document.querySelectorAll('.category-section').forEach(category => {
-      const categoryCheckboxes = category.querySelectorAll('.task-checkbox:checked');
-      const countElement = category.querySelector('.category-selected-count');
-      if (countElement) {
-        countElement.textContent = categoryCheckboxes.length;
-      }
-    });
+        // Update category-specific counts
+        document.querySelectorAll('.category-section').forEach(category => {
+            const categoryCheckboxes = category.querySelectorAll('.task-checkbox:checked');
+            const countElement = category.querySelector('.category-selected-count');
+            if (countElement) {
+                countElement.textContent = categoryCheckboxes.length;
+            }
+        });
 
-    // Update select all button text
-    const selectAllBtn = document.getElementById('selectAllBtn');
-    const totalCheckboxes = document.querySelectorAll('.task-checkbox').length;
-    selectAllBtn.textContent = count === totalCheckboxes && count > 0 ? 'Deselect All' : 'Select All';
-    allSelected = count === totalCheckboxes && count > 0;
-  }
-
-  function toggleSelectAll() {
-    const checkboxes = document.querySelectorAll('.task-checkbox');
-    checkboxes.forEach(checkbox => {
-      checkbox.checked = !allSelected;
-    });
-    updateSelectedCount();
-  }
-
-  function toggleCategorySelect(button) {
-    const category = button.closest('.category-section');
-    const checkboxes = category.querySelectorAll('.task-checkbox');
-    const checkedCount = category.querySelectorAll('.task-checkbox:checked').length;
-    const shouldSelect = checkedCount === 0;
-
-    checkboxes.forEach(checkbox => {
-      checkbox.checked = shouldSelect;
-    });
-
-    button.textContent = shouldSelect ? 'Deselect All' : 'Select All';
-    updateSelectedCount();
-  }
-
-  function toggleCategory(button) {
-    const content = button.closest('.category-section').querySelector('.category-content');
-    const icon = button.querySelector('.category-toggle');
-
-    if (content.style.display === 'none') {
-      content.style.display = 'block';
-      icon.classList.remove('fa-chevron-right');
-      icon.classList.add('fa-chevron-down');
-    } else {
-      content.style.display = 'none';
-      icon.classList.remove('fa-chevron-down');
-      icon.classList.add('fa-chevron-right');
+        // Update select all button text
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        const totalCheckboxes = document.querySelectorAll('.task-checkbox').length;
+        selectAllBtn.textContent = count === totalCheckboxes && count > 0 ? 'Deselect All' : 'Select All';
+        allSelected = count === totalCheckboxes && count > 0;
     }
-  }
 
-  // Bulk action form handling
-  document.getElementById('bulkAction').addEventListener('change', function() {
-    const action = this.value;
-    const categoryDiv = document.getElementById('categoryDiv');
-    const xpDiv = document.getElementById('xpDiv');
-    const difficultyDiv = document.getElementById('difficultyDiv');
-
-    // Hide all option divs
-    categoryDiv.classList.add('hidden');
-    xpDiv.classList.add('hidden');
-    difficultyDiv.classList.add('hidden');
-
-    // Show relevant div based on action
-    switch(action) {
-      case 'update-category':
-        categoryDiv.classList.remove('hidden');
-        break;
-      case 'update-xp':
-        xpDiv.classList.remove('hidden');
-        break;
-      case 'update-difficulty':
-        difficultyDiv.classList.remove('hidden');
-        break;
+    function toggleSelectAll() {
+        const checkboxes = document.querySelectorAll('.task-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = !allSelected;
+        });
+        updateSelectedCount();
     }
-  });
 
-  // Prevent form submission if no tasks selected
-  document.getElementById('bulkForm').addEventListener('submit', function(e) {
-    const checkboxes = document.querySelectorAll('.task-checkbox:checked');
-    if (checkboxes.length === 0) {
-      e.preventDefault();
-      alert('Please select at least one task to update.');
+    function toggleCategorySelect(button) {
+        const category = button.closest('.category-section');
+        const checkboxes = category.querySelectorAll('.task-checkbox');
+        const checkedCount = category.querySelectorAll('.task-checkbox:checked').length;
+        const shouldSelect = checkedCount === 0;
+
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = shouldSelect;
+        });
+
+        button.textContent = shouldSelect ? 'Deselect All' : 'Select All';
+        updateSelectedCount();
     }
-  });
 
-  // Search and filter functionality
-  document.getElementById('searchTasks').addEventListener('input', function() {
-    filterTasks();
-  });
+    function toggleCategory(button) {
+        const content = button.closest('.category-section').querySelector('.category-content');
+        const icon = button.querySelector('.category-toggle');
 
-  document.getElementById('filterCategory').addEventListener('change', function() {
-    filterTasks();
-  });
-
-  document.getElementById('filterDifficulty').addEventListener('change', function() {
-    filterTasks();
-  });
-
-  function filterTasks() {
-    const searchTerm = document.getElementById('searchTasks').value.toLowerCase();
-    const categoryFilter = document.getElementById('filterCategory').value;
-    const difficultyFilter = document.getElementById('filterDifficulty').value;
-
-    document.querySelectorAll('.category-section').forEach(categorySection => {
-      const categoryName = categorySection.dataset.category;
-      let categoryHasVisibleTasks = false;
-
-      // Hide/show category based on category filter
-      if (categoryFilter && categoryName !== categoryFilter) {
-        categorySection.style.display = 'none';
-        return;
-      }
-
-      categorySection.querySelectorAll('.task-item').forEach(taskItem => {
-        const title = taskItem.dataset.title.toLowerCase();
-        const tags = taskItem.dataset.tags.toLowerCase();
-        const difficulty = taskItem.dataset.difficulty;
-
-        const matchesSearch = title.includes(searchTerm) || tags.includes(searchTerm);
-        const matchesDifficulty = !difficultyFilter || difficulty === difficultyFilter;
-
-        if (matchesSearch && matchesDifficulty) {
-          taskItem.style.display = 'flex';
-          categoryHasVisibleTasks = true;
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            icon.classList.remove('fa-chevron-right');
+            icon.classList.add('fa-chevron-down');
         } else {
-          taskItem.style.display = 'none';
+            content.style.display = 'none';
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-right');
         }
-      });
+    }
 
-      categorySection.style.display = categoryHasVisibleTasks ? 'block' : 'none';
+    // Bulk action form handling
+    document.getElementById('bulkAction').addEventListener('change', function () {
+        const action = this.value;
+        const categoryDiv = document.getElementById('categoryDiv');
+        const xpDiv = document.getElementById('xpDiv');
+        const difficultyDiv = document.getElementById('difficultyDiv');
+
+        // Hide all option divs
+        categoryDiv.classList.add('hidden');
+        xpDiv.classList.add('hidden');
+        difficultyDiv.classList.add('hidden');
+
+        // Show relevant div based on action
+        switch (action) {
+            case 'update-category':
+                categoryDiv.classList.remove('hidden');
+                break;
+            case 'update-xp':
+                xpDiv.classList.remove('hidden');
+                break;
+            case 'update-difficulty':
+                difficultyDiv.classList.remove('hidden');
+                break;
+        }
     });
-  }
 
-  // Mobile menu toggle
-  document.getElementById('mobileMenuBtn').addEventListener('click', function () {
-    console.log('Mobile menu toggle clicked');
-  });
+    // Prevent form submission if no tasks selected
+    document.getElementById('bulkForm').addEventListener('submit', function (e) {
+        const checkboxes = document.querySelectorAll('.task-checkbox:checked');
+        if (checkboxes.length === 0) {
+            e.preventDefault();
+            alert('Please select at least one task to update.');
+        }
+    });
 
-  // Initialize
-  updateSelectedCount();
+    // Search and filter functionality
+    document.getElementById('searchTasks').addEventListener('input', function () {
+        filterTasks();
+    });
+
+    document.getElementById('filterCategory').addEventListener('change', function () {
+        filterTasks();
+    });
+
+    document.getElementById('filterDifficulty').addEventListener('change', function () {
+        filterTasks();
+    });
+
+    function filterTasks() {
+        const searchTerm = document.getElementById('searchTasks').value.toLowerCase();
+        const categoryFilter = document.getElementById('filterCategory').value;
+        const difficultyFilter = document.getElementById('filterDifficulty').value;
+
+        document.querySelectorAll('.category-section').forEach(categorySection => {
+            const categoryName = categorySection.dataset.category;
+            let categoryHasVisibleTasks = false;
+
+            // Hide/show category based on category filter
+            if (categoryFilter && categoryName !== categoryFilter) {
+                categorySection.style.display = 'none';
+                return;
+            }
+
+            categorySection.querySelectorAll('.task-item').forEach(taskItem => {
+                const title = taskItem.dataset.title.toLowerCase();
+                const tags = taskItem.dataset.tags.toLowerCase();
+                const difficulty = taskItem.dataset.difficulty;
+
+                const matchesSearch = title.includes(searchTerm) || tags.includes(searchTerm);
+                const matchesDifficulty = !difficultyFilter || difficulty === difficultyFilter;
+
+                if (matchesSearch && matchesDifficulty) {
+                    taskItem.style.display = 'flex';
+                    categoryHasVisibleTasks = true;
+                } else {
+                    taskItem.style.display = 'none';
+                }
+            });
+
+            categorySection.style.display = categoryHasVisibleTasks ? 'block' : 'none';
+        });
+    }
+
+    // Mobile menu toggle
+    document.getElementById('mobileMenuBtn').addEventListener('click', function () {
+        console.log('Mobile menu toggle clicked');
+    });
+
+    // Initialize
+    updateSelectedCount();
 </script>
 </body>
 </html>

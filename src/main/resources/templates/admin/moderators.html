@@ -94,109 +94,11 @@
 <body class="bg-gray-50 min-h-screen font-sans">
 <div class="flex min-h-screen">
     <!-- Sidebar -->
-    <div class="bg-primary-800 text-white w-64 py-8 px-4 hidden md:block shadow-elevation-2 animate-slide-in-left">
-        <div class="mb-8">
-            <h1 class="text-xl font-bold">CodeDrill</h1>
-            <p class="text-primary-200 text-sm">Administrator Panel</p>
-        </div>
-
-        <nav>
-            <ul>
-                <li class="mb-2">
-                    <a href="/admin"
-                       class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-                        Dashboard
-                    </a>
-                </li>
-                <li class="mb-2">
-                    <a href="/admin/users"
-                       class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-                        User Management
-                    </a>
-                </li>
-                <li class="mb-2">
-                    <a href="/admin/moderators"
-                       class="block py-2 px-4 bg-primary-700 rounded-lg font-medium transition-all duration-300 shadow-elevation-1">
-                        Manage Moderators
-                    </a>
-                </li>
-                <li class="mb-2">
-                    <a href="/moderator/tasks"
-                       class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-                        Task Management
-                    </a>
-                </li>
-                <li class="mb-2">
-                    <a href="/tasks"
-                       class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-                        View Public Site
-                    </a>
-                </li>
-                <li class="mb-2">
-                    <a href="/change-password"
-                       class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-                        Change Password
-                    </a>
-                </li>
-                <li class="mt-8">
-                    <form th:action="@{/logout}" method="post">
-                        <button type="submit"
-                                class="material-btn block w-full py-2 px-4 text-left hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-                            Logout
-                        </button>
-                    </form>
-                </li>
-            </ul>
-        </nav>
-    </div>
+    <th:block th:replace="fragments/sidebar :: sidebar('moderators')"></th:block>
 
     <!-- Main Content -->
     <div class="flex-1 overflow-y-auto">
-        <!-- Mobile Header -->
-        <div class="md:hidden bg-primary-800 text-white p-4 flex justify-between items-center shadow-elevation-2">
-            <h1 class="text-xl font-bold">Admin Panel</h1>
-            <button id="mobileMenuBtn"
-                    class="material-btn text-white p-1 rounded-full hover:bg-primary-700 transition-colors duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-            </button>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobileMenu" class="md:hidden bg-primary-800 text-white p-4 hidden shadow-elevation-3 animate-fade-in">
-            <nav>
-                <ul>
-                    <li class="mb-2">
-                        <a href="/admin"
-                           class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-                            Dashboard
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="/admin/moderators"
-                           class="block py-2 px-4 bg-primary-700 rounded-lg font-medium transition-all duration-300 shadow-elevation-1">
-                            Manage Moderators
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="/tasks"
-                           class="block py-2 px-4 hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-                            View Public Site
-                        </a>
-                    </li>
-                    <li class="mt-4">
-                        <form th:action="@{/logout}" method="post">
-                            <button type="submit"
-                                    class="material-btn block w-full py-2 px-4 text-left hover:bg-primary-700 rounded-lg font-medium transition-all duration-300 hover:shadow-elevation-1">
-                                Logout
-                            </button>
-                        </form>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+        <th:block th:replace="~{fragments/mobile-nav :: mobile-nav}"></th:block>
 
         <!-- Page Content -->
         <div class="p-6 animate-fade-in">
