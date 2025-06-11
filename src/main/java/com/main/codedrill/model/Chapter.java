@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -47,7 +48,6 @@ public class Chapter {
     private Boolean isCompleted = false;
 
     @Getter
-    @Setter
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
     @Column(name = "tasks", nullable = false)
@@ -59,20 +59,42 @@ public class Chapter {
     private Double progress = 0.0;
 
     @Getter
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "learning_path_id")
+    private LearningPath learningPath;
+
+    @Getter
     @Column(name = "created_at", nullable = false, updatable = false)
-    private java.time.LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Getter
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public Chapter() {
-        this.createdAt = java.time.LocalDateTime.now();
+    public Chapter(String title, String description, difficultyLevel difficulty, Integer timeEstimate, Integer xpReward) {
+        this.title = title;
+        this.description = description;
+        this.difficulty = difficulty;
+        this.timeEstimate = timeEstimate;
+        this.xpReward = xpReward;
+        this.createdAt = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void addTask(Task task) {
+        if (this.tasks == null) {
+            this.tasks = new ArrayList<>();
+        }
+        if(this.tasks.contains(task)) {
+            return;
+        }
+        task.setInChapter(this); // Set the chapter for the task
+        this.tasks.add(task);
     }
 
     public enum difficultyLevel {

@@ -2,36 +2,57 @@ package com.main.codedrill.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "achievements")
 public class Achievement {
 
+    // Getters and Setters
     @Id
+    @Getter
+    @Setter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
+    @Setter
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Getter
+    @Setter
     @Column(nullable = false)
     private String description;
 
+    @Getter
+    @Setter
     @Column(nullable = false)
     private String icon;
 
+    @Getter
+    @Setter
     @Column(name = "achievement_type", nullable = false)
     private String achievementType; // STREAK, COMPLETION, XP, SPECIAL
 
+    @Getter
+    @Setter
     @Column(name = "target_value")
     private Integer targetValue;
 
+    @Getter
+    @Setter
     @Column(name = "xp_reward", nullable = false)
     private Integer xpReward = 0;
 
+    @Getter
+    @Setter
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
+    @Getter
+    @Setter
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -49,32 +70,4 @@ public class Achievement {
         this.targetValue = targetValue;
         this.xpReward = xpReward;
     }
-
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public String getIcon() { return icon; }
-    public void setIcon(String icon) { this.icon = icon; }
-
-    public String getAchievementType() { return achievementType; }
-    public void setAchievementType(String achievementType) { this.achievementType = achievementType; }
-
-    public Integer getTargetValue() { return targetValue; }
-    public void setTargetValue(Integer targetValue) { this.targetValue = targetValue; }
-
-    public Integer getXpReward() { return xpReward; }
-    public void setXpReward(Integer xpReward) { this.xpReward = xpReward; }
-
-    public Boolean getIsActive() { return isActive; }
-    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

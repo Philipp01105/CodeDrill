@@ -74,4 +74,12 @@ public class LearningPath {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void addChapter(Chapter chapter) {
+        if (this.chapters == null) {
+            this.chapters = new java.util.ArrayList<>();
+        }
+        this.chapters.add(chapter);
+        chapter.setLearningPath(this);
+    }
+
 }
