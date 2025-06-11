@@ -79,7 +79,9 @@ public class TaskController {
 
             // Get learning path nur wenn es existiert
             LearningPath learningPath = gamificationService.getLearningPath(user);
-            model.addAttribute("learningPath", learningPath);
+            model.addAttribute("learningPathUserProgress", learningPath);
+
+            model.addAttribute("learningPaths", gamificationService.getAllLearningPaths());
         }
 
         return "tasks";

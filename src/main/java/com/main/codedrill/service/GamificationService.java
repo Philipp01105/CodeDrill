@@ -17,7 +17,6 @@ import java.util.Map;
 public class GamificationService {
 
     private final UserStatsRepository userStatsRepository;
-    private final AchievementRepository achievementRepository;
     private final AchievementService achievementService;
     private final UserAchievementRepository userAchievementRepository;
     private final LearningPathRepository learningPathRepository;
@@ -34,7 +33,6 @@ public class GamificationService {
             AchievementService achievementService,
             TaskRepository taskRepository) {
         this.userStatsRepository = userStatsRepository;
-        this.achievementRepository = achievementRepository;
         this.userAchievementRepository = userAchievementRepository;
         this.learningPathRepository = learningPathRepository;
         this.userTaskCompletionRepository = userTaskCompletionRepository;
@@ -44,46 +42,7 @@ public class GamificationService {
 
 
     private void updateLearningPathProgress(LearningPath learningPath, Task task) {
-        String category = task.getLearningCategory();
-        if (category == null) {
-            // Try to infer from tags
-            category = inferCategoryFromTags(task.getTags());
-        }
-
-        // Calculate progress based on completed tasks in this category
-        // This is a simplified calculation - you might want to make it more sophisticated
-        switch (category.toUpperCase()) {
-            case "FUNDAMENTALS":
-                learningPath.setFundamentalsProgress(Math.min(100, learningPath.getFundamentalsProgress() + 10));
-                break;
-            case "OOP":
-                learningPath.setOopProgress(Math.min(100, learningPath.getOopProgress() + 15));
-                break;
-            case "DATA_STRUCTURES":
-                learningPath.setDataStructuresProgress(Math.min(100, learningPath.getDataStructuresProgress() + 20));
-                break;
-            case "ALGORITHMS":
-                learningPath.setAlgorithmsProgress(Math.min(100, learningPath.getAlgorithmsProgress() + 20));
-                break;
-        }
-    }
-
-    private String inferCategoryFromTags(java.util.Set<String> tags) {
-        for (String tag : tags) {
-            switch (tag) {
-                case "Java Methods & Logic":
-                    return "FUNDAMENTALS";
-                case "Object-Oriented Design":
-                    return "OOP";
-                case "Data Structures":
-                    return "DATA_STRUCTURES";
-                case "Recursion":
-                    return "ALGORITHMS";
-                default:
-                    return "FUNDAMENTALS";
-            }
-        }
-        return "FUNDAMENTALS";
+        // TODO: Implement logic to update learning path progress based on task completion
     }
 
     private void updateOverallProgress(UserStats stats, User user) {
@@ -95,6 +54,7 @@ public class GamificationService {
     }
 
     private List<Achievement> checkAndAwardAchievements(User user, UserStats stats) {
+        // TODO: Implement logic to check for new achievements based on user stats
         // This is a simplified implementation
         // You would check all achievements and award new ones
         return List.of(); // Return list of newly earned achievements
@@ -236,5 +196,9 @@ public class GamificationService {
     public UserStats getUserStats(Long userId) {
         // Nur return wenn bereits existiert, sonst null
         return userStatsRepository.findByUserId(userId).orElse(null);
+    }
+
+    public LearningPath[] getAllLearningPaths() {
+        return learningPathRepository.findAll().toArray(new LearningPath[0]);
     }
 }
